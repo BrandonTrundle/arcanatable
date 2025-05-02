@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/HomePage.css';
-import Navbar from '../components/Navbar';
+import Navbar from '../components/Auth/Navbar';
 import heroArt from '../assets/HomePageBackground.png';
 
 const HomePage = () => {

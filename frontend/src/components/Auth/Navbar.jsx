@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
-import '../styles/Navbar.css';
-import logo from '../assets/ArcanaTableLogo.png';
-import { UserContext } from '../context/UserContext';
+import '../../styles/Navbar.css';
+import logo from '../../assets/ArcanaTableLogo.png';
+import { UserContext } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {

@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 import '../styles/UserWelcome.css';
 import welcomeBackground from '../assets/UserWelcomeBG.png';
-import UserInfoCard from '../components/UserInfoCard';
+import UserInfoCard from '../components/Auth/UserInfoCard';
 import BlackCrystal from '../assets/BlackCrystal.png';
 import BlueCrystal from '../assets/BlueCrystal.png';
 import OrangeCrystal from '../assets/OrangeCrystal.png';
-import Navbar from '../components/Navbar'; // make sure the path is correct
+import Navbar from '../components/Auth/Navbar'; // make sure the path is correct
 
 
 const userWelcomeStyle = {

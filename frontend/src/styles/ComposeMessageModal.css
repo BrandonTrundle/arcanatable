@@ -1,0 +1,40 @@
+.compose-modal {
+    position: fixed;
+    top: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 0 12px rgba(0,0,0,0.2);
+    z-index: 2000;
+    width: 400px;
+    max-width: 90%;
+  }
+  
+  .compose-modal .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .compose-modal input,
+  .compose-modal textarea {
+    width: 100%;
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .compose-modal button {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 0.5rem;
+    background: #774aa3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
