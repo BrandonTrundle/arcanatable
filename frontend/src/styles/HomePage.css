@@ -1,0 +1,232 @@
+/* src/css/HomePage.css */
+@import './variables.css'; /* Import the variables for colors */
+
+/* General page container */
+.homepage-container {
+  font-family: 'Tagesschrift', system-ui, sans-serif;
+  color: var(--dark-brown); /* Apply the dark brown color */
+  background-color: var(--parchment); /* Set background color to parchment */
+  margin: 0;
+  padding: 0;
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  height: 80vh; /* Full viewport height */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Wrapper for full-size background image */
+.hero-image-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 0;
+}
+
+.hero-image {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.9; /* Optional: allows text to stand out */
+}
+
+/* Content on top of image */
+.hero-content {
+  position: relative;
+  z-index: 1;
+  padding: 1rem;
+  max-width: 800px;
+  color: var(--parchment); /* Ensures light contrast */
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: bold;
+
+  color: var(--gold);
+}
+
+.hero-description {
+  font-size: 1.5rem;
+}
+
+.cta-button {
+  padding: 10px 20px;
+  background-color: var(--gold);
+  border: none;
+  color: var(--parchment);
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.cta-button:hover {
+  background-color: var(--emerald-green); /* Hover effect */
+  color: var(--parchment); /* Light color for contrast */
+}
+
+/* Features Section */
+.features-section {
+  padding: 50px 20px;
+  background-color: var(--dark-brown);
+}
+
+.features-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.feature-item {
+  background-color: var(--beige-tan);
+  color: var(--dark-brown);
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  width: 250px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.feature-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.feature-description {
+  font-size: 1rem;
+  color: var(--dark-brown);
+}
+
+/* About Section */
+.about-section {
+  padding: 50px 20px;
+  background-color: var(--parchment);
+}
+
+.about-container {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.about-title {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: var(--dark-brown);
+}
+
+.about-description {
+  font-size: 1.2rem;
+  color: var(--dark-brown);
+  line-height: 1.6;
+}
+
+/* Preview Section */
+.preview-section {
+  padding: 50px 20px;
+  background-color: var(--beige-tan);
+}
+
+.preview-container {
+  text-align: center;
+}
+
+.preview-title {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: var(--dark-brown);
+}
+
+.map-placeholder {
+  background-color: var(--e4e4e4);
+  border-radius: 10px;
+  padding: 50px;
+  font-size: 1.5rem;
+  color: var(--dark-brown);
+  text-align: center;
+}
+
+/* Call to Action Section */
+.cta-section {
+  background-color: var(--burnt-orange);
+  padding: 50px 20px;
+  text-align: center;
+}
+
+.cta-title {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  color: var(--parchment);
+}
+
+.cta-description {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  color: var(--parchment);
+}
+
+.cta-button {
+  padding: 10px 20px;
+  background-color: var(--parchment);
+  border: none;
+  color: var(--gold);
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.cta-button:hover {
+  background-color: var(--amber); /* Hover effect */
+}
+
+/* Footer Section */
+.footer-section {
+  background-color: var(--dark-brown);
+  padding: 20px;
+  text-align: center;
+}
+
+.footer-text {
+  font-size: 1rem;
+  color: var(--parchment);
+}
+
+.footer-links {
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+
+.footer-link {
+  color: var(--parchment);
+  text-decoration: none;
+  margin: 0 5px;
+}
+
+.footer-link:hover {
+  text-decoration: underline;
+  color: var(--gold); /* Hover effect */
+}
+
+.hero-image-wrapper {
+  width: 100%;
+  max-height: 800px;
+  overflow: hidden;
+}

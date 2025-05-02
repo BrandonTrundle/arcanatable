@@ -21,7 +21,7 @@ router.get('/google',
       const token = jwt.sign({ userId: req.user._id }, process.env.JWT_SECRET, {
         expiresIn: '1d',
       });
-      res.redirect(`/?token=${token}`);
+      res.redirect(`http://localhost:3000/?token=${token}`);
     }
   );
 

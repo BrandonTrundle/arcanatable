@@ -1,0 +1,15 @@
+/* src/css/variables.css */
+:root {
+    --dark-brown: #4E3629;
+    --beige-tan: #D9CBB5;
+    --gold:rgb(238, 181, 25);
+    --emerald-green: #2E8B57;
+    --steel-blue: #4682B4;
+    --amber: #FFBF00;
+    --parchment: #F5F5DC;
+    --burnt-orange:rgb(212, 131, 24);
+    --userWelcomeTile:rgb(199, 148, 54);
+    --userWelcomeTileHover: #F5F5DC;
+    --parchment4: #F5F5DC;
+  }
+  

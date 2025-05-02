@@ -1,0 +1,190 @@
+@import './variables.css';
+/* Navbar Styles */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 1860px; /* Set a max-width to prevent it from stretching too far */
+    background-color: rgba(40, 40, 40, 0.8);
+    color: #fff;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    margin: 0 auto; /* Center the navbar */
+  }
+
+  .navbar-logo img {
+    height: 50px;
+  }
+  
+  .navbar-links {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .navbar-links a,
+  .navbar-button {
+    color: var(--gold);
+    font-size: 1rem;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.8s;
+  }
+  
+  .navbar-links a:hover,
+  .navbar-button:hover {
+    background-color: var(--gold); /* Hover effect */
+    color: #fff;
+  }
+  
+  /* User Section */
+  .navbar-user {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .user-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+  }
+  
+  .sign-out {
+    background: var(--gold);
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .sign-in-btn {
+    background: transparent;
+    color: var(--gold);
+    border: 2px solid var(--gold);
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .sign-in-btn:hover {
+    background-color: var(--gold);
+    color: #fff;
+  }
+  
+  /* Sign In Form */
+  .sign-in-form {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background: #fff;
+    color: #333;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    animation: flyInRight 0.4s ease-out forwards;
+  }
+  .signin-links {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .signin-links button {
+    width: 100%;
+    background-color: var(--gold);
+    color: #fff;
+    border: none;
+    padding: 10px;
+    font-size: 0.9rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .signin-links button:hover:not(:disabled) {
+    background-color: var(--dark-brown);
+  }
+  
+  .signin-links button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  
+  @keyframes flyInRight {
+    from {
+      opacity: 0;
+      transform: translateX(500px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .sign-in-form input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box; /* Ensure padding & border stay inside width */
+  }
+  
+  .sign-in-form button {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--gold);
+    border: none;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .sign-in-form button:hover {
+    background-color: var(--dark-brown);
+  }
+
+  .New-to-Text{
+    color: var(--gold);
+    font-size: 1rem;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.8s;
+    text-align: center;
+  }
+  
+  /* Mobile View (Hamburger Menu) */
+  @media (max-width: 768px) {
+    .navbar-links {
+      display: none;
+    }
+  
+    .navbar {
+      flex-direction: column;
+    }
+  
+    .navbar-user {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+  

@@ -13,7 +13,17 @@ const userSchema = new mongoose.Schema({
   notificationPreferences: { type: Object, default: {} },
   twoFactorEnabled: { type: Boolean, default: false },
   activeCampaigns: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Campaign' }],
-  socialLogin: { googleId: { type: String },},
+  socialLogin: {
+    googleId: { type: String }
+  },
+
+  onboarding: {
+    rolePreference: { type: String, enum: ['Player', 'GM', 'Both'] },
+    theme: { type: String },
+    experienceLevel: { type: String, enum: ['Beginner', 'Intermediate', 'Expert'] },
+  },
+  onboardingComplete: { type: Boolean, default: false }
+
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

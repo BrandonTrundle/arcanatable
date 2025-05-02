@@ -1,0 +1,108 @@
+.onboarding-container {
+    min-width: 500px;
+    min-height: 200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: var(--parchment);
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', sans-serif;
+    text-align: center;
+    z-index: 2;
+    position: relative;
+  }
+  
+  .onboarding-container h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--dark-brown);
+  }
+  
+  .onboarding-container p {
+    margin-bottom: 1.5rem;
+    color: var(--dark-brown);
+  }
+  
+  .onboarding-container label {
+    display: block;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: var(--dark-brown);
+  }
+  
+  .onboarding-container input,
+  .onboarding-container select {
+    width: 100%;
+    padding: 0.6rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+  }
+  
+  .onboarding-container input[type="checkbox"] {
+    width: auto;
+    margin-right: 0.5rem;
+  }
+  
+  .onboarding-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    gap: 1rem;
+  }
+  
+  .onboarding-buttons button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    background-color: var(--gold);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .onboarding-buttons button:hover {
+    background-color: var(--emerald-green);
+  }
+  
+  /* Background Layer with Blur */
+  .onboarding-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    filter: blur(8px);
+    z-index: 0;
+  }
+  
+  /* Overlay Layer to center content */
+  .onboarding-overlay {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+  }
+  
+  /* Morphing/Fade animation */
+  .onboarding-fade {
+    animation: fadeMorph 0.4s ease-in-out;
+  }
+  
+  @keyframes fadeMorph {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  

@@ -1,0 +1,118 @@
+.user-welcome-page {
+    background-color: var(--parchment);
+    min-height: 100vh;
+    color: var(--dark-brown);
+    padding: 7rem 2rem 2rem 2rem; /* top padding accounts for fixed navbar */
+    position: relative;
+  }
+  
+  .user-welcome-loading {
+    min-height: 100vh;
+    display: flex;
+    justify-content: left;
+    align-items: left;
+    background-color: var(--parchment);
+    color: var(--dark-brown);
+    font-size: 1.2rem;
+  }
+  
+  .user-info-card-wrapper {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+  }
+  
+  .user-welcome-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    margin-left: 1rem;
+  }
+  
+  .user-welcome-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 3rem;
+    margin-left: 1.2rem;
+  }
+  
+  .user-welcome-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* 🔁 shift items left */
+    gap: 1rem;
+    width: 600px;
+  }
+  
+  .welcome-tile {
+    width: 100%;
+    min-height: 120px;
+    background-color: var(--userWelcomeTile);
+    border: 1px solid var(--dark-brown);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background-color 2s ease, box-shadow 0.3s ease, transform 1s ease;
+    margin-left: 1rem;
+  }
+  
+
+  .welcome-tile:hover .tile-crystal {
+    animation: spin 4s linear infinite;
+    transition: transform 4s ease-in;
+    
+  }
+
+  .welcome-tile:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    background-color: var(--userWelcomeTileHover);
+    transform: translateX(30px); /* 👈 this is what makes it jut out */
+  }
+
+  .welcome-tile h2 {
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+    text-align: left;
+  }
+  
+  .welcome-tile p {
+    font-size: 1rem;
+    text-align: left;
+  }
+
+  .user-info-card-wrapper {
+    position: absolute;
+    top: 6.5rem; /* push down below navbar */
+    right: 2rem;
+    z-index: 1;
+  }
+  .tile-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .tile-text {
+    flex: 1;
+  }
+  
+  .tile-crystal {
+    width: 100px;
+    height: 100px;
+    pointer-events: none;
+    transition: transform 0.3s ease-out;
+  }
+  
+  .rotate {
+    animation: spin 12s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
