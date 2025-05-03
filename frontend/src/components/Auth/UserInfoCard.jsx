@@ -1,6 +1,8 @@
 import React, { useRef, useState } from 'react';
 import '../../styles/UserInfoCard.css'; // Adjust if this is now under /styles/
 import { useNavigate } from 'react-router-dom';
+import defaultAvatar from '../../assets/defaultav.png';
+import { UserContext } from '../../context/UserContext';
 
 const UserInfoCard = ({
   user,
@@ -10,7 +12,7 @@ const UserInfoCard = ({
   hasUnseenMessages = false,
 }) => {
   const fileInputRef = useRef(null);
-  const [avatarUrl, setAvatarUrl] = useState('/defaultav.png');
+  const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl || defaultAvatar);
   const [showMessages, setShowMessages] = useState(false);
   const navigate = useNavigate();
 
@@ -18,23 +20,47 @@ const UserInfoCard = ({
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    console.log('Mock avatar selected:', file.name);
-    setAvatarUrl(URL.createObjectURL(file));
+  
+    const formData = new FormData();
+    formData.append('avatar', file);
+  
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/users/avatar', {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: formData
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to upload avatar');
+      }
+  
+      const data = await response.json();
+      setAvatarUrl(data.avatarUrl); // Update the visible avatar
+      console.log('Avatar uploaded:', data.avatarUrl);
+    } catch (err) {
+      console.error(err);
+      alert('Avatar upload failed.');
+    }
   };
+  
 
   return (
     <>
       <div className="user-info-card">
-        <img
-          src={avatarUrl}
-          alt="User Avatar"
-          onClick={handleAvatarClick}
-          onError={() => setAvatarUrl('/defaultav.png')}
-          className="user-avatar"
-        />
+      <img
+        src={avatarUrl}
+        alt="User Avatar"
+        onClick={handleAvatarClick}
+        onError={() => setAvatarUrl(defaultAvatar)}
+        className="user-avatar"
+      />
         <input
           type="file"
           name="avatar"

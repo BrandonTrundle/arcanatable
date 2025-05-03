@@ -1,3 +1,5 @@
+@import './variables.css';
+
 .user-info-card {
     display: flex;
     flex-direction: column; /* 🔁 stack vertically */
@@ -11,8 +13,9 @@
     font-family: 'Segoe UI', sans-serif;
     gap: 1.5rem;
     margin-top: 2rem;
+    font-family: var(--main-font);
   }
-  
+
   .user-avatar {
     width: 80px;
     height: 80px;

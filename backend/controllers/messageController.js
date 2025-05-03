@@ -129,3 +129,17 @@ exports.archiveMessage = async (req, res) => {
     res.status(500).json({ error: 'Failed to archive message.' });
   }
 };
+
+const getSentMessages = async (req, res) => {
+  try {
+    const messages = await Message.find({ senderId: req.user._id })
+      .sort({ createdAt: -1 })
+      .populate('recipientIds', 'username');
+    res.json(messages);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch sent messages' });
+  }
+};
+
+exports.getSentMessages = getSentMessages;

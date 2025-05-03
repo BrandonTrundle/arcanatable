@@ -10,6 +10,13 @@
     --burnt-orange:rgb(212, 131, 24);
     --userWelcomeTile:rgb(199, 148, 54);
     --userWelcomeTileHover: #F5F5DC;
-    --parchment4: #F5F5DC;
+    --parchment4:rgb(146, 127, 64);
+      /* Updated references */
+    --sidebar-bg: var(--parchment);
+    --viewer-bg: var(--stone);
+    --accent: var(--leaf-green);
+    --button-bg: var(--leather);
+    --button-text: var(--parchment);
+    --unread-highlight: #fff7cc;
   }
   

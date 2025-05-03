@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import defaultAvatar from '../assets/defaultav.png'; // ✅ Import fallback
 
 export const UserContext = createContext();
 
@@ -14,7 +15,12 @@ export const UserProvider = ({ children }) => {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(res => {
-        setUser({ ...res.data, token });
+        const userData = {
+          ...res.data,
+          token,
+          avatarUrl: res.data.avatarUrl || defaultAvatar, // ✅ Use fallback
+        };
+        setUser(userData);
       })
       .catch(err => {
         console.error('Failed to fetch user:', err);

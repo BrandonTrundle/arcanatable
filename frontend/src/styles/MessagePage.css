@@ -1,91 +1,214 @@
-.message-page {
-    display: flex;
-    height: 90vh;
-    background-color: #f9f9f9;
-    font-family: sans-serif;
-  }
-  
-  /* Sidebar for inbox */
-  .message-sidebar {
-    width: 30%;
-    background-color: #fff;
-    border-right: 1px solid #ddd;
-    padding: 1rem;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .message-sidebar h2 {
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
-  }
-  
-  .message-sidebar button {
-    background-color: #774aa3;
-    color: white;
-    border: none;
-    padding: 0.5rem;
-    margin-bottom: 1rem;
-    cursor: pointer;
-    border-radius: 4px;
-  }
-  
-  .message-list-item {
-    background-color: green;
-    padding: 0.5rem;
-    border-radius: 4px;
-    margin-bottom: 0.5rem;
-    cursor: pointer;
-    transition: background 0.2s ease;
-  }
-  
-  .message-list-item:hover {
-    background-color: #f0f0f0;
-  }
-  
-  .message-list-item.active {
-    background-color: #e6ddfa;
-  }
-  
-  /* Message view panel */
-  .message-viewer {
-    flex: 1;
-    padding: 2rem;
-    overflow-y: auto;
-    background-color: #fafafa;
-  }
-  
-  .message-viewer h3 {
-    margin-bottom: 0.5rem;
-  }
-  
-  .message-viewer p {
-    margin-bottom: 1rem;
-    line-height: 1.5;
-  }
+@import './variables.css';
 
-  .message-list-item.unread {
-    font-weight: bold;
-    background-color:rgb(230, 194, 14);
+.message-page {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(80, 55, 4, 0.65);
+  font-family: var(--main-font);
+  color: var(--ink);
+}
+
+.message-container {
+  width: 95%;
+  height: 90vh;
+  display: flex;
+  background-color: rgba(240, 230, 210, 0.65);
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  position: relative;
+}
+
+/* === Sidebar === */
+.message-sidebar {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--sidebar-bg);
+  border-right: 2px solid var(--leather);
+  padding: 1rem;
+  overflow-y: auto;
+  width: 16.667px;
+}
+
+.message-sidebar h2 {
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+  color: var(--ink);
+}
+
+.message-sidebar button {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.message-sidebar button:hover {
+  background-color: var(--leaf-green);
+}
+
+/* Filter buttons */
+.message-filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.message-filters button {
+  background: var(--stone);
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.message-filters button.active {
+  background: var(--leaf-green);
+  color: white;
+}
+
+/* Scrollable inbox list */
+.message-scroll-list {
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Message items */
+.message-list-item {
+  background-color: var(--beige-tan);
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid var(--steel-blue);
+}
+
+.message-list-item:hover {
+  transform: translateX(6px);
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
+  background-color: var(--unread-highlight);
+}
+
+.message-list-item.active {
+  background-color: var(--sky);
+}
+
+.message-list-item.unread {
+  font-weight: bold;
+}
+
+/* === Resizer === */
+.resizer {
+  width: 4px;
+  background-color: var(--leather);
+  cursor: col-resize;
+}
+
+/* === Viewer === */
+.message-viewer {
+  flex: 1;
+  background-color: var(--viewer-bg);
+  padding: 2rem;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateX(40px);
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.message-viewer.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.message-viewer h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.6rem;
+  color: var(--ink);
+}
+
+.message-viewer p {
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-buttons button {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.action-buttons button:hover {
+  background-color: var(--leaf-green);
+}
+
+/* === Right Action Bar === */
+.message-actions-bar {
+  display: flex;
+  width: 320px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 0.5rem;
+  background-color: rgba(255, 248, 220, 0.9);
+  border-left: 2px solid var(--leather);
+  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.1);
+  gap: 1.5rem;
+}
+
+.message-actions-bar button {
+  font-size: 5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ink);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.message-actions-bar button:hover {
+  transform: scale(1.2);
+  color: var(--leaf-green);
+}
+
+.message-body{
+  border: 1px solid var(--steel-blue);
+  border-radius: 10px;
+  padding: 5px;
+  background-color: var(--steel-blue);
+}
+.fade-in {
+  opacity: 0;
+  animation: fadeInText 0.35s ease-in forwards;
+}
+
+@keyframes fadeInText {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-  .message-filters {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .message-filters button {
-    padding: 0.4rem 0.6rem;
-    background-color: #eee;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .message-filters button.active {
-    background-color: #774aa3;
-    color: white;
-  }
-  
-  
+}

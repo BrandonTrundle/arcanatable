@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   sendMessage,
   getMessagesForUser,
+  getSentMessages,
   getMessageById,
   markAsRead,
   deleteMessage,
@@ -11,28 +12,21 @@ const {
 } = require('../controllers/messageController');
 const { protect } = require('../middleware/authMiddleware');
 
-// Secure all routes
+// Protect all routes
 router.use(protect);
 
-// Send a message
+// Compose & read
 router.post('/', sendMessage);
-
-// Get all messages for logged-in user
 router.get('/', getMessagesForUser);
-
-// Get a specific message
+router.get('/sent', getSentMessages); // Moved ABOVE :id route
+router.get('/search/query', searchMessages);
 router.get('/:id', getMessageById);
 
-// Mark a message as read
+// Status updates
 router.patch('/:id/read', markAsRead);
+router.patch('/:id/archive', archiveMessage);
 
-// Soft-delete message for user
+// Delete
 router.delete('/:id', deleteMessage);
-
-// Search messages
-router.get('/search/query', searchMessages);
-
-// Archive messages
-router.patch('/:id/archive', protect, archiveMessage);
 
 module.exports = router;

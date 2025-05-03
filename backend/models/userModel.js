@@ -22,7 +22,11 @@ const userSchema = new mongoose.Schema({
     theme: { type: String },
     experienceLevel: { type: String, enum: ['Beginner', 'Intermediate', 'Expert'] },
   },
-  onboardingComplete: { type: Boolean, default: false }
+  onboardingComplete: { type: Boolean, default: false },
+  avatarUrl: {
+    type: String,
+    default: '/defaultav.png',
+  },
 
 }, { timestamps: true });
 

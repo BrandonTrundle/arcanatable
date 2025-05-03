@@ -1,3 +1,5 @@
+@import './variables.css';
+
 .compose-modal {
     position: fixed;
     top: 15%;
@@ -10,6 +12,7 @@
     z-index: 2000;
     width: 400px;
     max-width: 90%;
+    font-family: var(--main-font);
   }
   
   .compose-modal .modal-header {

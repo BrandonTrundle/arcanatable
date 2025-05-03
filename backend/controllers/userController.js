@@ -10,12 +10,10 @@ exports.updateOnboarding = async (req, res) => {
       experienceLevel
     } = req.body;
 
-    // Basic validation
     if (!rolePreference || !theme || !experienceLevel) {
       return res.status(400).json({ error: 'All onboarding fields are required.' });
     }
 
-    // Update onboarding subdocument
     user.onboarding = {
       rolePreference,
       theme,
@@ -23,7 +21,6 @@ exports.updateOnboarding = async (req, res) => {
     };
 
     user.onboardingComplete = true;
-
     await user.save();
 
     res.status(200).json({ message: 'Onboarding complete', onboarding: user.onboarding });
@@ -47,14 +44,14 @@ exports.getMe = async (req, res) => {
       onboardingComplete: user.onboardingComplete,
       roles: user.roles,
       onboarding: user.onboarding || {},
+      avatarUrl: user.avatarUrl || '/defaultav.png', // Include avatar in response
     });
   } catch (err) {
-    console.error('Error in getMe:', err); // 🧪 Log actual issue
+    console.error('Error in getMe:', err);
     res.status(500).json({ error: err.message });
   }
 };
 
-// GET /api/users/lookup?username=someUser
 exports.lookupUserByUsername = async (req, res) => {
   try {
     const { username } = req.query;
@@ -72,5 +69,21 @@ exports.lookupUserByUsername = async (req, res) => {
     res.json(user);
   } catch (err) {
     res.status(500).json({ error: 'Server error.' });
+  }
+};
+
+exports.uploadAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    const user = await User.findById(req.user._id);
+    user.avatarUrl = `/uploads/avatars/${req.file.filename}`;
+    await user.save();
+
+    res.status(200).json({ avatarUrl: user.avatarUrl });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
   }
 };
