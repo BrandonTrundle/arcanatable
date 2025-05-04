@@ -32,6 +32,7 @@ const Dashboard = () => {
     campaign: 0,
     character: 0,
     learn: 0,
+    dmtoolkit:0,
   });
 
   const rotationRef = useRef({});
@@ -143,6 +144,27 @@ const Dashboard = () => {
             />
           </div>
         </div>
+
+        {/* DM Toolkit Tile */}
+<div
+  className="welcome-tile"
+  onClick={() => navigate('/dm-toolkit')}
+  onMouseEnter={() => startSpinning('dmtoolkit')}
+  onMouseLeave={() => stopSpinning('dmtoolkit')}
+>
+  <div className="tile-content">
+    <div className="tile-text">
+      <h2>DM Toolkit</h2>
+      <p>Your archive of monsters, items, rules, and more.</p>
+    </div>
+    <img
+      src={OrangeCrystal}
+      alt="Orange Crystal"
+      className="tile-crystal"
+      style={{ transform: `rotate(${rotationAngles.dmtoolkit || 0}deg)` }}
+    />
+  </div>
+</div>
       </div>
     </div>
     </>

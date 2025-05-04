@@ -2,7 +2,8 @@ const DMToolkit = require('../models/dmToolkitModel');
 
 exports.createToolkitItem = async (req, res) => {
   try {
-    const { toolkitType, title, content } = req.body;
+    const { toolkitType, title = 'Untitled', content } = req.body;
+
 
     const item = new DMToolkit({
       userId: req.user._id,

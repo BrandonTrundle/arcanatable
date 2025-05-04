@@ -1,0 +1,125 @@
+.monster-preview {
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 0 20px #0003;
+    max-width: 900px;
+    margin: 0 auto;
+    line-height: 1.6;
+    color: #2e1f13;
+    overflow-y: auto;
+    background-color: rgba(255, 248, 230, 0.9); /* fallback if parchment image fails */
+    font-family: 'Garamond', serif;
+  }
+  
+  /* Header */
+  .monster-name {
+    font-size: 2.8rem;
+    font-weight: bold;
+    margin-bottom: 0.2rem;
+    color: #4a2f10;
+  }
+  
+  .monster-subtype {
+    font-size: 1.2rem;
+    color: #6e4b2c;
+    margin-bottom: 1rem;
+    font-style: italic;
+  }
+  
+  /* Image */
+  .monster-image-wrapper {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .monster-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 0 12px #0004;
+  }
+  
+  /* Blocks */
+  .monster-statblock {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .monster-abilities {
+    display: flex;
+    justify-content: space-between;
+    margin: 1rem 0;
+    padding: 0.5rem;
+    border: 1px solid #cdb79e;
+    border-radius: 8px;
+    background-color: #fff6e0;
+  }
+  
+  /* Sections */
+  .monster-section {
+    margin-top: 1.5rem;
+  }
+  
+  .monster-section h3 {
+    font-size: 1.4rem;
+    color: #4a2f10;
+    border-bottom: 1px solid #cdb79e;
+    margin-bottom: 0.5rem;
+  }
+  
+  .monster-section ul {
+    padding-left: 1.2rem;
+    margin-top: 0.5rem;
+  }
+  
+  .monster-section li {
+    margin-bottom: 0.3rem;
+  }
+  
+  /* Custom Sections */
+  .custom-section-block {
+    background-color: #f4ebd8;
+    padding: 1rem;
+    border-radius: 10px;
+    border: 1px solid #cbb994;
+    margin-bottom: 1rem;
+    box-shadow: inset 0 0 5px #0002;
+  }
+  
+  .custom-section-block h4 {
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+    color: #5a3b1c;
+  }
+  
+  .custom-section-block p {
+    margin: 0;
+    color: #3b2b1c;
+  }
+  
+  /* Descriptions */
+  .monster-section em {
+    font-size: 0.95rem;
+    display: block;
+    margin-top: 1rem;
+    color: #6b4f38;
+  }
+  .pdf-export-btn {
+    margin: 1rem auto;
+    display: block;
+    background-color: var(--burnt-orange);
+    color: #fff;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Garamond', serif;
+  }
+  
+  .pdf-export-btn:hover {
+    background-color: #a44d0c;
+  }
+  

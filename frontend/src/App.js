@@ -8,6 +8,7 @@ import UserOnboarding from './pages/UserOnboarding';
 import PrivateRoute from './components/Auth/PrivateRoute';
 import RequireOnboarding from './components/Auth/RequireOnboarding';
 import MessagePage from './pages/Messages/MessagePage';
+import DMToolkit from './pages/DMToolkit';
 
 function TokenHandler() {
   const location = useLocation();
@@ -26,36 +27,44 @@ function TokenHandler() {
 }
 
 const App = () => (
-<Router>
-  <TokenHandler />
-  <Routes>
-    <Route path="/" element={<HomePage />} />
-    <Route path="/login" element={<Login />} />
-    <Route path="/signup" element={<Signup />} />
+  <Router>
+    <TokenHandler />
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
 
-    <Route path="/user-onboarding" element={
-      <PrivateRoute>
-        <UserOnboarding />
-      </PrivateRoute>
-    } />
+      <Route path="/user-onboarding" element={
+        <PrivateRoute>
+          <UserOnboarding />
+        </PrivateRoute>
+      } />
 
-    <Route path="/dashboard" element={
-      <PrivateRoute>
-        <RequireOnboarding>
-          <Dashboard />
-        </RequireOnboarding>
-      </PrivateRoute>
-    } />
+      <Route path="/dashboard" element={
+        <PrivateRoute>
+          <RequireOnboarding>
+            <Dashboard />
+          </RequireOnboarding>
+        </PrivateRoute>
+      } />
 
-    <Route path="/messages" element={
-      <PrivateRoute>
-        <RequireOnboarding>
-          <MessagePage />
-        </RequireOnboarding>
-      </PrivateRoute>
-    } />
-  </Routes>
-</Router>
+      <Route path="/dm-toolkit" element={
+        <PrivateRoute>
+          <RequireOnboarding>
+          <DMToolkit />
+          </RequireOnboarding>
+        </PrivateRoute>
+      } />
+
+      <Route path="/messages" element={
+        <PrivateRoute>
+          <RequireOnboarding>
+            <MessagePage />
+          </RequireOnboarding>
+        </PrivateRoute>
+      } />
+    </Routes>
+  </Router>
 );
 
 export default App;

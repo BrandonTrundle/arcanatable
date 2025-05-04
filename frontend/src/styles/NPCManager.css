@@ -1,0 +1,159 @@
+@import './variables.css';
+
+.npc-manager-container {
+  padding: 2rem;
+  background-color: rgba(255, 250, 240, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 0 20px #0003;
+  font-family: 'Garamond', serif;
+  color: #3a2a1a;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.npc-manager-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.npc-manager-header h3 {
+  font-size: 1.8rem;
+  margin: 0;
+  color: #4a2f10;
+}
+
+.npc-manager-header button {
+  background-color: var(--burnt-orange);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.npc-manager-header button:hover {
+  background-color: #7c2d2d;
+}
+
+.npc-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+}
+
+.npc-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  background-color: #fffdf6;
+  border: 1px solid #d5c1a5;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  transition: background-color 0.3s ease;
+}
+
+.npc-list-item:hover {
+  background-color: #fff5e1;
+}
+
+.npc-name {
+  flex: 1;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.npc-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.edit-btn,
+.delete-btn {
+  background-color: var(--burnt-orange);
+  color: #fff;
+  padding: 0.3rem 0.6rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+.edit-btn:hover {
+  background-color: #c97b14;
+}
+
+.delete-btn {
+  background-color: #7c2d2d;
+}
+
+.delete-btn:hover {
+  background-color: #5c1f1f;
+}
+/* Campaign Dropdown */
+.npc-list-item select {
+  margin-top: 0.5rem;
+  padding: 0.4rem;
+  border-radius: 6px;
+  border: 1px solid #cdb79e;
+  background-color: #fffaf0;
+  font-family: 'Garamond', serif;
+  font-size: 0.95rem;
+  color: #3a2a1a;
+  cursor: pointer;
+}
+
+/* Assigned Campaigns List */
+.assigned-campaigns {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 0.4rem;
+}
+
+.assigned-campaigns li {
+  background-color: #eee4cf;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 0.6rem;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  margin-top: 0.3rem;
+}
+
+/* Remove Campaign Button */
+.remove-campaign-btn {
+  background: none;
+  border: none;
+  color: #7c2d2d;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-left: 0.5rem;
+}
+
+.remove-campaign-btn:hover {
+  color: #4a2f10;
+}
+
+/* PDF Export Button */
+.export-pdf-btn {
+  margin: 1rem auto;
+  display: block;
+  padding: 0.5rem 1rem;
+  font-family: 'Garamond', serif;
+  font-size: 1rem;
+  background-color: var(--burnt-orange);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.export-pdf-btn:hover {
+  background-color: #7c2d2d;
+}

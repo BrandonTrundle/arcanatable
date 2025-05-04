@@ -13,7 +13,8 @@ const dmToolkitSchema = new mongoose.Schema({
   },
   title: {
     type: String,
-    required: true,
+    required: false,
+    default: 'Untitled',
   },
   content: {
     type: mongoose.Schema.Types.Mixed, // Flexible structure

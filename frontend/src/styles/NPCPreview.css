@@ -1,0 +1,131 @@
+.npc-preview {
+  background-color: rgba(255, 248, 230, 0.95);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 0 20px #0003;
+  max-width: 900px;
+  margin: 0 auto;
+  line-height: 1.6;
+  color: #2e1f13;
+  overflow-y: auto;
+  font-family: 'Garamond', serif;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.npc-name {
+  font-size: 2.8rem;
+  font-weight: bold;
+  margin-bottom: 0.2rem;
+  color: #4a2f10;
+}
+
+.npc-subtype {
+  font-size: 1.2rem;
+  color: #6e4b2c;
+  margin-bottom: 0.5rem;
+  font-style: italic;
+}
+
+.npc-basic-info,
+.npc-occupation {
+  font-size: 1rem;
+  color: #3a2a1a;
+  margin-bottom: 0.5rem;
+}
+
+.npc-image-wrapper {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.npc-image {
+  max-width: 100%;
+  max-height: 100px; /* or 400px depending on your layout */
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 0 12px #0004;
+}
+.npc-statblock {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.npc-abilities {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+  padding: 0.75rem;
+  border: 1px solid #cdb79e;
+  border-radius: 8px;
+  background-color: #fff6e0;
+}
+
+.npc-section {
+  margin-top: 1.5rem;
+}
+
+.npc-section h3 {
+  font-size: 1.4rem;
+  color: #4a2f10;
+  border-bottom: 1px solid #cdb79e;
+  margin-bottom: 0.5rem;
+}
+
+.npc-section ul {
+  padding-left: 1.2rem;
+  margin-top: 0.5rem;
+}
+
+.npc-section li {
+  margin-bottom: 0.3rem;
+  font-size: 0.95rem;
+}
+
+/* Improve text clarity against parchment */
+.npc-preview,
+.npc-preview * {
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    background: white !important;
+  }
+
+  .npc-preview {
+    background-color: rgba(255, 248, 230, 1) !important;
+    box-shadow: none !important;
+    padding: 1.5rem !important;
+  }
+
+  .npc-statblock,
+  .npc-abilities {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem;
+  }
+
+  .npc-section h3 {
+    font-size: 1.1rem;
+    margin-top: 1rem;
+  }
+
+  .npc-section li {
+    margin-bottom: 0.2rem;
+    font-size: 0.9rem;
+  }
+
+  .npc-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: none;
+  }
+}

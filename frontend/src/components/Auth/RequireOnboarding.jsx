@@ -5,8 +5,10 @@ import { UserContext } from '../../context/UserContext';
 const RequireOnboarding = ({ children }) => {
   const { user } = useContext(UserContext);
 
-  // Assume you fetched user with onboardingComplete previously
-  // Otherwise fetch the user in a useEffect on app startup
+  if (localStorage.getItem('token') && user === null) {
+    return <p>Loading...</p>;
+  }
+
   if (!user?.token) return <Navigate to="/" />;
   if (!user?.onboardingComplete) return <Navigate to="/user-onboarding" />;
 

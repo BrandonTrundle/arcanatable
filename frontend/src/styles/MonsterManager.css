@@ -1,0 +1,160 @@
+/* src/styles/MonsterManager.css */
+@import './variables.css';
+.monster-manager-container {
+    padding: 2rem;
+    background-color: rgba(255, 250, 240, 0.95);
+    border-radius: 16px;
+    box-shadow: 0 0 20px #0003;
+    font-family: 'Garamond', serif;
+    color: #3a2a1a;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  
+  .monster-manager-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .monster-manager-header h3 {
+    font-size: 1.8rem;
+    margin: 0;
+    color: #4a2f10;
+  }
+  
+  .monster-manager-header button {
+    background-color: var(--burnt-orange);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .monster-manager-header button:hover {
+    background-color: #7c2d2d;
+  }
+  
+  .monster-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 1rem;
+  }
+  
+  .monster-list li {
+    padding: 0.6rem 1rem;
+    background-color: #fffdf6;
+    border: 1px solid #d5c1a5;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .monster-list li:hover {
+    background-color: #fff5e1;
+  }
+
+  .saved-monsters-title{
+    color: var(--gold);
+  }
+  .monster-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 1rem;
+    background-color: #fffdf6;
+    border: 1px solid #d5c1a5;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .monster-list-item:hover {
+    background-color: #fff5e1;
+  }
+  
+  .monster-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .edit-btn,
+  .delete-btn {
+    background-color: var(--burnt-orange);
+    color: #fff;
+    padding: 0.3rem 0.6rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.8rem;
+  }
+  
+  .edit-btn:hover {
+    background-color: #c97b14;
+  }
+  
+  .delete-btn {
+    background-color: #7c2d2d;
+  }
+  
+  .delete-btn:hover {
+    background-color: #5c1f1f;
+  }
+  
+  .monster-name {
+    flex: 1;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .monster-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  
+  .monster-info select {
+    width: fit-content;
+    padding: 0.3rem;
+    border-radius: 6px;
+    border: 1px solid #d5c1a5;
+    font-family: 'Garamond', serif;
+    font-size: 0.9rem;
+  }
+  
+  .assigned-campaigns {
+    list-style: none;
+    padding-left: 0.5rem;
+    margin-top: 0.3rem;
+  }
+  
+  .assigned-campaigns li {
+    font-size: 0.85rem;
+    background-color: #fdf5e6;
+    padding: 0.2rem 0.4rem;
+    border-radius: 6px;
+    border: 1px solid #d5c1a5;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 0.4rem;
+  }
+  .remove-campaign-btn {
+    background: none;
+    border: none;
+    color: #7c2d2d;
+    font-weight: bold;
+    margin-left: 0.3rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    line-height: 1;
+  }
+  
+  .remove-campaign-btn:hover {
+    color: #a44d0c;
+  }
+  
