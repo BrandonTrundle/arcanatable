@@ -3,6 +3,8 @@ import '../styles/DMToolkit.css';
 import WizardsTower from '../assets/WizardsTower.png';
 import MonsterManager from '../components/DMToolkit/MonsterManager'; 
 import NPCManager from '../components/DMToolkit/NPCManager'; 
+import MapsManager from '../components/DMToolkit/MapsManager';
+
 
 
 const DMToolkit = () => {
@@ -48,6 +50,7 @@ const DMToolkit = () => {
         <main className="dm-main">
         {activeTool === 'monsters' && <MonsterManager />}
         {activeTool === 'npcs' && <NPCManager />}
+        {activeTool === 'maps' && <MapsManager />} 
         </main>
       </div>
     </div>

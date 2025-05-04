@@ -1,9 +1,40 @@
 const DMToolkit = require('../models/dmToolkitModel');
 
+// --- Map Upload Handler ---
+exports.uploadMap = async (req, res) => {
+  try {
+    const { name, width, height, imageUrl } = req.body;
+    const userId = req.user._id;
+
+    if (!name || !width || !height || !imageUrl) {
+      return res.status(400).json({ message: 'Missing map data' });
+    }
+
+    const mapContent = {
+      name,
+      width: parseInt(width),
+      height: parseInt(height),
+      imageUrl
+    };
+
+    const newMap = await DMToolkit.create({
+      toolkitType: 'Map',
+      userId,
+      title: name,
+      content: mapContent
+    });
+
+    res.status(201).json(newMap);
+  } catch (err) {
+    console.error('Map save failed:', err);
+    res.status(500).json({ message: 'Failed to save map', error: err.message });
+  }
+};
+
+// --- Existing Toolkit CRUD ---
 exports.createToolkitItem = async (req, res) => {
   try {
     const { toolkitType, title = 'Untitled', content } = req.body;
-
 
     const item = new DMToolkit({
       userId: req.user._id,

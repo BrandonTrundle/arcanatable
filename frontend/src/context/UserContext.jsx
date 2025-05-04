@@ -1,13 +1,12 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import defaultAvatar from '../assets/defaultav.png'; // ✅ Import fallback
+import defaultAvatar from '../assets/defaultav.png';
 
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  // Load token and fetch user data
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -18,7 +17,7 @@ export const UserProvider = ({ children }) => {
         const userData = {
           ...res.data,
           token,
-          avatarUrl: res.data.avatarUrl || defaultAvatar, // ✅ Use fallback
+          avatarUrl: res.data.avatarUrl || defaultAvatar,
         };
         setUser(userData);
       })
@@ -41,3 +40,6 @@ export const UserProvider = ({ children }) => {
     </UserContext.Provider>
   );
 };
+
+// ✅ Add this helper to fix your error
+export const useUserContext = () => useContext(UserContext);

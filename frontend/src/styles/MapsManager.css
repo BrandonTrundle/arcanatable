@@ -1,0 +1,77 @@
+/* src/styles/MapsManager.css */
+@import './variables.css';
+
+.maps-manager {
+  padding: 2rem;
+  background-color: rgba(245, 245, 220, 0.95); /* parchment tone */
+  border-radius: 16px;
+  box-shadow: 0 0 20px #0003;
+  font-family: 'Garamond', serif;
+  color: var(--dark-brown);
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.maps-manager h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: var(--burnt-orange);
+}
+
+.map-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 2rem;
+}
+
+.map-form input[type="text"],
+.map-form input[type="number"],
+.map-form input[type="file"] {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #d5c1a5;
+  font-family: 'Garamond', serif;
+  font-size: 1rem;
+}
+
+.map-form button {
+  width: fit-content;
+  padding: 0.5rem 1rem;
+  background-color: var(--burnt-orange);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.map-form button:hover {
+  background-color: #7c2d2d;
+}
+
+.map-preview {
+  max-width: 300px;
+  border: 2px solid #d5c1a5;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+}
+
+.saved-maps h3 {
+  font-size: 1.4rem;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+
+.saved-maps ul {
+  list-style: none;
+  padding: 0;
+}
+
+.saved-maps li {
+  padding: 0.6rem 1rem;
+  background-color: #fffdf6;
+  border: 1px solid #d5c1a5;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
