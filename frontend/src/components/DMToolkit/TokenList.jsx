@@ -48,10 +48,15 @@ const TokenList = ({ user }) => {
           key={token._id}
           className="token-card"
           title={`Size: ${token.content?.size || 'Default'}`}
+          draggable="true"
+          onDragStart={(e) => {
+            e.dataTransfer.setData('application/json', JSON.stringify(token));
+          }}
         >
           <img src={getImage(token)} alt={token.title} />
           <span>{token.title}</span>
         </div>
+
       ))}
     </div>
   );

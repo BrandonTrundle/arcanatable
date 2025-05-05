@@ -1,18 +1,18 @@
 import React, { useRef, useState, useEffect } from 'react';
-import '../../styles/LayerControlPanel.css';
-import TokenList from './TokenList';
+import '../../../styles/LayerControlPanel.css';
+import TokenList from '../TokenList';
 
 const LayerControlPanel = ({ activeLayer, onLayerChange }) => {
   const panelRef = useRef();
   const [dragging, setDragging] = useState(false);
   const [position, setPosition] = useState({ x: 20, y: 20 });
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const offsetRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (dragging && panelRef.current) {
-        const newX = e.clientX - offset.x;
-        const newY = e.clientY - offset.y;
+        const newX = e.clientX - offsetRef.current.x;
+        const newY = e.clientY - offsetRef.current.y;
   
         const maxX = window.innerWidth - panelRef.current.offsetWidth;
         const maxY = window.innerHeight - panelRef.current.offsetHeight;
@@ -33,12 +33,13 @@ const LayerControlPanel = ({ activeLayer, onLayerChange }) => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [dragging, offset]);
+  }, [dragging]);
 
   const handleMouseDown = (e) => {
     const rect = panelRef.current.getBoundingClientRect();
-    setOffset({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+    offsetRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
     setDragging(true);
+    
   };
 
   return (

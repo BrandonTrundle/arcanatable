@@ -48,3 +48,23 @@ export const deleteMap = async (mapId, token) => {
 
   return response;
 };
+export const updateMapTokens = async (mapId, placedTokens, token) => {
+  try {
+    const response = await axios.patch(
+      `/api/dmtoolkit/${mapId}`,
+      {
+        'content.placedTokens': placedTokens
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    return response.data;
+  } catch (err) {
+    console.error('Failed to update map tokens:', err);
+    throw err;
+  }
+};

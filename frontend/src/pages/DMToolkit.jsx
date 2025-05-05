@@ -4,7 +4,7 @@ import WizardsTower from '../assets/WizardsTower.png';
 
 import MonsterManager from '../components/DMToolkit/MonsterManager';
 import NPCManager from '../components/DMToolkit/NPCManager';
-import MapsManager from '../components/DMToolkit/MapsManager';
+import MapsManager from '../components/DMToolkit/MapsManager/MapsManager';
 import TokenForm from '../components/DMToolkit/TokenForm';
 import axios from 'axios';
 

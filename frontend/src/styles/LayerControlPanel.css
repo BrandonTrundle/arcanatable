@@ -1,5 +1,5 @@
 .layer-control-panel {
-    position: absolute;
+    position: fixed;
     background: #fdf5e6;
     border: 2px solid #c7a34f;
     padding: 1rem;
