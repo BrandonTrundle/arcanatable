@@ -1,0 +1,53 @@
+/* TokenForm.css */
+.token-form {
+    background-color: rgba(255, 250, 220, 0.95); /* parchment style */
+    padding: 1.5rem;
+    border: 2px solid var(--burnt-orange);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    max-width: 420px;
+    font-family: 'Garamond', serif;
+  }
+  
+  .token-form h3 {
+    font-size: 1.6rem;
+    color: var(--dark-brown);
+    margin-bottom: 1rem;
+  }
+  
+  .token-form input[type="text"],
+  .token-form select,
+  .token-form input[type="file"] {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #d5c1a5;
+    font-size: 1rem;
+    font-family: inherit;
+    margin-bottom: 1rem;
+  }
+  
+  .token-form button {
+    padding: 0.6rem 1.2rem;
+    background-color: var(--burnt-orange);
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .token-form button:hover {
+    background-color: #7c2d2d;
+  }
+  
+  .token-form img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 2px solid #8b5e3c;
+    margin-bottom: 1rem;
+  }
+  

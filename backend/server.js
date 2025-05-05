@@ -37,6 +37,8 @@ app.use('/uploads/avatars', express.static(path.join(__dirname, 'uploads/avatars
 app.use('/uploads/monsters', express.static(path.join(__dirname, 'uploads/monsters'))); // ✅ for monster images
 app.use('/uploads/npcs', express.static(path.join(__dirname, 'uploads/npcs')));
 app.use('/uploads/maps', express.static(path.join(__dirname, 'uploads/maps')));
+app.use('/uploads/tokenImages', express.static(path.join(__dirname, 'uploads/tokenImages')));
+
 
 
 // API Routes

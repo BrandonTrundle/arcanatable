@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/DMToolkit.css';
 import WizardsTower from '../assets/WizardsTower.png';
-import MonsterManager from '../components/DMToolkit/MonsterManager'; 
-import NPCManager from '../components/DMToolkit/NPCManager'; 
+
+import MonsterManager from '../components/DMToolkit/MonsterManager';
+import NPCManager from '../components/DMToolkit/NPCManager';
 import MapsManager from '../components/DMToolkit/MapsManager';
-
-
+import TokenForm from '../components/DMToolkit/TokenForm';
+import axios from 'axios';
 
 const DMToolkit = () => {
   const [activeTool, setActiveTool] = useState('monsters'); // default to monsters
+  const [tokens, setTokens] = useState([]);
 
   const toolList = [
     { key: 'all', label: '📜 All' },
@@ -22,6 +24,40 @@ const DMToolkit = () => {
     { key: 'tokens', label: '🧩 Tokens' },
     { key: 'cheatsheet', label: '📝 Cheat Sheet' }
   ];
+
+  const fetchTokens = async () => {
+    try {
+      const res = await axios.get('/api/dmtoolkit', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      const tokenItems = res.data.filter(item => item.toolkitType === 'Token');
+      setTokens(tokenItems);
+    } catch (err) {
+      console.error('Failed to fetch tokens:', err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`/api/dmtoolkit/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      fetchTokens(); // refresh list
+    } catch (err) {
+      console.error('Failed to delete token:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTool === 'tokens') {
+      fetchTokens();
+    }
+  }, [activeTool]);
 
   return (
     <div
@@ -48,9 +84,27 @@ const DMToolkit = () => {
         </aside>
 
         <main className="dm-main">
-        {activeTool === 'monsters' && <MonsterManager />}
-        {activeTool === 'npcs' && <NPCManager />}
-        {activeTool === 'maps' && <MapsManager />} 
+          {activeTool === 'monsters' && <MonsterManager />}
+          {activeTool === 'npcs' && <NPCManager />}
+          {activeTool === 'maps' && <MapsManager />}
+
+          {activeTool === 'tokens' && (
+            <div className="dm-section">
+              <h2>🧩 Token Creator</h2>
+              <TokenForm onCreated={fetchTokens} />
+
+              <h3 style={{ marginTop: '2rem' }}>🧱 Created Tokens</h3>
+              <div className="token-list">
+                {tokens.map(token => (
+                  <div key={token._id} className="token-card" title={`Size: ${token.content.size}`}>
+                    <img src={token.content.imageUrl} alt={token.title} />
+                    <span>{token.title}</span>
+                    <button onClick={() => handleDelete(token._id)}>🗑 Delete</button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </main>
       </div>
     </div>

@@ -1,0 +1,39 @@
+.layer-control-panel {
+    position: absolute;
+    background: #fdf5e6;
+    border: 2px solid #c7a34f;
+    padding: 1rem;
+    border-radius: 12px;
+    z-index: 100;
+    width: 200px;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+    font-family: 'Garamond', serif;
+    cursor: move;
+  }
+  
+  .layer-buttons button {
+    display: block;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    padding: 0.4rem;
+    background-color: var(--burnt-orange);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  .layer-buttons button.active {
+    background-color: var(--emerald-green);
+  }
+  
+  .token-section {
+    margin-top: 1rem;
+  }
+  
+  .token-placeholder {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: #555;
+  }
+  

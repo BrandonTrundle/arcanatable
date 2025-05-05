@@ -1,9 +1,12 @@
 import React from 'react';
+import { useState } from 'react';
 import { Stage, Layer, Image as KonvaImage, Line } from 'react-konva';
 import useImage from 'use-image';
+import LayerControlPanel from './LayerControlPanel';
 
 const MapEditor = ({ map, onClose }) => {
   const [image] = useImage(map.content.imageUrl);
+  const [activeLayer, setActiveLayer] = useState('dm');
 
   const squaresX = map.content.width;
   const squaresY = map.content.height;
@@ -46,12 +49,21 @@ const MapEditor = ({ map, onClose }) => {
             />
           )}
         </Layer>
-        <Layer>
-          {verticalLines}
-          {horizontalLines}
-        </Layer>
+
+        {(activeLayer === 'dm' || activeLayer === 'player') && (
+          <Layer>
+            {verticalLines}
+            {horizontalLines}
+          </Layer>
+        )}
       </Stage>
-    </div>
+
+        <LayerControlPanel
+          activeLayer={activeLayer}
+          onLayerChange={setActiveLayer}
+        >
+        </LayerControlPanel>
+        </div>
   );
 };
 
