@@ -51,6 +51,7 @@ const MapEditor = ({ map, onClose, onMapUpdate }) => {
     };
   
     setPlacedTokens(prev => [...prev, newToken]);
+    console.log('New token:', newToken);
   };
   
   

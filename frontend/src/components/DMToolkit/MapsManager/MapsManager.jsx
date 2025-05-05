@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import '../../../styles/MapsManager.css';
-import { uploadMapImage, saveMap } from '../../../services/mapService';
+import { uploadMapImage, saveMap, updateMap } from '../../../services/mapService';
 import { useUserContext } from '../../../context/UserContext';
 import axios from 'axios';
 import MapEditor from '../Maps/MapEditor';
@@ -48,9 +48,18 @@ const MapsManager = () => {
     }
   };
 
-  const handleMapUpdateInline = (updatedMap) => {
-    setMaps(prev => prev.map(m => m._id === updatedMap._id ? updatedMap : m));
+  const handleMapUpdateInline = async (updatedMap) => {
+    console.log('handleMapUpdateInline →', updatedMap); // 👈 Add this
+    try {
+      const saved = await updateMap(updatedMap._id, updatedMap.content, user.token);
+      console.log('Map saved on server →', saved); // 👈 Add this too
+      setMaps(prev => prev.map(m => m._id === saved._id ? saved : m));
+    } catch (err) {
+      console.error('Failed to update map:', err);
+      alert('Could not save map changes.');
+    }
   };
+  
 
   const handleDeleteMap = async (id) => {
     try {

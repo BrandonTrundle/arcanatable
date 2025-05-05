@@ -27,17 +27,6 @@ export const saveMap = async (mapData, token) => {
   return response.data;
 };
 
-// 3. Update an existing map
-export const updateMap = async (mapId, updates, token) => {
-  const response = await axios.patch(`${API_BASE}/dmtoolkit/${mapId}`, updates, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
-
-  return response.data;
-};
-
 // 4. Delete a map
 export const deleteMap = async (mapId, token) => {
   const response = await axios.delete(`${API_BASE}/dmtoolkit/${mapId}`, {
@@ -67,4 +56,15 @@ export const updateMapTokens = async (mapId, placedTokens, token) => {
     console.error('Failed to update map tokens:', err);
     throw err;
   }
+};
+
+export const updateMap = async (mapId, updatedContent, token) => {
+  const res = await axios.patch(
+    `/api/dmtoolkit/${mapId}`,
+    { content: updatedContent },
+    {
+      headers: { Authorization: `Bearer ${token}` }
+    }
+  );
+  return res.data;
 };

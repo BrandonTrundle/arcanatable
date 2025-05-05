@@ -61,18 +61,32 @@ exports.getToolkitItems = async (req, res) => {
 
 exports.updateToolkitItem = async (req, res) => {
   try {
-    const item = await DMToolkit.findOneAndUpdate(
-      { _id: req.params.id, userId: req.user._id },
-      req.body,
+    const existing = await DMToolkit.findOne({ _id: req.params.id, userId: req.user._id });
+
+    if (!existing) return res.status(404).json({ message: 'Toolkit item not found' });
+
+    // Merge content updates if applicable
+    const updatedFields = { ...req.body };
+
+    if (req.body.content) {
+      updatedFields.content = {
+        ...existing.content,
+        ...req.body.content
+      };
+    }
+
+    const updated = await DMToolkit.findByIdAndUpdate(
+      req.params.id,
+      updatedFields,
       { new: true }
     );
 
-    if (!item) return res.status(404).json({ message: 'Toolkit item not found' });
-    res.json(item);
+    res.json(updated);
   } catch (err) {
     res.status(500).json({ message: 'Failed to update toolkit item', error: err.message });
   }
 };
+
 
 exports.deleteToolkitItem = async (req, res) => {
   try {
