@@ -1,0 +1,32 @@
+.character-stats-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.stats-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stats-cell label {
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.stats-cell input {
+  width: 100px;
+  padding: 0.25rem;
+  text-align: center;
+  border: 1px solid #999;
+  border-radius: 6px;
+}

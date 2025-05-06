@@ -9,6 +9,9 @@ import PrivateRoute from './components/Auth/PrivateRoute';
 import RequireOnboarding from './components/Auth/RequireOnboarding';
 import MessagePage from './pages/Messages/MessagePage';
 import DMToolkit from './pages/DMToolkit';
+import CharacterDashboard from './pages/CharacterDashboard';
+import CharacterCreate from './pages/CharacterCreate';
+import CharacterEdit from './pages/CharacterEdit';
 
 function TokenHandler() {
   const location = useLocation();
@@ -30,40 +33,67 @@ const App = () => (
   <Router>
     <TokenHandler />
     <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
+  <Route path="/" element={<HomePage />} />
+  <Route path="/login" element={<Login />} />
+  <Route path="/signup" element={<Signup />} />
 
-      <Route path="/user-onboarding" element={
-        <PrivateRoute>
-          <UserOnboarding />
-        </PrivateRoute>
-      } />
+  <Route path="/user-onboarding" element={
+    <PrivateRoute>
+      <UserOnboarding />
+    </PrivateRoute>
+  } />
 
-      <Route path="/dashboard" element={
-        <PrivateRoute>
-          <RequireOnboarding>
-            <Dashboard />
-          </RequireOnboarding>
-        </PrivateRoute>
-      } />
+  <Route path="/dashboard" element={
+    <PrivateRoute>
+      <RequireOnboarding>
+        <Dashboard />
+      </RequireOnboarding>
+    </PrivateRoute>
+  } />
 
-      <Route path="/dm-toolkit" element={
-        <PrivateRoute>
-          <RequireOnboarding>
-          <DMToolkit />
-          </RequireOnboarding>
-        </PrivateRoute>
-      } />
+  <Route path="/dm-toolkit" element={
+    <PrivateRoute>
+      <RequireOnboarding>
+        <DMToolkit />
+      </RequireOnboarding>
+    </PrivateRoute>
+  } />
 
-      <Route path="/messages" element={
-        <PrivateRoute>
-          <RequireOnboarding>
-            <MessagePage />
-          </RequireOnboarding>
-        </PrivateRoute>
-      } />
-    </Routes>
+  <Route path="/messages" element={
+    <PrivateRoute>
+      <RequireOnboarding>
+        <MessagePage />
+      </RequireOnboarding>
+    </PrivateRoute>
+  } />
+
+  <Route path="/characters" element={
+    <PrivateRoute>
+      <RequireOnboarding>
+        <CharacterDashboard />
+      </RequireOnboarding>
+    </PrivateRoute>
+  } />
+
+<Route path="/characters/create" element={
+  <PrivateRoute>
+    <RequireOnboarding>
+      <CharacterCreate />
+    </RequireOnboarding>
+  </PrivateRoute>
+} />
+
+<Route path="/characters/:id/edit" element={
+  <PrivateRoute>
+    <RequireOnboarding>
+      <CharacterEdit />
+    </RequireOnboarding>
+  </PrivateRoute>
+} />
+</Routes>
+
+
+
   </Router>
 );
 

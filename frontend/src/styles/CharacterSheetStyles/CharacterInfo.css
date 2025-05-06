@@ -1,0 +1,11 @@
+.sheet-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+.basics-header-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}

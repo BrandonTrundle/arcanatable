@@ -1,0 +1,26 @@
+@import "../variables.css";
+
+.character-dashboard {
+  display: flex;
+  justify-content: center; /* horizontal center */
+  align-items: center; /* vertical center */
+  min-height: 100vh; /* full screen height */
+}
+
+.character-dashboard-content-main {
+  background-color: var(--parchment);
+  opacity: 0.8; /* corrected value */
+  max-width: 1300px;
+  width: 100%;
+  padding: 2rem;
+  border-radius: 12px;
+}
+.create-character-btn {
+  color: var(--gold);
+  font-size: 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 10px 15px;
+  border-radius: 5px;
+  transition: background-color 0.8s;
+}

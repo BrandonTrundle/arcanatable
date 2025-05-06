@@ -1,17 +1,18 @@
-const express = require('express');
-const dotenv = require('dotenv');
+const express = require("express");
+const dotenv = require("dotenv");
 dotenv.config(); // ✅ Load env vars BEFORE anything else
 
-const path = require('path');
-const connectDB = require('./config/db');
-const cors = require('cors');
-const session = require('express-session');
-const passport = require('passport');
+const path = require("path");
+const connectDB = require("./config/db");
+const cors = require("cors");
+const session = require("express-session");
+const passport = require("passport");
 
-const dmToolkitRoutes = require('./routes/dmToolkitRoutes');
-const uploadRoutes = require('./routes/uploadRoutes'); // ✅ New upload route
-const appRoutes = require('./routes'); // general app routes
-require('./config/passport'); // ✅ after dotenv
+const dmToolkitRoutes = require("./routes/dmToolkitRoutes");
+const characterRoutes = require("./routes/characterRoutes");
+const uploadRoutes = require("./routes/uploadRoutes"); // ✅ New upload route
+const appRoutes = require("./routes"); // general app routes
+require("./config/passport"); // ✅ after dotenv
 
 // Connect to MongoDB
 connectDB();
@@ -21,34 +22,44 @@ const app = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "20mb" }));
 
 // Session and Passport
-app.use(session({
-  secret: 'sessionsecret',
-  resave: false,
-  saveUninitialized: false
-}));
+app.use(
+  session({
+    secret: "sessionsecret",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 app.use(passport.initialize());
 app.use(passport.session());
 
 // Static file serving
-app.use('/uploads/avatars', express.static(path.join(__dirname, 'uploads/avatars')));
-app.use('/uploads/monsters', express.static(path.join(__dirname, 'uploads/monsters'))); // ✅ for monster images
-app.use('/uploads/npcs', express.static(path.join(__dirname, 'uploads/npcs')));
-app.use('/uploads/maps', express.static(path.join(__dirname, 'uploads/maps')));
-app.use('/uploads/tokenImages', express.static(path.join(__dirname, 'uploads/tokenImages')));
-
-
+app.use(
+  "/uploads/avatars",
+  express.static(path.join(__dirname, "uploads/avatars"))
+);
+app.use(
+  "/uploads/monsters",
+  express.static(path.join(__dirname, "uploads/monsters"))
+); // ✅ for monster images
+app.use("/uploads/npcs", express.static(path.join(__dirname, "uploads/npcs")));
+app.use("/uploads/maps", express.static(path.join(__dirname, "uploads/maps")));
+app.use(
+  "/uploads/tokenImages",
+  express.static(path.join(__dirname, "uploads/tokenImages"))
+);
 
 // API Routes
-app.use('/api/dmtoolkit', dmToolkitRoutes);
-app.use('/api', appRoutes);            // general app logic
-app.use('/api', uploadRoutes);         // ✅ file upload API
+app.use("/api/dmtoolkit", dmToolkitRoutes);
+app.use("/api", appRoutes); // general app logic
+app.use("/api", uploadRoutes); // ✅ file upload API
+app.use("/api/characters", characterRoutes);
 
 // Root health check
-app.get('/', (req, res) => {
-  res.send('API is running...');
+app.get("/", (req, res) => {
+  res.send("API is running...");
 });
 
 // Start server

@@ -1,0 +1,52 @@
+.ability-block-wrapper {
+  width: 120px;
+  height: 150px;
+  margin: 0.5rem;
+  position: relative;
+}
+
+.ability-block-frame {
+  width: 100%;
+  height: 100%;
+  border: 3px solid #333;
+  border-radius: 25px;
+  background-color: #f0f0ff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0.1rem 0.35rem;
+  position: relative;
+  background-size: cover;
+  margin: 1rem;
+}
+
+.ability-label {
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: #000;
+  text-align: center;
+}
+
+.ability-score-input {
+  width: 60px;
+  height: 50px;
+  font-size: 1.5rem;
+  text-align: center;
+  border: 2px solid #999;
+  border-radius: 6px;
+  background-color: #fff;
+}
+
+.ability-mod-input {
+  width: 40px;
+  height: 30px;
+  font-size: 1rem;
+  text-align: center;
+  border: 2px solid #999;
+  border-radius: 50%;
+  background-color: #fff;
+  position: absolute;
+  bottom: 10px;
+}

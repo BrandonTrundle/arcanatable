@@ -1,0 +1,33 @@
+.backstory-extras-container {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+  align-items: flex-start;
+}
+
+.backstory-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.extras-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.features-box,
+.treasure-box {
+  display: flex;
+  flex-direction: column;
+}
+
+textarea {
+  padding: 0.5rem;
+  border: 1px solid #999;
+  border-radius: 6px;
+  resize: vertical;
+  font-size: 1rem;
+}
