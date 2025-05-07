@@ -14,6 +14,7 @@ import "../styles/CharacterSheetStyles/CombatStats.css";
 import "../styles/CharacterSheetStyles/PersonalityTraits.css";
 import "../styles/CharacterSheetStyles/CharacterInfo.css";
 import PageTwo from "../components/CharacterForm/PageTwo";
+import PageThree from "../components/CharacterForm/PageThree";
 
 const CharacterCreate = () => {
   const { user } = useContext(UserContext);
@@ -95,7 +96,7 @@ const CharacterCreate = () => {
           <div className="tab-header">
             {renderTabButton("basics", "Page 1")}
             {renderTabButton("attributes", "Page 2")}
-            {renderTabButton("saves", "Page 3")}
+            {renderTabButton("spells", "Page 3")}
             {/* More tab buttons coming later */}
           </div>
 
@@ -110,6 +111,13 @@ const CharacterCreate = () => {
             )}
             {activeTab === "attributes" && (
               <PageTwo
+                formData={formData}
+                handleChange={handleChange}
+                setFormData={setFormData}
+              />
+            )}
+            {activeTab === "spells" && (
+              <PageThree
                 formData={formData}
                 handleChange={handleChange}
                 setFormData={setFormData}

@@ -81,26 +81,13 @@ const emptyCharacter = {
   spellSaveDC: 0,
   spellAttackBonus: 0,
 
-  // Simplified Spell Block
-  spellSlots_1: 0,
-  spellSlots_2: 0,
-  spellSlots_3: 0,
-  spellSlots_4: 0,
-  spellSlots_5: 0,
-  spellSlots_6: 0,
-  spellSlots_7: 0,
-  spellSlots_8: 0,
-  spellSlots_9: 0,
-  spells_0: "",
-  spells_1: "",
-  spells_2: "",
-  spells_3: "",
-  spells_4: "",
-  spells_5: "",
-  spells_6: "",
-  spells_7: "",
-  spells_8: "",
-  spells_9: "",
+  // Full Spellcasting Block
+  spells: Array.from({ length: 10 }, (_, level) => ({
+    level,
+    slotsMax: level === 0 ? null : 0,
+    slotsUsed: level === 0 ? null : 0,
+    spells: Array.from({ length: 10 }, () => ({ name: "", desc: "" })),
+  })),
 
   // Allies & Organizations
   allies: "",

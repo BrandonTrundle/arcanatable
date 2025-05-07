@@ -88,21 +88,30 @@ const CharacterDashboard = () => {
           ) : Array.isArray(characters) && characters.length > 0 ? (
             <ul className="character-list">
               {characters.map((char) => (
-                <li key={char._id}>
-                  <strong>{char.charname}</strong> – {char.class} lvl{" "}
-                  {char.level}
-                  <button
-                    onClick={() => navigate(`/characters/${char._id}/edit`)}
-                    className="edit-character-btn"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(char._id)}
-                    className="delete-character-btn"
-                  >
-                    Delete
-                  </button>
+                <li key={char._id} className="character-card">
+                  <img
+                    src={char.portraitImage || "/default-portrait.png"} // fallback image
+                    alt={`${char.charname} portrait`}
+                    className="character-portrait"
+                  />
+                  <div className="character-info">
+                    <strong>{char.charname}</strong> – {char.class} lvl{" "}
+                    {char.level}
+                  </div>
+                  <div className="character-actions">
+                    <button
+                      onClick={() => navigate(`/characters/${char._id}/edit`)}
+                      className="edit-character-btn"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(char._id)}
+                      className="delete-character-btn"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>

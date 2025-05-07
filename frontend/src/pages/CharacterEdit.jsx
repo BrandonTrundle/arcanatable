@@ -7,6 +7,7 @@ import "../styles/CharacterSheetStyles/CharacterDashboard.css";
 import "../styles/CharacterSheetStyles/CharacterSheet.css";
 import backgroundImage from "../assets/CharacterDashboard.png";
 import PageTwo from "../components/CharacterForm/PageTwo";
+import PageThree from "../components/CharacterForm/PageThree";
 
 const CharacterEdit = () => {
   const { id } = useParams();
@@ -112,7 +113,7 @@ const CharacterEdit = () => {
           <div className="tab-header">
             {renderTabButton("basics", "Page 1")}
             {renderTabButton("attributes", "Page 2")}
-            {renderTabButton("saves", "Page 3")}
+            {renderTabButton("spells", "Page 3")}
             {/* More tab buttons can go here */}
           </div>
 
@@ -131,7 +132,13 @@ const CharacterEdit = () => {
                 setFormData={setFormData}
               />
             )}
-
+            {activeTab === "spells" && (
+              <PageThree
+                formData={formData}
+                handleChange={handleChange}
+                setFormData={setFormData}
+              />
+            )}
             <button type="submit" className="create-character-btn">
               Save Changes
             </button>
