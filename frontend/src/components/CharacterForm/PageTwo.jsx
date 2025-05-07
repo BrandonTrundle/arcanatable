@@ -14,11 +14,6 @@ const PageTwo = ({ formData, handleChange, setFormData }) => {
         setFormData={setFormData}
       />
       <BackstoryAndExtras formData={formData} handleChange={handleChange} />
-
-      {/* Future Sections Will Go Here */}
-      {/* <Spellcasting /> */}
-      {/* <AlliesAndOrganizations /> */}
-      {/* <FeaturesTraitsBlock /> */}
     </div>
   );
 };
