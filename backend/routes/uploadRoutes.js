@@ -1,116 +1,58 @@
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
+const express = require("express");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// Define storage strategy
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../uploads/monsters'));
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const base = path.basename(file.originalname, ext);
-    const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, `${base}-${unique}${ext}`);
+/**
+ * Helper: Create dynamic multer storage
+ */
+const createStorage = (folderName) => {
+  const uploadPath = path.join(__dirname, `../uploads/${folderName}`);
+
+  // Ensure folder exists
+  if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
   }
-});
 
-const upload = multer({ storage });
-
-// POST /api/uploads/monsters
-router.post('/uploads/monsters', upload.single('image'), (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded' });
-      }
-      const imageUrl = `/uploads/monsters/${req.file.filename}`;
-      res.status(200).json({ url: imageUrl });
-    } catch (err) {
-      console.error('Upload error:', err);
-      res.status(500).json({ error: 'Upload failed' });
-    }
-  });
-
-  const npcStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, path.join(__dirname, '../uploads/npcs'));
-    },
+  return multer.diskStorage({
+    destination: (req, file, cb) => cb(null, uploadPath),
     filename: (req, file, cb) => {
       const ext = path.extname(file.originalname);
       const base = path.basename(file.originalname, ext);
-      const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
       cb(null, `${base}-${unique}${ext}`);
-    }
-  });
-  
-  const npcUpload = multer({ storage: npcStorage });
-  
-  router.post('/uploads/npcs', npcUpload.single('image'), (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded' });
-      }
-      const imageUrl = `/uploads/npcs/${req.file.filename}`;
-      res.status(200).json({ url: imageUrl });
-    } catch (err) {
-      console.error('NPC upload error:', err);
-      res.status(500).json({ error: 'Upload failed' });
-    }
-  });
-  const mapStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, path.join(__dirname, '../uploads/maps'));
     },
-    filename: (req, file, cb) => {
-      const ext = path.extname(file.originalname);
-      const base = path.basename(file.originalname, ext);
-      const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      cb(null, `${base}-${unique}${ext}`);
-    }
   });
-  
-  const mapUpload = multer({ storage: mapStorage });
-  
-  router.post('/uploads/maps', mapUpload.single('image'), (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded' });
-      }
-      const imageUrl = `/uploads/maps/${req.file.filename}`;
-      res.status(200).json({ url: imageUrl });
-    } catch (err) {
-      console.error('Map upload error:', err);
-      res.status(500).json({ error: 'Upload failed' });
-    }
-  });
+};
 
-  const tokenImageStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, path.join(__dirname, '../uploads/tokenImages')); // ✅ correct folder
-    },
-    filename: (req, file, cb) => {
-      const ext = path.extname(file.originalname);
-      const base = path.basename(file.originalname, ext);
-      const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      cb(null, `${base}-${unique}${ext}`);
-    }
-  });
-  
-  const tokenImageUpload = multer({ storage: tokenImageStorage });
-  
-  router.post('/uploads/tokenImages', tokenImageUpload.single('image'), (req, res) => {
+/**
+ * Helper: Create upload route for a category
+ */
+const createUploadRoute = (routePath, folderName) => {
+  const upload = multer({ storage: createStorage(folderName) });
+
+  router.post(routePath, protect, upload.single("image"), (req, res) => {
     try {
       if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded' });
+        return res.status(400).json({ error: "No file uploaded" });
       }
-      const imageUrl = `/uploads/tokenImages/${req.file.filename}`;
+      const imageUrl = `/uploads/${folderName}/${req.file.filename}`;
       res.status(200).json({ url: imageUrl });
     } catch (err) {
-      console.error('Token image upload error:', err);
-      res.status(500).json({ error: 'Upload failed' });
+      console.error(`${folderName} upload error:`, err);
+      res.status(500).json({ error: "Upload failed" });
     }
   });
+};
+
+// ✅ Define all upload routes
+createUploadRoute("/uploads/monsters", "monsters");
+createUploadRoute("/uploads/npcs", "npcs");
+createUploadRoute("/uploads/maps", "maps");
+createUploadRoute("/uploads/tokenImages", "tokenImages");
+createUploadRoute("/uploads/campaigns", "campaigns"); // ✅ new route
 
 module.exports = router;

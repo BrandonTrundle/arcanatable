@@ -1,6 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
-dotenv.config(); // ✅ Load env vars BEFORE anything else
+dotenv.config(); // Load environment variables
 
 const path = require("path");
 const connectDB = require("./config/db");
@@ -10,9 +10,11 @@ const passport = require("passport");
 
 const dmToolkitRoutes = require("./routes/dmToolkitRoutes");
 const characterRoutes = require("./routes/characterRoutes");
-const uploadRoutes = require("./routes/uploadRoutes"); // ✅ New upload route
-const appRoutes = require("./routes"); // general app routes
-require("./config/passport"); // ✅ after dotenv
+const campaignRoutes = require("./routes/campaignRoutes");
+const uploadRoutes = require("./routes/uploadRoutes");
+const appRoutes = require("./routes"); // General app routes
+
+require("./config/passport"); // Initialize passport config
 
 // Connect to MongoDB
 connectDB();
@@ -24,7 +26,7 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "20mb" }));
 
-// Session and Passport
+// Session and Passport setup
 app.use(
   session({
     secret: "sessionsecret",
@@ -35,7 +37,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Static file serving
+// Static file serving for uploads
 app.use(
   "/uploads/avatars",
   express.static(path.join(__dirname, "uploads/avatars"))
@@ -43,21 +45,26 @@ app.use(
 app.use(
   "/uploads/monsters",
   express.static(path.join(__dirname, "uploads/monsters"))
-); // ✅ for monster images
+);
 app.use("/uploads/npcs", express.static(path.join(__dirname, "uploads/npcs")));
 app.use("/uploads/maps", express.static(path.join(__dirname, "uploads/maps")));
 app.use(
   "/uploads/tokenImages",
   express.static(path.join(__dirname, "uploads/tokenImages"))
 );
+app.use(
+  "/uploads/campaigns", // ✅ Added for campaign image access
+  express.static(path.join(__dirname, "uploads/campaigns"))
+);
 
 // API Routes
 app.use("/api/dmtoolkit", dmToolkitRoutes);
-app.use("/api", appRoutes); // general app logic
-app.use("/api", uploadRoutes); // ✅ file upload API
 app.use("/api/characters", characterRoutes);
+app.use("/api/campaigns", campaignRoutes);
+app.use("/api", appRoutes); // General app logic (auth, users, etc.)
+app.use("/api", uploadRoutes); // Upload endpoints
 
-// Root health check
+// Health check
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
