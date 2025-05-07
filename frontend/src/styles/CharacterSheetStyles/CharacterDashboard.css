@@ -92,3 +92,13 @@
 .delete-character-btn:hover {
   background-color: #922b21;
 }
+
+.character-portrait {
+  width: 60px;
+  height: 60px;
+  max-width: 80px;
+  max-height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--burnt-orange);
+}

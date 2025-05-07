@@ -1,0 +1,105 @@
+/* Spellcasting section wrapper */
+.spellcasting-block {
+  background-color: var(--parchment);
+  border: 2px solid var(--dark-brown);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Form fields layout */
+.spellcasting-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.spellcasting-fields label {
+  flex: 1 1 200px;
+  font-weight: bold;
+  color: var(--dark-brown);
+}
+
+/* Individual spell level section */
+.spell-level-block {
+  background-color: var(--parchment);
+  border: 1px solid var(--burnt-orange);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Slots input section */
+.slots-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.slots-row label {
+  flex: 1;
+}
+
+/* Spell list layout */
+.spells-list {
+  list-style: none;
+  padding: 0;
+}
+
+.spells-list li {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  align-items: center;
+}
+
+.spells-list input[type="text"] {
+  flex: 1;
+  padding: 0.25rem;
+  border: 1px solid var(--dark-brown);
+  border-radius: 0.25rem;
+  background-color: white;
+}
+/* Container for the entire spellcasting block */
+.spellcasting-block {
+  background-color: var(--parchment);
+  border: 2px solid var(--dark-brown);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* Title styling */
+.spellcasting-block h2 {
+  color: var(--burnt-orange);
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+/* Form layout */
+.spellcasting-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.spellcasting-fields label {
+  flex: 1 1 250px;
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+  color: var(--dark-brown);
+}
+
+/* Inputs */
+.spellcasting-fields select,
+.spellcasting-fields input[type="number"] {
+  margin-top: 0.25rem;
+  padding: 0.5rem;
+  border: 1px solid var(--dark-brown);
+  border-radius: 0.5rem;
+  background-color: #fff;
+  font-size: 1rem;
+}
