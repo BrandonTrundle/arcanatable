@@ -83,9 +83,36 @@ const deleteCampaign = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Campaign deleted" });
 });
 
+const getCampaignById = async (req, res) => {
+  try {
+    const campaign = await Campaign.findById(req.params.id)
+      .populate("players", "username avatarUrl _id")
+      .populate("creator", "username _id");
+
+    if (!campaign) {
+      return res.status(404).json({ message: "Campaign not found" });
+    }
+
+    // Optional: check if the user is either the DM or a player
+    const isParticipant =
+      campaign.creator._id.equals(req.user._id) ||
+      campaign.players.some((p) => p._id.equals(req.user._id));
+
+    if (!isParticipant) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    res.json(campaign);
+  } catch (error) {
+    console.error("Error fetching campaign:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   createCampaign,
   getUserCampaigns,
   joinCampaign,
   deleteCampaign,
+  getCampaignById,
 };

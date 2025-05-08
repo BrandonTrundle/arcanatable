@@ -1,41 +1,61 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import '../../../styles/MapsManager.css';
-import { uploadMapImage, saveMap, updateMap } from '../../../services/mapService';
-import { useUserContext } from '../../../context/UserContext';
-import axios from 'axios';
-import MapEditor from '../Maps/MapEditor';
-import MapCreationForm from './MapCreationForm';
-import MapListItem from './MapListItem';
+import React, { useState, useEffect, useMemo } from "react";
+import "../../../styles/MapsManager.css";
+import {
+  uploadMapImage,
+  saveMap,
+  updateMap,
+} from "../../../services/mapService";
+import { useUserContext } from "../../../context/UserContext";
+import axios from "axios";
+import MapEditor from "../Maps/MapEditor";
+import MapCreationForm from "./MapCreationForm";
+import MapListItem from "./MapListItem";
 
 const MapsManager = () => {
   const [maps, setMaps] = useState([]);
   const [selectedMap, setSelectedMap] = useState(null);
   const { user } = useUserContext();
+  const [campaigns, setCampaigns] = useState([]);
 
   useEffect(() => {
     const fetchMaps = async () => {
       try {
-        const res = await axios.get('/api/dmtoolkit', {
-          headers: { Authorization: `Bearer ${user.token}` }
+        const res = await axios.get("/api/dmtoolkit", {
+          headers: { Authorization: `Bearer ${user.token}` },
         });
-        const mapItems = res.data.filter(item => item.toolkitType === 'Map');
+        const mapItems = res.data.filter((item) => item.toolkitType === "Map");
         setMaps(mapItems);
       } catch (err) {
-        console.error('Failed to load maps:', err);
+        console.error("Failed to load maps:", err);
+      }
+    };
+
+    const fetchCampaigns = async () => {
+      try {
+        const res = await axios.get("/api/campaigns", {
+          headers: { Authorization: `Bearer ${user.token}` },
+        });
+        setCampaigns(res.data);
+      } catch (err) {
+        console.error("Failed to load campaigns:", err);
       }
     };
 
     if (user?.token) {
       fetchMaps();
+      fetchCampaigns(); // <-- add this
     }
   }, [user]);
 
   const handleMapSubmit = async ({ name, width, height, imageUrl }) => {
     try {
-      const savedMap = await saveMap({ name, width, height, imageUrl }, user.token);
-      setMaps(prev => [...prev, savedMap]);
+      const savedMap = await saveMap(
+        { name, width, height, imageUrl },
+        user.token
+      );
+      setMaps((prev) => [...prev, savedMap]);
     } catch (err) {
-      console.error('Failed to save map', err);
+      console.error("Failed to save map", err);
     }
   };
 
@@ -43,37 +63,39 @@ const MapsManager = () => {
     try {
       return await uploadMapImage(file);
     } catch (err) {
-      console.error('Image upload failed', err);
-      return '';
+      console.error("Image upload failed", err);
+      return "";
     }
   };
 
   const handleMapUpdateInline = async (updatedMap) => {
-    console.log('handleMapUpdateInline →', updatedMap); // 👈 Add this
+    console.log("handleMapUpdateInline →", updatedMap); // 👈 Add this
     try {
-      const saved = await updateMap(updatedMap._id, updatedMap.content, user.token);
-      console.log('Map saved on server →', saved); // 👈 Add this too
-      setMaps(prev => prev.map(m => m._id === saved._id ? saved : m));
+      const saved = await updateMap(
+        updatedMap._id,
+        updatedMap.content,
+        user.token
+      );
+      console.log("Map saved on server →", saved); // 👈 Add this too
+      setMaps((prev) => prev.map((m) => (m._id === saved._id ? saved : m)));
     } catch (err) {
-      console.error('Failed to update map:', err);
-      alert('Could not save map changes.');
+      console.error("Failed to update map:", err);
+      alert("Could not save map changes.");
     }
   };
-  
 
   const handleDeleteMap = async (id) => {
     try {
       await axios.delete(`/api/dmtoolkit/${id}`, {
-        headers: { Authorization: `Bearer ${user.token}` }
+        headers: { Authorization: `Bearer ${user.token}` },
       });
-      setMaps(prev => prev.filter(map => map._id !== id));
+      setMaps((prev) => prev.filter((map) => map._id !== id));
       if (selectedMap?._id === id) setSelectedMap(null);
     } catch (err) {
-      console.error('Failed to delete map:', err);
-      alert('Could not delete the map.');
+      console.error("Failed to delete map:", err);
+      alert("Could not delete the map.");
     }
   };
-  
 
   const renderedMapEditor = useMemo(() => {
     if (!selectedMap) return null;
@@ -83,7 +105,9 @@ const MapsManager = () => {
         map={selectedMap}
         onClose={() => setSelectedMap(null)}
         onMapUpdate={(updatedMap) => {
-          setMaps(prev => prev.map(m => m._id === updatedMap._id ? updatedMap : m));
+          setMaps((prev) =>
+            prev.map((m) => (m._id === updatedMap._id ? updatedMap : m))
+          );
           setSelectedMap(updatedMap);
         }}
       />
@@ -105,7 +129,7 @@ const MapsManager = () => {
           <p>No maps added yet.</p>
         ) : (
           <ul>
-            {maps.map(map => (
+            {maps.map((map) => (
               <MapListItem
                 key={map._id}
                 map={map}
@@ -113,6 +137,7 @@ const MapsManager = () => {
                 onSelect={setSelectedMap}
                 onUpdate={handleMapUpdateInline}
                 onDelete={handleDeleteMap} // ← Add this line
+                campaigns={campaigns}
               />
             ))}
           </ul>

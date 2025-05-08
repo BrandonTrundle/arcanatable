@@ -1,26 +1,52 @@
 const express = require("express");
-const dotenv = require("dotenv");
-dotenv.config(); // Load environment variables
-
+const http = require("http");
 const path = require("path");
-const connectDB = require("./config/db");
+const dotenv = require("dotenv");
 const cors = require("cors");
 const session = require("express-session");
 const passport = require("passport");
+const { Server } = require("socket.io");
 
-const dmToolkitRoutes = require("./routes/dmToolkitRoutes");
-const characterRoutes = require("./routes/characterRoutes");
-const campaignRoutes = require("./routes/campaignRoutes");
-const uploadRoutes = require("./routes/uploadRoutes");
-const appRoutes = require("./routes"); // General app routes
+const connectDB = require("./config/db");
 
-require("./config/passport"); // Initialize passport config
+// Load environment variables
+dotenv.config();
 
 // Connect to MongoDB
 connectDB();
 
-// Create express app
+// Express app + HTTP server (for Socket.IO)
 const app = express();
+const server = http.createServer(app);
+
+// Socket.IO setup
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000", // Adjust if deploying elsewhere
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log(`🔌 Client connected: ${socket.id}`);
+
+  socket.on("joinRoom", (campaignId) => {
+    socket.join(campaignId);
+    console.log(`🟢 Socket ${socket.id} joined room ${campaignId}`);
+    io.to(campaignId).emit("userJoined", { socketId: socket.id });
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`❌ Client disconnected: ${socket.id}`);
+    // Optional: io.to(room).emit("userLeft", ...) if tracking
+  });
+
+  socket.on("chatMessage", (message) => {
+    const { campaignId } = message;
+    io.to(campaignId).emit("chatMessage", message);
+  });
+});
 
 // Middleware
 app.use(cors());
@@ -34,35 +60,38 @@ app.use(
     saveUninitialized: false,
   })
 );
+require("./config/passport"); // Load Passport strategies
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Static file serving for uploads
-app.use(
-  "/uploads/avatars",
-  express.static(path.join(__dirname, "uploads/avatars"))
-);
-app.use(
-  "/uploads/monsters",
-  express.static(path.join(__dirname, "uploads/monsters"))
-);
-app.use("/uploads/npcs", express.static(path.join(__dirname, "uploads/npcs")));
-app.use("/uploads/maps", express.static(path.join(__dirname, "uploads/maps")));
-app.use(
-  "/uploads/tokenImages",
-  express.static(path.join(__dirname, "uploads/tokenImages"))
-);
-app.use(
-  "/uploads/campaigns", // ✅ Added for campaign image access
-  express.static(path.join(__dirname, "uploads/campaigns"))
-);
+// Static files (uploads)
+const staticPaths = [
+  "avatars",
+  "monsters",
+  "npcs",
+  "maps",
+  "tokenImages",
+  "campaigns",
+];
+staticPaths.forEach((folder) => {
+  app.use(
+    `/uploads/${folder}`,
+    express.static(path.join(__dirname, `uploads/${folder}`))
+  );
+});
 
-// API Routes
+// Routes
+const dmToolkitRoutes = require("./routes/dmToolkitRoutes");
+const characterRoutes = require("./routes/characterRoutes");
+const campaignRoutes = require("./routes/campaignRoutes");
+const uploadRoutes = require("./routes/uploadRoutes");
+const appRoutes = require("./routes"); // General app logic
+
 app.use("/api/dmtoolkit", dmToolkitRoutes);
 app.use("/api/characters", characterRoutes);
 app.use("/api/campaigns", campaignRoutes);
-app.use("/api", appRoutes); // General app logic (auth, users, etc.)
-app.use("/api", uploadRoutes); // Upload endpoints
+app.use("/api", appRoutes);
+app.use("/api", uploadRoutes);
 
 // Health check
 app.get("/", (req, res) => {
@@ -71,4 +100,4 @@ app.get("/", (req, res) => {
 
 // Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

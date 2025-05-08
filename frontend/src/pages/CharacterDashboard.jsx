@@ -2,104 +2,121 @@ import React, { useEffect, useState, useContext } from "react";
 import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Auth/Navbar";
-import backgroundImage from "../assets/Campaigns.png"; // Reuse or swap for campaigns
-import "../styles/CampaignDashboard.css";
+import backgroundImage from "../assets/CharacterDashboard.png";
+import "../styles/CharacterSheetStyles/CharacterDashboard.css";
 
-const CampaignDashboard = () => {
+const CharacterDashboard = () => {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
-  const [campaigns, setCampaigns] = useState([]);
+  const [characters, setCharacters] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCampaigns = async () => {
+    const fetchCharacters = async () => {
       try {
-        const response = await fetch("/api/campaigns", {
+        const response = await fetch("/api/characters", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
         const data = await response.json();
-        const list = Array.isArray(data) ? data : data.campaigns || [];
-        setCampaigns(list);
+        console.log("Fetched characters:", data); // Debug output
+        // If response is wrapped, adjust accordingly:
+        const charList = Array.isArray(data) ? data : data.characters || [];
+        setCharacters(charList);
       } catch (error) {
-        console.error("Failed to fetch campaigns:", error);
+        console.error("Failed to fetch characters:", error);
       } finally {
         setLoading(false);
       }
     };
 
     if (user?._id) {
-      fetchCampaigns();
+      fetchCharacters();
     }
   }, [user]);
 
   const handleCreate = () => {
-    navigate("/campaigns/create");
+    navigate("/characters/create");
   };
 
-  const handleJoin = () => {
-    navigate("/campaigns/join");
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this character?"))
+      return;
+
+    try {
+      const res = await fetch(`/api/characters/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (res.ok) {
+        setCharacters((prev) => prev.filter((char) => char._id !== id));
+      } else {
+        const err = await res.json();
+        console.error("Failed to delete:", err.message);
+      }
+    } catch (err) {
+      console.error("Error deleting character:", err);
+    }
   };
 
   return (
     <>
       <Navbar />
       <div
-        className="campaign-dashboard"
+        className="character-dashboard"
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: "cover",
-          backgroundPosition: "0% 25%",
+          backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           minHeight: "100vh",
           paddingTop: "10rem",
+          backgroundPosition: "0% 25%",
         }}
       >
-        <div className="campaign-dashboard-content">
-          <h1>Your Campaigns</h1>
-          <div className="dashboard-actions">
-            <button onClick={handleCreate} className="create-campaign-btn">
-              Create New Campaign
-            </button>
-            <button onClick={handleJoin} className="join-campaign-btn">
-              Join Campaign
-            </button>
-          </div>
+        <div className="character-dashboard-content">
+          <h1>Your Characters</h1>
+          <button onClick={handleCreate} className="create-character-btn">
+            Create New Character
+          </button>
           {loading ? (
             <p>Loading...</p>
-          ) : Array.isArray(campaigns) && campaigns.length > 0 ? (
-            <ul className="campaign-list">
-              {campaigns.map((campaign) => (
-                <li key={campaign._id} className="campaign-card">
+          ) : Array.isArray(characters) && characters.length > 0 ? (
+            <ul className="character-list">
+              {characters.map((char) => (
+                <li key={char._id} className="character-card">
                   <img
-                    src={campaign.imageUrl || "/placeholder.jpg"}
-                    alt={campaign.name}
-                    className="campaign-image"
+                    src={char.portraitImage || "/default-portrait.png"} // fallback image
+                    alt={`${char.charname} portrait`}
+                    className="character-portrait"
                   />
-                  <div className="campaign-info">
-                    <strong>{campaign.name}</strong> – {campaign.gameSystem}
-                    <p className="invite-code">
-                      Invite Code: {campaign.inviteCode}
-                    </p>
+                  <div className="character-info">
+                    <strong>{char.charname}</strong> – {char.class} lvl{" "}
+                    {char.level}
                   </div>
-                  {campaign.creator === user._id && (
-                    <div className="campaign-actions">
-                      <button
-                        onClick={() =>
-                          navigate(`/campaigns/${campaign._id}/launch`)
-                        }
-                        className="launch-campaign-btn"
-                      >
-                        Launch Campaign
-                      </button>
-                    </div>
-                  )}
+                  <div className="character-actions">
+                    <button
+                      onClick={() => navigate(`/characters/${char._id}/edit`)}
+                      className="edit-character-btn"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(char._id)}
+                      className="delete-character-btn"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
           ) : (
-            <p>No campaigns found.</p>
+            <p>No characters found.</p>
           )}
         </div>
       </div>
@@ -107,4 +124,4 @@ const CampaignDashboard = () => {
   );
 };
 
-export default CampaignDashboard;
+export default CharacterDashboard;

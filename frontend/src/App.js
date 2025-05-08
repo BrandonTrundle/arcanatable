@@ -25,6 +25,7 @@ import JoinCampaign from "./pages/JoinCampaign";
 
 import PrivateRoute from "./components/Auth/PrivateRoute";
 import RequireOnboarding from "./components/Auth/RequireOnboarding";
+import SessionRoom from "./pages/SessionRoom";
 
 function TokenHandler() {
   const location = useLocation();
@@ -142,6 +143,16 @@ const App = () => (
           <PrivateRoute>
             <RequireOnboarding>
               <CreateCampaign />
+            </RequireOnboarding>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/campaigns/:id/launch"
+        element={
+          <PrivateRoute>
+            <RequireOnboarding>
+              <SessionRoom />
             </RequireOnboarding>
           </PrivateRoute>
         }

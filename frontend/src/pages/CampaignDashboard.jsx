@@ -130,24 +130,35 @@ const CampaignDashboard = () => {
                     ))}
                   </div>
 
-                  {campaign.creator === user._id && (
-                    <div className="campaign-actions">
+                  <div className="campaign-actions">
+                    {campaign.creator === user._id ? (
+                      <>
+                        <button
+                          onClick={() =>
+                            navigate(`/campaigns/${campaign._id}/launch`)
+                          }
+                          className="launch-campaign-btn"
+                        >
+                          Launch Campaign
+                        </button>
+                        <button
+                          onClick={() => handleDelete(campaign._id)}
+                          className="delete-campaign-btn"
+                        >
+                          Delete
+                        </button>
+                      </>
+                    ) : (
                       <button
                         onClick={() =>
                           navigate(`/campaigns/${campaign._id}/launch`)
                         }
-                        className="launch-campaign-btn"
+                        className="join-campaign-btn"
                       >
-                        Launch Campaign
+                        Join Session
                       </button>
-                      <button
-                        onClick={() => handleDelete(campaign._id)}
-                        className="delete-campaign-btn"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>

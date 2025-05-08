@@ -1,48 +1,54 @@
-import React, { useEffect, useState, useRef } from 'react';
-import NPCForm from './NPCForm';
-import NPCPreview from './NPCPreview';
-import '../../styles/NPCManager.css';
+import React, { useEffect, useState, useRef } from "react";
+import NPCForm from "./NPCForm";
+import NPCPreview from "./NPCPreview";
+import axios from "axios";
+import "../../styles/NPCManager.css";
 import {
   fetchNPCs,
   createNPC,
   updateNPC,
-  deleteNPC
-} from '../../services/npcService';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+  deleteNPC,
+} from "../../services/npcService";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
-const dummyCampaigns = ['The Crimson Pact', 'Storm of Embers', 'Hollowreach', 'Sunken Vale'];
+const dummyCampaigns = [
+  "The Crimson Pact",
+  "Storm of Embers",
+  "Hollowreach",
+  "Sunken Vale",
+];
 
 const defaultNPC = {
-  name: '',
-  race: '',
-  class: '',
-  gender: '',
-  age: '',
-  alignment: '',
-  background: '',
-  occupation: '',
-  tokenSize: '',
-  armorClass: '',
-  hitPoints: '',
-  hitDice: '',
-  speed: '',
-  proficiencyBonus: '',
-  challengeRating: '',
+  name: "",
+  race: "",
+  class: "",
+  gender: "",
+  age: "",
+  alignment: "",
+  background: "",
+  occupation: "",
+  tokenSize: "",
+  armorClass: "",
+  hitPoints: "",
+  hitDice: "",
+  speed: "",
+  proficiencyBonus: "",
+  challengeRating: "",
   languages: [],
-  abilityScores: { str: '', dex: '', con: '', int: '', wis: '', cha: '' },
+  abilityScores: { str: "", dex: "", con: "", int: "", wis: "", cha: "" },
   savingThrows: {},
   skills: {},
-  senses: { passivePerception: '' },
+  senses: { passivePerception: "" },
   damageResistances: [],
   conditionImmunities: [],
   traits: [],
   actions: [],
   spells: { cantrips: [], level1: [] },
-  description: '',
-  image: '',
+  description: "",
+  image: "",
   campaigns: [],
-  toolkitType: 'NPC'
+  toolkitType: "NPC",
 };
 
 const NPCManager = () => {
@@ -51,37 +57,53 @@ const NPCManager = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const previewRef = useRef();
+  const [campaigns, setCampaigns] = useState([]);
 
   useEffect(() => {
     fetchNPCs()
-      .then(data => {
-        const unpacked = data.map(item => ({
+      .then((data) => {
+        const unpacked = data.map((item) => ({
           _id: item._id,
           ...item.content,
-          campaigns: item.content.campaigns || []
+          campaigns: item.content.campaigns || [],
         }));
         setNpcs(unpacked);
       })
       .catch(console.error);
+
+    const fetchCampaigns = async () => {
+      try {
+        const res = await axios.get("/api/campaigns", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        setCampaigns(res.data);
+      } catch (err) {
+        console.error("Failed to fetch campaigns:", err);
+      }
+    };
+
+    fetchCampaigns();
   }, []);
 
   const handleCreate = async (npc) => {
     const created = await createNPC(npc);
-    setNpcs(prev => [...prev, { _id: created._id, ...created.content }]);
+    setNpcs((prev) => [...prev, { _id: created._id, ...created.content }]);
     resetForm();
   };
 
   const handleUpdate = async (updatedNPC) => {
     const updated = await updateNPC(updatedNPC._id, updatedNPC);
-    setNpcs(prev =>
-      prev.map(n => (n._id === updated._id ? { _id: updated._id, ...updated.content } : n))
+    setNpcs((prev) =>
+      prev.map((n) =>
+        n._id === updated._id ? { _id: updated._id, ...updated.content } : n
+      )
     );
     resetForm();
   };
 
   const handleDelete = async (id) => {
     await deleteNPC(id);
-    setNpcs(prev => prev.filter(n => n._id !== id));
+    setNpcs((prev) => prev.filter((n) => n._id !== id));
     if (selectedNPC && selectedNPC._id === id) resetForm();
   };
 
@@ -104,15 +126,15 @@ const NPCManager = () => {
   };
 
   const assignCampaign = (npcId, campaignName) => {
-    setNpcs(prev =>
-      prev.map(npc => {
+    setNpcs((prev) =>
+      prev.map((npc) => {
         if (npc._id !== npcId) return npc;
         const alreadyAssigned = npc.campaigns?.includes(campaignName);
         const updated = {
           ...npc,
           campaigns: alreadyAssigned
             ? npc.campaigns
-            : [...(npc.campaigns || []), campaignName]
+            : [...(npc.campaigns || []), campaignName],
         };
         handleUpdate(updated);
         return updated;
@@ -121,12 +143,12 @@ const NPCManager = () => {
   };
 
   const removeCampaign = (npcId, campaignName) => {
-    setNpcs(prev =>
-      prev.map(npc => {
+    setNpcs((prev) =>
+      prev.map((npc) => {
         if (npc._id !== npcId) return npc;
         const updated = {
           ...npc,
-          campaigns: npc.campaigns.filter(c => c !== campaignName)
+          campaigns: npc.campaigns.filter((c) => c !== campaignName),
         };
         handleUpdate(updated);
         return updated;
@@ -136,20 +158,19 @@ const NPCManager = () => {
 
   const handleExportPDF = async () => {
     if (!selectedNPC || !previewRef.current) return;
-  
-    const pdf = new jsPDF('p', 'pt', 'a4');
-  
+
+    const pdf = new jsPDF("p", "pt", "a4");
+
     await pdf.html(previewRef.current, {
       margin: 20,
       autoPaging: true,
       html2canvas: {
         scale: 0.8,
-        useCORS: true
+        useCORS: true,
       },
-      callback: () => pdf.save(`${selectedNPC.name || 'npc'}.pdf`)
+      callback: () => pdf.save(`${selectedNPC.name || "npc"}.pdf`),
     });
   };
-  
 
   return (
     <div className="npc-manager-container">
@@ -162,13 +183,10 @@ const NPCManager = () => {
         <p>No NPCs yet.</p>
       ) : (
         <ul className="npc-list">
-          {npcs.map(npc => (
+          {npcs.map((npc) => (
             <li key={npc._id} className="npc-list-item">
               <div className="npc-info">
-                <span
-                  className="npc-name"
-                  onClick={() => setSelectedNPC(npc)}
-                >
+                <span className="npc-name" onClick={() => setSelectedNPC(npc)}>
                   {npc.name}
                 </span>
                 <select
@@ -178,9 +196,13 @@ const NPCManager = () => {
                   }}
                   defaultValue=""
                 >
-                  <option value="" disabled>Assign to Campaign</option>
-                  {dummyCampaigns.map(name => (
-                    <option key={name} value={name}>{name}</option>
+                  <option value="" disabled>
+                    Assign to Campaign
+                  </option>
+                  {campaigns.map((c) => (
+                    <option key={c._id} value={c.name}>
+                      {c.name}
+                    </option>
                   ))}
                 </select>
 
@@ -202,8 +224,18 @@ const NPCManager = () => {
                 )}
 
                 <div className="npc-actions">
-                  <button className="edit-btn" onClick={() => handleEditClick(npc)}>Edit</button>
-                  <button className="delete-btn" onClick={() => handleDelete(npc._id)}>Delete</button>
+                  <button
+                    className="edit-btn"
+                    onClick={() => handleEditClick(npc)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="delete-btn"
+                    onClick={() => handleDelete(npc._id)}
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             </li>
@@ -213,7 +245,9 @@ const NPCManager = () => {
 
       {selectedNPC && (
         <>
-          <button onClick={handleExportPDF} className="export-pdf-btn">📄 Export to PDF</button>
+          <button onClick={handleExportPDF} className="export-pdf-btn">
+            📄 Export to PDF
+          </button>
           <div ref={previewRef}>
             <NPCPreview data={selectedNPC} />
           </div>

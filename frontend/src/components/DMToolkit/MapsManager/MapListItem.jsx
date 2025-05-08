@@ -1,13 +1,20 @@
-import React from 'react';
+import React from "react";
 
-const MapListItem = ({ map, isSelected, onSelect, onUpdate, onDelete }) => {
+const MapListItem = ({
+  map,
+  isSelected,
+  onSelect,
+  onUpdate,
+  onDelete,
+  campaigns = [],
+}) => {
   const handleNameChange = (e) => {
     const updated = {
       ...map,
       content: {
         ...map.content,
-        name: e.target.value
-      }
+        name: e.target.value,
+      },
     };
     onUpdate(updated);
   };
@@ -17,8 +24,8 @@ const MapListItem = ({ map, isSelected, onSelect, onUpdate, onDelete }) => {
       ...map,
       content: {
         ...map.content,
-        [field]: parseInt(value) || 0
-      }
+        [field]: parseInt(value) || 0,
+      },
     };
     onUpdate(updated);
   };
@@ -26,7 +33,11 @@ const MapListItem = ({ map, isSelected, onSelect, onUpdate, onDelete }) => {
   return (
     <li
       onClick={() => onSelect(map)}
-      style={{ cursor: 'pointer', backgroundColor: isSelected ? '#eef' : 'transparent', padding: '0.5rem' }}
+      style={{
+        cursor: "pointer",
+        backgroundColor: isSelected ? "#eef" : "transparent",
+        padding: "0.5rem",
+      }}
     >
       <input
         type="text"
@@ -37,58 +48,63 @@ const MapListItem = ({ map, isSelected, onSelect, onUpdate, onDelete }) => {
       <input
         type="number"
         value={map.content.width}
-        onChange={(e) => handleSizeChange('width', e.target.value)}
+        onChange={(e) => handleSizeChange("width", e.target.value)}
         placeholder="Width"
       />
       <input
         type="number"
         value={map.content.height}
-        onChange={(e) => handleSizeChange('height', e.target.value)}
+        onChange={(e) => handleSizeChange("height", e.target.value)}
         placeholder="Height"
       />
       <select
-          value={map.content.campaign || ''}
-          onChange={(e) =>
-            onUpdate({
-              ...map,
-              content: {
-                ...map.content,
-                campaign: e.target.value
-              }
-            })
-          }
-        >
-          <option value="">-- Select Campaign --</option>
-          <option value="Curse of Emberfall">Curse of Emberfall</option>
-          <option value="Echoes of Mythara">Echoes of Mythara</option>
-          <option value="Tomb of the Unseen">Tomb of the Unseen</option>
-          <option value="Isle of Forgotten Kings">Isle of Forgotten Kings</option>
-        </select>
-      <button onClick={(e) => {
+        value={map.content.campaign || ""}
+        onChange={(e) =>
+          onUpdate({
+            ...map,
+            content: {
+              ...map.content,
+              campaign: e.target.value,
+            },
+          })
+        }
+      >
+        <option value="">-- Select Campaign --</option>
+        {campaigns.map((c) => (
+          <option key={c._id} value={c.name}>
+            {c.name}
+          </option>
+        ))}
+      </select>
+
+      <button
+        onClick={(e) => {
           e.stopPropagation(); // Prevent triggering map selection
           onDelete(map._id);
-        }} style={{ marginLeft: '1rem', color: 'red' }}>
-          ❌
-        </button>
-        <button
-  onClick={(e) => {
-    e.stopPropagation();
-    console.log('Saving map:', map); // 👈 Add this
-    onUpdate(map);
-      }}
-      style={{
-        marginLeft: '0.5rem',
-        backgroundColor: '#222',
-        color: 'white',
-        borderRadius: '6px',
-        padding: '0.3rem 0.5rem',
-        fontSize: '0.8rem',
-        cursor: 'pointer'
-      }}
-      title="Save Map Changes"
-    >
-      💾
-    </button>
+        }}
+        style={{ marginLeft: "1rem", color: "red" }}
+      >
+        ❌
+      </button>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          console.log("Saving map:", map); // 👈 Add this
+          onUpdate(map);
+        }}
+        style={{
+          marginLeft: "0.5rem",
+          backgroundColor: "#222",
+          color: "white",
+          borderRadius: "6px",
+          padding: "0.3rem 0.5rem",
+          fontSize: "0.8rem",
+          cursor: "pointer",
+        }}
+        title="Save Map Changes"
+      >
+        💾
+      </button>
     </li>
   );
 };

@@ -1,26 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import MonsterForm from './MonsterForm';
-import MonsterPreview from './MonsterPreview';
-import '../../styles/MonsterManager.css';
+import React, { useEffect, useState } from "react";
+import MonsterForm from "./MonsterForm";
+import MonsterPreview from "./MonsterPreview";
+import "../../styles/MonsterManager.css";
+import axios from "axios";
 import {
   fetchMonsters,
   createMonster,
   updateMonster,
-  deleteMonster
-} from '../../services/monsterService';
+  deleteMonster,
+} from "../../services/monsterService";
 
-const dummyCampaigns = ['The Crimson Pact', 'Storm of Embers', 'Hollowreach', 'Sunken Vale'];
+const dummyCampaigns = [
+  "The Crimson Pact",
+  "Storm of Embers",
+  "Hollowreach",
+  "Sunken Vale",
+];
 
 const defaultMonster = {
-  name: '',
-  size: '',
-  type: '',
-  alignment: '',
-  armorClass: '',
-  hitPoints: '',
-  hitDice: '',
-  speed: { walk: '', fly: '', swim: '', climb: '', burrow: '' },
-  abilityScores: { str: '', dex: '', con: '', int: '', wis: '', cha: '' },
+  name: "",
+  tokenSize: "",
+  type: "",
+  alignment: "",
+  armorClass: "",
+  hitPoints: "",
+  hitDice: "",
+  speed: { walk: "", fly: "", swim: "", climb: "", burrow: "" },
+  abilityScores: { str: "", dex: "", con: "", int: "", wis: "", cha: "" },
   savingThrows: {},
   skills: {},
   damageVulnerabilities: [],
@@ -28,15 +34,15 @@ const defaultMonster = {
   damageImmunities: [],
   conditionImmunities: [],
   senses: {
-    darkvision: '',
-    blindsight: '',
-    tremorsense: '',
-    truesight: '',
-    passivePerception: ''
+    darkvision: "",
+    blindsight: "",
+    tremorsense: "",
+    truesight: "",
+    passivePerception: "",
   },
-  languages: '',
-  challengeRating: '',
-  proficiencyBonus: '',
+  languages: "",
+  challengeRating: "",
+  proficiencyBonus: "",
   traits: [],
   actions: [],
   reactions: [],
@@ -44,10 +50,10 @@ const defaultMonster = {
   legendaryActions: [],
   lairActions: [],
   regionalEffects: [],
-  description: '',
-  image: '',
+  description: "",
+  image: "",
   extraSections: [],
-  campaigns: [] // <-- new field
+  campaigns: [], // <-- new field
 };
 
 const MonsterManager = () => {
@@ -55,37 +61,53 @@ const MonsterManager = () => {
   const [selectedMonster, setSelectedMonster] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [campaigns, setCampaigns] = useState([]);
 
   useEffect(() => {
     fetchMonsters()
-      .then(data => {
-        const unpacked = data.map(item => ({
+      .then((data) => {
+        const unpacked = data.map((item) => ({
           _id: item._id,
           ...item.content,
-          campaigns: item.content.campaigns || []
+          campaigns: item.content.campaigns || [],
         }));
         setMonsters(unpacked);
       })
       .catch(console.error);
+
+    const fetchCampaigns = async () => {
+      try {
+        const res = await axios.get("/api/campaigns", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        setCampaigns(res.data);
+      } catch (err) {
+        console.error("Failed to fetch campaigns:", err);
+      }
+    };
+
+    fetchCampaigns();
   }, []);
 
   const handleCreate = async (monster) => {
     const created = await createMonster(monster);
-    setMonsters(prev => [...prev, { _id: created._id, ...created.content }]);
+    setMonsters((prev) => [...prev, { _id: created._id, ...created.content }]);
     resetForm();
   };
 
   const handleUpdate = async (updatedMonster) => {
     const updated = await updateMonster(updatedMonster._id, updatedMonster);
-    setMonsters(prev =>
-      prev.map(mon => (mon._id === updated._id ? { _id: updated._id, ...updated.content } : mon))
+    setMonsters((prev) =>
+      prev.map((mon) =>
+        mon._id === updated._id ? { _id: updated._id, ...updated.content } : mon
+      )
     );
     resetForm();
   };
 
   const handleDelete = async (id) => {
     await deleteMonster(id);
-    setMonsters(prev => prev.filter(mon => mon._id !== id));
+    setMonsters((prev) => prev.filter((mon) => mon._id !== id));
     if (selectedMonster && selectedMonster._id === id) {
       resetForm();
     }
@@ -110,32 +132,31 @@ const MonsterManager = () => {
   };
 
   const assignCampaign = (monsterId, campaignName) => {
-    setMonsters(prev =>
-      prev.map(mon => {
+    setMonsters((prev) =>
+      prev.map((mon) => {
         if (mon._id !== monsterId) return mon;
         const alreadyAssigned = mon.campaigns?.includes(campaignName);
         return {
           ...mon,
           campaigns: alreadyAssigned
             ? mon.campaigns
-            : [...(mon.campaigns || []), campaignName]
+            : [...(mon.campaigns || []), campaignName],
         };
       })
     );
   };
 
   const removeCampaign = (monsterId, campaignName) => {
-    setMonsters(prev =>
-      prev.map(mon => {
+    setMonsters((prev) =>
+      prev.map((mon) => {
         if (mon._id !== monsterId) return mon;
         return {
           ...mon,
-          campaigns: mon.campaigns.filter(c => c !== campaignName)
+          campaigns: mon.campaigns.filter((c) => c !== campaignName),
         };
       })
     );
   };
-  
 
   return (
     <div className="monster-manager-container">
@@ -147,7 +168,7 @@ const MonsterManager = () => {
         <p>No monsters yet.</p>
       ) : (
         <ul className="monster-list">
-          {monsters.map(mon => (
+          {monsters.map((mon) => (
             <li key={mon._id} className="monster-list-item">
               <div className="monster-info">
                 <span
@@ -168,10 +189,15 @@ const MonsterManager = () => {
                       assignCampaign(mon._id, selected);
                     }
                   }}
+                  defaultValue=""
                 >
-                  <option value="" disabled>Assign to Campaign</option>
-                  {dummyCampaigns.map(name => (
-                    <option key={name} value={name}>{name}</option>
+                  <option value="" disabled>
+                    Assign to Campaign
+                  </option>
+                  {campaigns.map((c) => (
+                    <option key={c._id} value={c.name}>
+                      {c.name}
+                    </option>
                   ))}
                 </select>
 
@@ -194,8 +220,18 @@ const MonsterManager = () => {
               </div>
 
               <div className="monster-actions">
-                <button onClick={() => handleEditClick(mon)} className="edit-btn">Edit</button>
-                <button onClick={() => handleDelete(mon._id)} className="delete-btn">Delete</button>
+                <button
+                  onClick={() => handleEditClick(mon)}
+                  className="edit-btn"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(mon._id)}
+                  className="delete-btn"
+                >
+                  Delete
+                </button>
               </div>
             </li>
           ))}
@@ -211,9 +247,7 @@ const MonsterManager = () => {
         />
       )}
 
-      {selectedMonster && (
-        <MonsterPreview data={selectedMonster} />
-      )}
+      {selectedMonster && <MonsterPreview data={selectedMonster} />}
     </div>
   );
 };
