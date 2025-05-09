@@ -28,10 +28,26 @@ const MapLoaderPanel = ({ campaign, socket }) => {
     fetchMaps();
   }, [campaign]);
 
-  const handleLoadMap = (map) => {
-    console.log("📤 Emitting map to socket:", map);
-    socket.emit("loadMap", map); // we’ll wire up reception later
+  const handleLoadMap = async (map) => {
+    try {
+      // Persist current map to session state
+      await fetch(`/api/sessionstate/${campaign._id}/set-map`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ mapId: map._id }),
+      });
+
+      console.log("📤 Emitting map to socket:", map);
+      socket.emit("loadMap", map);
+    } catch (err) {
+      console.error("❌ Failed to set current map:", err);
+      alert("Failed to load map for session.");
+    }
   };
+
   const handleMapSubmit = async ({ name, width, height, imageUrl }) => {
     const completeContent = {
       name,

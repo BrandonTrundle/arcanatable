@@ -11,6 +11,7 @@ const SessionRoom = () => {
   const { id } = useParams(); // campaign ID
   const { user } = useContext(UserContext);
   const [campaign, setCampaign] = useState(null);
+  const [sessionMap, setSessionMap] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // ✅ useSocket must be inside the component
@@ -33,6 +34,7 @@ const SessionRoom = () => {
         });
         const data = await res.json();
         setCampaign(data);
+        fetchSessionState(data._id); // ✅ Move this INSIDE success block
       } catch (err) {
         console.error("Failed to load campaign:", err);
       } finally {
@@ -40,7 +42,23 @@ const SessionRoom = () => {
       }
     };
 
-    fetchCampaign();
+    const fetchSessionState = async (campaignId) => {
+      try {
+        const res = await fetch(`/api/sessionstate/${campaignId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setSessionMap(data.currentMapId || null);
+        }
+      } catch (err) {
+        console.error("Failed to load session state:", err);
+      }
+    };
+
+    fetchCampaign(); // ✅ leave this call here
   }, [id]);
 
   useEffect(() => {
@@ -64,9 +82,13 @@ const SessionRoom = () => {
   return (
     <div className="session-room">
       {campaign.creator?._id === user._id ? (
-        <DMView campaign={campaign} socket={socket} />
+        <DMView campaign={campaign} socket={socket} sessionMap={sessionMap} />
       ) : (
-        <PlayerView campaign={campaign} socket={socket} />
+        <PlayerView
+          campaign={campaign}
+          socket={socket}
+          sessionMap={sessionMap}
+        />
       )}
     </div>
   );

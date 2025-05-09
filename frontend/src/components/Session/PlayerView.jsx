@@ -1,13 +1,31 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import "../../styles/SessionStyles/DMStyles/DMView.css";
 import "../../styles/SessionStyles/SharedStyles/ChatBox.css";
 import Toolbar from "../Session/PlayerComponents/Toolbar";
 import ChatBox from "../Session/SharedComponents/ChatBox";
 import { UserContext } from "../../context/UserContext";
+import loadMapFallback from "../../assets/LoadMapToProceed.png";
+import RenderedMap from "../Session/DMComponents/Maps/RenderedMap";
 
-const PlayerView = ({ campaign, socket }) => {
+const PlayerView = ({ campaign, socket, sessionMap }) => {
   const { user } = useContext(UserContext);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [activeMap, setActiveMap] = useState(sessionMap || null);
+
+  useEffect(() => {
+    if (sessionMap) {
+      setActiveMap(sessionMap);
+    }
+  }, [sessionMap]);
+
+  useEffect(() => {
+    socket.on("loadMap", (map) => {
+      console.log("📥 Player received map:", map);
+      setActiveMap(map);
+    });
+
+    return () => socket.off("loadMap");
+  }, [socket]);
 
   return (
     <div className="dm-session-container">
@@ -16,9 +34,18 @@ const PlayerView = ({ campaign, socket }) => {
       </aside>
 
       <main className="dm-map-area">
-        <div className="map-placeholder">
-          <p>No map loaded yet.</p>
-        </div>
+        {activeMap && activeMap.content ? (
+          <RenderedMap map={activeMap} activeLayer="player" />
+        ) : (
+          <div className="map-placeholder">
+            <img
+              src={loadMapFallback}
+              alt="No map loaded"
+              style={{ width: "60%", opacity: 0.5 }}
+            />
+            <p style={{ color: "#ccc" }}>Waiting for DM to load a map...</p>
+          </div>
+        )}
       </main>
 
       <aside className="dm-chat-panel">

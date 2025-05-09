@@ -104,6 +104,7 @@ app.use("/api/characters", characterRoutes);
 app.use("/api/campaigns", campaignRoutes);
 app.use("/api", appRoutes);
 app.use("/api", uploadRoutes);
+app.use("/api/sessionstate", require("./routes/sessionState"));
 
 // Health check
 app.get("/", (req, res) => {

@@ -6,11 +6,16 @@ import TokenManager from "../Session/DMComponents/Tokens/TokenManager"; // impor
 import Toolbar from "../Session/DMComponents/Toolbar"; // import the new Toolbar component
 import MapLoaderPanel from "../Session/DMComponents/Maps/MapLoaderPanel";
 import RenderedMap from "../Session/DMComponents/Maps/RenderedMap";
+import loadMapFallback from "../../assets/LoadMapToProceed.png";
 
-const DMView = ({ campaign, socket }) => {
+const DMView = ({ campaign, socket, sessionMap }) => {
   const { user } = useContext(UserContext);
-  const [activeMap, setActiveMap] = useState(null);
-
+  const [activeMap, setActiveMap] = useState(sessionMap || null);
+  useEffect(() => {
+    if (sessionMap) {
+      setActiveMap(sessionMap);
+    }
+  }, [sessionMap]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTool, setActiveTool] = useState(null);
   const [panelPosition, setPanelPosition] = useState({ x: 220, y: 80 });
@@ -61,11 +66,16 @@ const DMView = ({ campaign, socket }) => {
         />
       </aside>
 
-      {activeMap ? (
+      {activeMap && activeMap.content ? (
         <RenderedMap map={activeMap} activeLayer="dm" />
       ) : (
         <div className="map-placeholder">
-          <p>No map loaded yet.</p>
+          <img
+            src={loadMapFallback}
+            alt="No map loaded"
+            style={{ width: "60%", opacity: 0.8 }}
+          />
+          <p style={{ color: "#ccc" }}>No map loaded yet.</p>
         </div>
       )}
 
