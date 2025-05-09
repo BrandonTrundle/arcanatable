@@ -1,16 +1,16 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = "http://localhost:5000/api";
 
 // 1. Upload map image
 export const uploadMapImage = async (file) => {
   const formData = new FormData();
-  formData.append('image', file);
+  formData.append("image", file);
 
   const response = await axios.post(`${API_BASE}/uploads/maps`, formData, {
     headers: {
-      'Content-Type': 'multipart/form-data'
-    }
+      "Content-Type": "multipart/form-data",
+    },
   });
 
   return response.data.url; // returns imageUrl
@@ -18,11 +18,18 @@ export const uploadMapImage = async (file) => {
 
 // 2. Save map metadata to DM Toolkit
 export const saveMap = async (mapData, token) => {
-  const response = await axios.post(`${API_BASE}/dmtoolkit/maps/upload`, mapData, {
-    headers: {
-      Authorization: `Bearer ${token}`
+  const response = await axios.post(
+    `${API_BASE}/dmtoolkit`,
+    {
+      toolkitType: "Map",
+      content: mapData,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     }
-  });
+  );
 
   return response.data;
 };
@@ -31,8 +38,8 @@ export const saveMap = async (mapData, token) => {
 export const deleteMap = async (mapId, token) => {
   const response = await axios.delete(`${API_BASE}/dmtoolkit/${mapId}`, {
     headers: {
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   return response;
@@ -42,18 +49,18 @@ export const updateMapTokens = async (mapId, placedTokens, token) => {
     const response = await axios.patch(
       `/api/dmtoolkit/${mapId}`,
       {
-        'content.placedTokens': placedTokens
+        "content.placedTokens": placedTokens,
       },
       {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       }
     );
 
     return response.data;
   } catch (err) {
-    console.error('Failed to update map tokens:', err);
+    console.error("Failed to update map tokens:", err);
     throw err;
   }
 };
@@ -63,7 +70,7 @@ export const updateMap = async (mapId, updatedContent, token) => {
     `/api/dmtoolkit/${mapId}`,
     { content: updatedContent },
     {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` },
     }
   );
   return res.data;

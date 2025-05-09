@@ -16,6 +16,7 @@ const MapsManager = () => {
   const [selectedMap, setSelectedMap] = useState(null);
   const { user } = useUserContext();
   const [campaigns, setCampaigns] = useState([]);
+  const [selectedCampaignId, setSelectedCampaignId] = useState("");
 
   useEffect(() => {
     const fetchMaps = async () => {
@@ -50,7 +51,14 @@ const MapsManager = () => {
   const handleMapSubmit = async ({ name, width, height, imageUrl }) => {
     try {
       const savedMap = await saveMap(
-        { name, width, height, imageUrl },
+        {
+          name,
+          width,
+          height,
+          imageUrl,
+          placedTokens: [],
+          campaign: selectedCampaignId, // ✅ Add campaign._id to map content
+        },
         user.token
       );
       setMaps((prev) => [...prev, savedMap]);
@@ -117,7 +125,20 @@ const MapsManager = () => {
   return (
     <div className="maps-manager">
       <h2>🗺️ Map Manager</h2>
-
+      <div style={{ marginBottom: "1rem" }}>
+        <label>Select Campaign: </label>
+        <select
+          value={selectedCampaignId}
+          onChange={(e) => setSelectedCampaignId(e.target.value)}
+        >
+          <option value="">-- Choose Campaign --</option>
+          {campaigns.map((c) => (
+            <option key={c._id} value={c._id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+      </div>
       <MapCreationForm
         onSubmit={handleMapSubmit}
         onImageUpload={handleImageUpload}

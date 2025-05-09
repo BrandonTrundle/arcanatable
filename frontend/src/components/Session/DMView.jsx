@@ -4,9 +4,12 @@ import ChatBox from "../Session/SharedComponents/ChatBox";
 import { UserContext } from "../../context/UserContext";
 import TokenManager from "../Session/DMComponents/Tokens/TokenManager"; // import TokenManager component
 import Toolbar from "../Session/DMComponents/Toolbar"; // import the new Toolbar component
+import MapLoaderPanel from "../Session/DMComponents/Maps/MapLoaderPanel";
+import RenderedMap from "../Session/DMComponents/Maps/RenderedMap";
 
 const DMView = ({ campaign, socket }) => {
   const { user } = useContext(UserContext);
+  const [activeMap, setActiveMap] = useState(null);
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTool, setActiveTool] = useState(null);
@@ -19,6 +22,15 @@ const DMView = ({ campaign, socket }) => {
     setIsDragging(true);
     setDragOffset({ x: e.clientX - rect.left, y: e.clientY - rect.top });
   };
+
+  useEffect(() => {
+    socket.on("loadMap", (map) => {
+      console.log("📥 DM received map:", map);
+      setActiveMap(map);
+    });
+
+    return () => socket.off("loadMap");
+  }, [socket]);
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -49,11 +61,13 @@ const DMView = ({ campaign, socket }) => {
         />
       </aside>
 
-      <main className="dm-map-area">
+      {activeMap ? (
+        <RenderedMap map={activeMap} activeLayer="dm" />
+      ) : (
         <div className="map-placeholder">
           <p>No map loaded yet.</p>
         </div>
-      </main>
+      )}
 
       {activeTool === "tokens" && (
         <TokenManager
@@ -61,6 +75,12 @@ const DMView = ({ campaign, socket }) => {
           campaign={campaign} // ⬅️ send full campaign object
           setActiveTool={setActiveTool}
         />
+      )}
+
+      {activeTool === "maps" && (
+        <div className="dm-maps-panel">
+          <MapLoaderPanel campaign={campaign} socket={socket} />
+        </div>
       )}
 
       <aside className="dm-chat-panel">

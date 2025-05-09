@@ -1,0 +1,18 @@
+.map-loader-panel {
+  position: absolute;
+  top: 80px;
+  left: 220px;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  z-index: 20;
+}
+
+.map-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+}

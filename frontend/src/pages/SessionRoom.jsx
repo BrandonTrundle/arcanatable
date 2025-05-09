@@ -68,12 +68,6 @@ const SessionRoom = () => {
       ) : (
         <PlayerView campaign={campaign} socket={socket} />
       )}
-
-      <ChatBox
-        socket={socket}
-        campaignId={campaign._id}
-        username={user.username}
-      />
     </div>
   );
 };

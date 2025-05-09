@@ -46,6 +46,18 @@ io.on("connection", (socket) => {
     const { campaignId } = message;
     io.to(campaignId).emit("chatMessage", message);
   });
+
+  socket.on("loadMap", (map) => {
+    const campaignId = map.content?.campaign;
+
+    if (!campaignId) {
+      console.warn("⚠️ Map missing campaign ID:", map);
+      return;
+    }
+
+    console.log(`📡 Broadcasting map to room ${campaignId}`);
+    io.to(campaignId).emit("loadMap", map);
+  });
 });
 
 // Middleware
