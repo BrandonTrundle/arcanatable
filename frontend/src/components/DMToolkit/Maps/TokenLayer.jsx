@@ -1,7 +1,8 @@
 import React, { memo } from "react";
-import { Group, Rect, Image as KonvaImage } from "react-konva";
+import { Group, Rect, Image as KonvaImage, Text } from "react-konva";
 import useImage from "use-image";
 
+// Individual token component
 const Token = ({
   id,
   x,
@@ -13,6 +14,11 @@ const Token = ({
   activeLayer,
   onDragEnd,
   onRightClick,
+  onClick,
+  draggable,
+  isSelected,
+  isExternallySelected,
+  selectedBy,
 }) => {
   const [img] = useImage(imageUrl, "anonymous");
   if (!img) return null;
@@ -35,8 +41,6 @@ const Token = ({
   const visualSize = baseSize * scaleFactor;
   const offset = visualSize / 2;
 
-  console.log("Rendering token", id, "with size", size);
-
   return (
     <Group
       x={x}
@@ -44,13 +48,14 @@ const Token = ({
       offsetX={offset}
       offsetY={offset}
       opacity={opacity}
-      draggable
+      draggable={draggable}
       dragBoundFunc={(pos) => pos}
       onDragEnd={(e) => {
         const { x, y } = e.target.position();
         onDragEnd(id, x, y);
       }}
       onContextMenu={onRightClick}
+      onClick={onClick ? () => onClick(id) : undefined}
       onMouseEnter={(e) => {
         const stage = e.target.getStage();
         if (stage) stage.container().style.cursor = "pointer";
@@ -61,6 +66,54 @@ const Token = ({
       }}
       title={title || id}
     >
+      {/* External selection highlight */}
+      {isExternallySelected && (
+        <>
+          <Rect
+            width={visualSize + 16}
+            height={visualSize + 16}
+            offsetX={8}
+            offsetY={8}
+            stroke="deepskyblue"
+            strokeWidth={3}
+            dash={[4, 4]}
+            cornerRadius={visualSize / 2}
+            listening={false}
+            pointerEvents="none"
+          />
+          {selectedBy && (
+            <Text
+              text={selectedBy}
+              fontSize={12}
+              fill="deepskyblue"
+              y={-offset - 18}
+              x={-offset}
+              width={visualSize}
+              align="center"
+              listening={false}
+              pointerEvents="none"
+            />
+          )}
+        </>
+      )}
+
+      {/* Local selection highlight */}
+      {isSelected && (
+        <Rect
+          width={visualSize + 10}
+          height={visualSize + 10}
+          offsetX={5}
+          offsetY={5}
+          fill="rgba(255, 255, 0, 0.2)"
+          stroke="gold"
+          strokeWidth={4}
+          cornerRadius={visualSize / 2}
+          listening={false}
+          pointerEvents="none"
+        />
+      )}
+
+      {/* Base token */}
       <Rect
         width={visualSize}
         height={visualSize}
@@ -82,7 +135,17 @@ const Token = ({
 const MemoizedToken = memo(Token);
 export { MemoizedToken as Token };
 
-const TokenLayer = ({ tokens, onDragEnd, onRightClick, activeLayer }) => {
+// TokenLayer renders multiple tokens
+const TokenLayer = ({
+  tokens,
+  onDragEnd,
+  onRightClick,
+  onClick = () => {},
+  selectedTokenId,
+  activeLayer,
+  canMove = () => true,
+  externalSelections = {},
+}) => {
   return (
     <>
       {tokens.map((token) => (
@@ -98,6 +161,11 @@ const TokenLayer = ({ tokens, onDragEnd, onRightClick, activeLayer }) => {
           activeLayer={activeLayer}
           onDragEnd={onDragEnd}
           onRightClick={(e) => onRightClick(e, token.id)}
+          onClick={onClick}
+          draggable={canMove(token)}
+          isSelected={selectedTokenId === token.id}
+          isExternallySelected={!!externalSelections[token.id]}
+          selectedBy={externalSelections[token.id]?.username}
         />
       ))}
     </>

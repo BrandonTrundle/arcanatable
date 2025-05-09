@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "../../../styles/SessionStyles/SharedStyles/ChatBox.css";
 
 const ChatBox = ({ socket, campaignId, username }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     socket.on("chatMessage", (message) => {
@@ -15,6 +16,12 @@ const ChatBox = ({ socket, campaignId, username }) => {
       socket.off("chatMessage");
     };
   }, [socket]);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   const sendMessage = (e) => {
     e.preventDefault();
@@ -44,6 +51,7 @@ const ChatBox = ({ socket, campaignId, username }) => {
             </div>
           ))
         )}
+        <div ref={messagesEndRef} />
       </div>
 
       <form onSubmit={sendMessage} className="chat-input-form">

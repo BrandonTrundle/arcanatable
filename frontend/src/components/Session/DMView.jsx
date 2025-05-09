@@ -21,6 +21,7 @@ const DMView = ({ campaign, socket, sessionMap }) => {
   const [panelPosition, setPanelPosition] = useState({ x: 220, y: 80 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [activeLayer, setActiveLayer] = useState("dm");
 
   const startDrag = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -67,7 +68,13 @@ const DMView = ({ campaign, socket, sessionMap }) => {
       </aside>
 
       {activeMap && activeMap.content ? (
-        <RenderedMap map={activeMap} activeLayer="dm" />
+        <RenderedMap
+          map={activeMap}
+          activeLayer={activeLayer}
+          isDM={true}
+          socket={socket} // ✅ This is what’s missing!
+          user={user}
+        />
       ) : (
         <div className="map-placeholder">
           <img

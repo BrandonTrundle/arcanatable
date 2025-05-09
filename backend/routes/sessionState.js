@@ -18,16 +18,14 @@ router.get("/:campaignId", authenticateToken, async (req, res) => {
       return res.status(404).json({ message: "No session state found." });
     }
 
-    console.log("✅ Session state found:", session);
+    //console.log("✅ Session state found:", session);
     res.json(session);
   } catch (err) {
     console.error("❌ ERROR in /sessionstate GET:", err);
-    res
-      .status(500)
-      .json({
-        message: "Error retrieving session state.",
-        details: err.message,
-      });
+    res.status(500).json({
+      message: "Error retrieving session state.",
+      details: err.message,
+    });
   }
 });
 

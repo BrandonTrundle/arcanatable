@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import "../../../styles/MapEditor.css";
+import React, { useState, useEffect } from "react";
+import "../../../../styles/MapEditor.css";
 
-const MapEditorContextMenu = ({ contextMenu, onAction, onClose }) => {
+const SessionContextMenu = ({ contextMenu, onAction, onClose }) => {
   const [selectedSize, setSelectedSize] = useState("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (contextMenu?.mode === "resize") {
-      // Grab the current token’s size and default to it
       const currentSize = contextMenu?.currentSize ?? "";
       setSelectedSize(currentSize);
     }
@@ -15,7 +14,6 @@ const MapEditorContextMenu = ({ contextMenu, onAction, onClose }) => {
   if (!contextMenu) return null;
 
   const { x, y, tokenId, mode } = contextMenu;
-  //console.log("Rendering context menu with mode:", mode);
 
   return (
     <div
@@ -37,10 +35,8 @@ const MapEditorContextMenu = ({ contextMenu, onAction, onClose }) => {
           value={selectedSize}
           onChange={(e) => {
             const value = e.target.value;
-            console.log("Dropdown value selected:", value); // 🐞 Debug log
             setSelectedSize(value);
             if (value && tokenId) {
-              console.log("Resize dropdown changed →", tokenId, value);
               onAction("apply-resize", tokenId, value);
               onClose();
             }
@@ -72,4 +68,4 @@ const MapEditorContextMenu = ({ contextMenu, onAction, onClose }) => {
   );
 };
 
-export default MapEditorContextMenu;
+export default SessionContextMenu;

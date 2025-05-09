@@ -24,30 +24,59 @@ const TokenGrid = ({
       />
 
       <ul className="token-image-grid">
+        {/* Toolkit Tokens (e.g., NPCs, Creatures) */}
         {toolkitTokens
           .filter((token) =>
             (token.title || token.content?.name || "")
               .toLowerCase()
               .includes(searchQuery.toLowerCase())
           )
-          .map((token) =>
-            token.content?.imageUrl ? (
+          .map((token) => {
+            const content = token.content || {};
+            const name = token.title || content.name || "Unnamed";
+            const imageUrl =
+              content.image || content.avatar || content.imageUrl || "";
+            const tokenSize =
+              content.tokenSize || content.size || "Unknown size";
+
+            if (!imageUrl) {
+              console.warn("⚠️ Skipping toolkit token with no image:", token);
+              return null;
+            }
+
+            return (
               <li
                 key={token._id}
                 className="token-thumb-wrapper"
-                data-tooltip={`${
-                  token.title || token.content?.name || "Unnamed"
-                } (${
-                  token.content?.tokenSize ||
-                  token.content?.size ||
-                  "Unknown size"
-                })`}
+                data-tooltip={`${name} (${tokenSize})`}
               >
                 <div className="token-image-container">
                   <img
-                    src={token.content.imageUrl}
-                    alt={token.title || token.content?.name}
+                    src={imageUrl}
+                    alt={name}
                     className="token-thumbnail"
+                    draggable
+                    onDragStart={(e) => {
+                      const payload = {
+                        id: token._id,
+                        name,
+                        imageUrl,
+                        tokenSize,
+                        layer: "dm",
+                      };
+
+                      //console.log("✅ Drag Start Payload (toolkit):", payload);
+
+                      try {
+                        e.dataTransfer.setData(
+                          "application/json",
+                          JSON.stringify(payload)
+                        );
+                        e.dataTransfer.effectAllowed = "copy";
+                      } catch (err) {
+                        console.error("❌ Failed to set drag data:", err);
+                      }
+                    }}
                   />
                 </div>
                 <p
@@ -57,34 +86,60 @@ const TokenGrid = ({
                     margin: "0.25rem 0 0",
                   }}
                 >
-                  {token.title || token.content?.name || "Unnamed"} <br />(
-                  {token.content?.tokenSize ||
-                    token.content?.size ||
-                    "Unknown size"}
-                  )
+                  {name} <br />({tokenSize})
                 </p>
               </li>
-            ) : null
-          )}
+            );
+          })}
 
+        {/* Campaign Tokens (flat format) */}
         {campaignTokens
           .filter((token) =>
             (token.name || "").toLowerCase().includes(searchQuery.toLowerCase())
           )
-          .map((token) =>
-            token.imageUrl ? (
+          .map((token) => {
+            const name = token.name || "Unnamed";
+            const imageUrl = token.imageUrl || "";
+            const tokenSize = token.tokenSize || "Unknown size";
+
+            if (!imageUrl) {
+              console.warn("⚠️ Skipping campaign token with no image:", token);
+              return null;
+            }
+
+            return (
               <li
                 key={token._id}
                 className="token-thumb-wrapper"
-                data-tooltip={`${token.name || "Unnamed"} (${
-                  token.tokenSize || "Unknown size"
-                })`}
+                data-tooltip={`${name} (${tokenSize})`}
               >
                 <div className="token-image-container">
                   <img
-                    src={token.imageUrl}
-                    alt={token.name}
+                    src={imageUrl}
+                    alt={name}
                     className="token-thumbnail"
+                    draggable
+                    onDragStart={(e) => {
+                      const payload = {
+                        id: token._id,
+                        name,
+                        imageUrl,
+                        tokenSize,
+                        layer: "dm",
+                      };
+
+                      //console.log("✅ Drag Start Payload (campaign):", payload);
+
+                      try {
+                        e.dataTransfer.setData(
+                          "application/json",
+                          JSON.stringify(payload)
+                        );
+                        e.dataTransfer.effectAllowed = "copy";
+                      } catch (err) {
+                        console.error("❌ Failed to set drag data:", err);
+                      }
+                    }}
                   />
                 </div>
                 <p
@@ -94,12 +149,11 @@ const TokenGrid = ({
                     margin: "0.25rem 0 0",
                   }}
                 >
-                  {token.name || "Unnamed"} <br />(
-                  {token.tokenSize || "Unknown size"})
+                  {name} <br />({tokenSize})
                 </p>
               </li>
-            ) : null
-          )}
+            );
+          })}
       </ul>
     </>
   );

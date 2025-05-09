@@ -35,7 +35,12 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
 
       <main className="dm-map-area">
         {activeMap && activeMap.content ? (
-          <RenderedMap map={activeMap} activeLayer="player" />
+          <RenderedMap
+            map={activeMap}
+            activeLayer="player"
+            socket={socket}
+            user={user} // ✅ Add this!
+          />
         ) : (
           <div className="map-placeholder">
             <img

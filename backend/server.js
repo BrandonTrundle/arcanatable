@@ -33,12 +33,12 @@ io.on("connection", (socket) => {
 
   socket.on("joinRoom", (campaignId) => {
     socket.join(campaignId);
-    console.log(`🟢 Socket ${socket.id} joined room ${campaignId}`);
+    //console.log(`🟢 Socket ${socket.id} joined room ${campaignId}`);
     io.to(campaignId).emit("userJoined", { socketId: socket.id });
   });
 
   socket.on("disconnect", () => {
-    console.log(`❌ Client disconnected: ${socket.id}`);
+    //console.log(`❌ Client disconnected: ${socket.id}`);
     // Optional: io.to(room).emit("userLeft", ...) if tracking
   });
 
@@ -57,6 +57,47 @@ io.on("connection", (socket) => {
 
     console.log(`📡 Broadcasting map to room ${campaignId}`);
     io.to(campaignId).emit("loadMap", map);
+  });
+
+  socket.on("updateTokens", ({ mapId, tokens }) => {
+    //console.log(`🔁 Tokens updated for map ${mapId}`);
+
+    // Optional: figure out which campaign this map belongs to (if not already handled)
+    // For now, just broadcast to all clients except sender:
+    socket.broadcast.emit("tokensUpdated", { mapId, tokens });
+  });
+
+  socket.on("tokensUpdated", (payload) => {
+    console.log("📥 Player received tokensUpdated:", payload);
+    if (String(payload.mapId) === String(map._id)) {
+      setTokens(payload.tokens || []);
+    }
+  });
+
+  socket.on("tokenSelected", (payload) => {
+    console.log("🛬 Received tokenSelected payload:", payload);
+
+    const { mapId, campaignId, tokenId, userId, username } = payload;
+
+    if (!campaignId) {
+      console.warn("⚠️ Missing campaignId, not broadcasting selection.");
+      return;
+    }
+
+    console.log(
+      `🎯 Token selected: ${tokenId} by ${username} in campaign ${campaignId}`
+    );
+    io.to(campaignId).emit("tokenSelected", {
+      mapId,
+      tokenId,
+      userId,
+      username,
+    });
+  });
+
+  socket.on("tokenDeselected", ({ campaignId, mapId, userId }) => {
+    console.log(`🧹 Deselection received from ${userId} in ${campaignId}`);
+    io.to(campaignId).emit("tokenDeselected", { mapId, userId });
   });
 });
 

@@ -57,7 +57,10 @@ const TokenManager = ({ token, setActiveTool, campaign }) => {
       setLoadingTokens(false);
     }
   };
-
+  const campaignTokenIds = new Set(campaignTokens.map((t) => t._id));
+  const filteredToolkitTokens = toolkitTokens.filter(
+    (t) => !campaignTokenIds.has(t._id)
+  );
   return (
     <DraggableResizablePanel>
       <button className="close-button" onClick={() => setActiveTool(null)}>
@@ -78,7 +81,7 @@ const TokenManager = ({ token, setActiveTool, campaign }) => {
               <p>No tokens found for this campaign.</p>
             ) : (
               <TokenGrid
-                toolkitTokens={toolkitTokens}
+                toolkitTokens={filteredToolkitTokens}
                 campaignTokens={campaignTokens}
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
