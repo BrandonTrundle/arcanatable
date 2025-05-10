@@ -11,7 +11,6 @@ export const useTokenSelection = (
   const selectToken = useCallback(
     (id) => {
       const token = tokens.find((t) => t.id === id);
-      if (!token || !hasControl(token)) return;
 
       // 🔥 Emit deselection if switching
       if (selectedTokenId && selectedTokenId !== id && emitDeselection) {
