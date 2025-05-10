@@ -1,6 +1,5 @@
-const mongoose = require('mongoose'); // Mongoose library for MongoDB object modeling
+const mongoose = require("mongoose"); // Mongoose library for MongoDB object modeling
 const { Schema } = mongoose; // Destructured Schema constructor for defining models
-
 
 const CharacterSchema = new Schema(
   {
@@ -40,18 +39,18 @@ const CharacterSchema = new Schema(
     chamod: Number,
 
     // Saving Throws
-    'strength-save': Number,
-    'strength-save-prof': Boolean,
-    'dexterity-save': Number,
-    'dexterity-save-prof': Boolean,
-    'constitution-save': Number,
-    'constitution-save-prof': Boolean,
-    'intelligence-save': Number,
-    'intelligence-save-prof': Boolean,
-    'wisdom-save': Number,
-    'wisdom-save-prof': Boolean,
-    'charisma-save': Number,
-    'charisma-save-prof': Boolean,
+    "strength-save": Number,
+    "strength-save-prof": Boolean,
+    "dexterity-save": Number,
+    "dexterity-save-prof": Boolean,
+    "constitution-save": Number,
+    "constitution-save-prof": Boolean,
+    "intelligence-save": Number,
+    "intelligence-save-prof": Boolean,
+    "wisdom-save": Number,
+    "wisdom-save-prof": Boolean,
+    "charisma-save": Number,
+    "charisma-save-prof": Boolean,
 
     // Combat
     ac: Number,
@@ -63,26 +62,26 @@ const CharacterSchema = new Schema(
 
     // Death Saves
     hitdice: String,
-    'success-0': Boolean,
-    'success-1': Boolean,
-    'success-2': Boolean,
-    'failure-0': Boolean,
-    'failure-1': Boolean,
-    'failure-2': Boolean,
+    "success-0": Boolean,
+    "success-1": Boolean,
+    "success-2": Boolean,
+    "failure-0": Boolean,
+    "failure-1": Boolean,
+    "failure-2": Boolean,
 
     // Attacks
     attacks: {
       type: [
         {
-          name: { type: String, default: '' },
+          name: { type: String, default: "" },
           atk: { type: Schema.Types.Mixed },
-          damage: { type: String, default: '' },
-          type: { type: String, default: '' },
-        }
+          damage: { type: String, default: "" },
+          type: { type: String, default: "" },
+        },
       ],
-      default: []
+      default: [],
     },
-    'attack-notes': String,
+    "attack-notes": String,
 
     // Skills
     skills: [
@@ -90,8 +89,8 @@ const CharacterSchema = new Schema(
         name: String,
         stat: String,
         mod: Schema.Types.Mixed,
-        proficient: Boolean
-      }
+        proficient: Boolean,
+      },
     ],
 
     // Proficiency + Inspiration
@@ -113,10 +112,10 @@ const CharacterSchema = new Schema(
         spells: [
           {
             name: String,
-            desc: String
-          }
-        ]
-      }
+            desc: String,
+          },
+        ],
+      },
     ],
 
     // Simplified spell block fallback (textarea-based)
@@ -149,8 +148,8 @@ const CharacterSchema = new Schema(
     equipment: [
       {
         name: String,
-        desc: String
-      }
+        desc: String,
+      },
     ],
 
     // Coins and Treasure
@@ -159,7 +158,7 @@ const CharacterSchema = new Schema(
       sp: Number,
       ep: Number,
       gp: Number,
-      pp: Number
+      pp: Number,
     },
     treasure: [String],
 
@@ -179,10 +178,11 @@ const CharacterSchema = new Schema(
     system: String,
     backstory: String,
     isPublic: Boolean,
-    creator: { type: Schema.Types.ObjectId, ref: 'User' }
+    creator: { type: Schema.Types.ObjectId, ref: "User" },
+    campaign: { type: Schema.Types.ObjectId, ref: "Campaign", default: null },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.models.Character || mongoose.model('Character', CharacterSchema);
-
+module.exports =
+  mongoose.models.Character || mongoose.model("Character", CharacterSchema);

@@ -52,6 +52,18 @@ export const useTokenManager = ({ map, socket, isDM, user }) => {
   useEffect(() => {
     if (!socket) return;
 
+    const handleTokenDropped = ({ mapId, token }) => {
+      if (String(mapId) !== String(map._id)) return;
+      setTokens((prev) => [...prev, token]);
+    };
+
+    socket.on("tokenDropped", handleTokenDropped);
+    return () => socket.off("tokenDropped", handleTokenDropped);
+  }, [socket, map._id]);
+
+  useEffect(() => {
+    if (!socket) return;
+
     const handleTokenSelected = ({ mapId, tokenId, userId, username }) => {
       if (String(mapId) !== String(map._id)) return;
       if (user && user._id === userId) return;
@@ -85,6 +97,21 @@ export const useTokenManager = ({ map, socket, isDM, user }) => {
 
     socket.on("tokenDeselected", handleDeselection);
     return () => socket.off("tokenDeselected", handleDeselection);
+  }, [socket, map._id]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handlePlayerMovedToken = ({ mapId, tokenId, x, y }) => {
+      if (String(mapId) !== String(map._id)) return;
+
+      setTokens((prev) =>
+        prev.map((t) => (t.id === tokenId ? { ...t, x, y } : t))
+      );
+    };
+
+    socket.on("playerMovedToken", handlePlayerMovedToken);
+    return () => socket.off("playerMovedToken", handlePlayerMovedToken);
   }, [socket, map._id]);
 
   const handleTokenRightClick = (e, id, stageRef) => {
@@ -180,12 +207,21 @@ export const useTokenManager = ({ map, socket, isDM, user }) => {
         title: data.name || "Unnamed",
         tokenSize,
         layer: data.layer || "dm",
-        controller: null,
+        controller: !isDM && user ? user._id : null,
       };
 
       const updated = [...tokens, newToken];
       setTokens(updated);
-      emitTokenUpdate(updated);
+
+      if (isDM) {
+        emitTokenUpdate(updated);
+      } else if (socket) {
+        socket.emit("tokenDrop", {
+          campaignId: map.content?.campaign,
+          mapId: map._id,
+          token: newToken,
+        });
+      }
     } catch (err) {
       console.error("❌ Failed to parse dropped token:", err);
     }

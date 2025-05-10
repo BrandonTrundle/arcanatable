@@ -8,6 +8,7 @@ import "../styles/CharacterSheetStyles/CharacterSheet.css";
 import backgroundImage from "../assets/CharacterDashboard.png";
 import PageTwo from "../components/CharacterForm/PageTwo";
 import PageThree from "../components/CharacterForm/PageThree";
+import axios from "axios";
 
 const CharacterEdit = () => {
   const { id } = useParams();
@@ -17,6 +18,7 @@ const CharacterEdit = () => {
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("basics");
+  const [campaigns, setCampaigns] = useState([]);
 
   useEffect(() => {
     const fetchCharacter = async () => {
@@ -37,6 +39,42 @@ const CharacterEdit = () => {
 
     fetchCharacter();
   }, [id]);
+
+  useEffect(() => {
+    const fetchCharacter = async () => {
+      try {
+        const res = await fetch(`/api/characters/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        const data = await res.json();
+        setFormData(data);
+      } catch (err) {
+        console.error("Error fetching character:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchCampaigns = async () => {
+      try {
+        const res = await axios.get("/api/campaigns", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        const allCampaigns = res.data;
+        const playerCampaigns = allCampaigns.filter(
+          (camp) => camp.creator !== user._id
+        );
+        setCampaigns(playerCampaigns);
+      } catch (err) {
+        console.error("Failed to fetch campaigns:", err);
+      }
+    };
+
+    fetchCharacter();
+    if (user?._id) fetchCampaigns();
+  }, [id, user]);
 
   const handleChange = (e) => {
     const { name, type, value, checked } = e.target;
@@ -142,6 +180,22 @@ const CharacterEdit = () => {
             <button type="submit" className="create-character-btn">
               Save Changes
             </button>
+            <div className="form-group">
+              <label htmlFor="campaign">Assign to Campaign (optional)</label>
+              <select
+                name="campaign"
+                value={formData.campaign || ""}
+                onChange={handleChange}
+                className="form-control"
+              >
+                <option value="">-- No Campaign --</option>
+                {campaigns.map((camp) => (
+                  <option key={camp._id} value={camp._id}>
+                    {camp.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </form>
         </div>
       </div>

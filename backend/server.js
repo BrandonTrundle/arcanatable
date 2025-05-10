@@ -99,6 +99,28 @@ io.on("connection", (socket) => {
     console.log(`🧹 Deselection received from ${userId} in ${campaignId}`);
     io.to(campaignId).emit("tokenDeselected", { mapId, userId });
   });
+
+  socket.on("tokenDrop", ({ campaignId, mapId, token }) => {
+    if (!campaignId || !mapId || !token) {
+      console.warn("⚠️ Invalid tokenDrop payload:", {
+        campaignId,
+        mapId,
+        token,
+      });
+      return;
+    }
+
+    console.log(
+      `📤 Token dropped by player in campaign ${campaignId}: ${token.title}`
+    );
+    socket.to(campaignId).emit("tokenDropped", { mapId, token });
+  });
+
+  socket.on("playerMovedToken", ({ campaignId, mapId, tokenId, x, y }) => {
+    if (!campaignId || !mapId || !tokenId) return;
+
+    io.to(campaignId).emit("playerMovedToken", { mapId, tokenId, x, y });
+  });
 });
 
 // Middleware
@@ -146,6 +168,7 @@ app.use("/api/campaigns", campaignRoutes);
 app.use("/api", appRoutes);
 app.use("/api", uploadRoutes);
 app.use("/api/sessionstate", require("./routes/sessionState"));
+app.use("/api/player-toolkit-tokens", require("./routes/playerToolkitRoutes"));
 
 // Health check
 app.get("/", (req, res) => {

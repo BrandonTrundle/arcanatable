@@ -6,11 +6,16 @@ import ChatBox from "../Session/SharedComponents/ChatBox";
 import { UserContext } from "../../context/UserContext";
 import loadMapFallback from "../../assets/LoadMapToProceed.png";
 import RenderedMap from "../Session/DMComponents/Maps/RenderedMap";
+import PlayerTokenManager from "./PlayerComponents/Tokens/PlayerTokenManager";
+import InteractionToolbar from "../Session/DMComponents/UI/InteractionToolbar";
 
 const PlayerView = ({ campaign, socket, sessionMap }) => {
   const { user } = useContext(UserContext);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeMap, setActiveMap] = useState(sessionMap || null);
+  const [activeTool, setActiveTool] = useState(null);
+  const [activeInteractionMode, setActiveInteractionMode] = useState("select");
+  const [selectedTokenId, setSelectedTokenId] = useState(null);
 
   useEffect(() => {
     if (sessionMap) {
@@ -30,7 +35,11 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
   return (
     <div className="dm-session-container">
       <aside className={`dm-sidebar ${sidebarOpen ? "open" : "collapsed"}`}>
-        <Toolbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <Toolbar
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+          setActiveTool={setActiveTool}
+        />
       </aside>
 
       <main className="dm-map-area">
@@ -38,8 +47,12 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
           <RenderedMap
             map={activeMap}
             activeLayer="player"
+            isDM={false}
             socket={socket}
-            user={user} // ✅ Add this!
+            user={user}
+            activeInteractionMode={activeInteractionMode}
+            selectedTokenId={selectedTokenId}
+            setSelectedTokenId={setSelectedTokenId}
           />
         ) : (
           <div className="map-placeholder">
@@ -51,7 +64,24 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
             <p style={{ color: "#ccc" }}>Waiting for DM to load a map...</p>
           </div>
         )}
+
+        {selectedTokenId && (
+          <InteractionToolbar
+            activeMode={activeInteractionMode}
+            setActiveMode={setActiveInteractionMode}
+          />
+        )}
       </main>
+
+      {activeTool === "tokens" && (
+        <div className="player-token-panel">
+          <PlayerTokenManager
+            campaignId={campaign._id}
+            userToken={user.token}
+            onClose={() => setActiveTool(null)} // 👈 this line
+          />
+        </div>
+      )}
 
       <aside className="dm-chat-panel">
         <ChatBox

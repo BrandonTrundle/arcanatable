@@ -140,34 +140,39 @@ const TokenLayer = ({
   tokens,
   onDragEnd,
   onRightClick,
-  onClick = () => {},
+  onClick,
   selectedTokenId,
   activeLayer,
-  canMove = () => true,
+  canMove = () => true, // safe default
   externalSelections = {},
 }) => {
   return (
     <>
-      {tokens.map((token) => (
-        <Token
-          key={token.id}
-          id={token.id}
-          x={token.x}
-          y={token.y}
-          size={token.tokenSize}
-          imageUrl={token.imageUrl}
-          title={token.title}
-          layer={token.layer}
-          activeLayer={activeLayer}
-          onDragEnd={onDragEnd}
-          onRightClick={(e) => onRightClick(e, token.id)}
-          onClick={onClick}
-          draggable={canMove(token)}
-          isSelected={selectedTokenId === token.id}
-          isExternallySelected={!!externalSelections[token.id]}
-          selectedBy={externalSelections[token.id]?.username}
-        />
-      ))}
+      {tokens.map((token) => {
+        const draggable =
+          typeof canMove === "function" ? canMove(token) : !!canMove;
+
+        return (
+          <Token
+            key={token.id}
+            id={token.id}
+            x={token.x}
+            y={token.y}
+            size={token.tokenSize}
+            imageUrl={token.imageUrl}
+            title={token.title}
+            layer={token.layer}
+            activeLayer={activeLayer}
+            onDragEnd={onDragEnd}
+            onRightClick={(e) => onRightClick(e, token.id)}
+            onClick={onClick}
+            draggable={draggable}
+            isSelected={selectedTokenId === token.id}
+            isExternallySelected={!!externalSelections[token.id]}
+            selectedBy={externalSelections[token.id]?.username}
+          />
+        );
+      })}
     </>
   );
 };

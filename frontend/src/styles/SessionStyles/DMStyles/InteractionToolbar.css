@@ -1,0 +1,78 @@
+.interaction-toolbar {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20, 20, 20, 0.85);
+  border-radius: 12px;
+  padding: 4px 10px;
+  display: flex;
+  gap: 8px;
+  z-index: 100;
+  box-shadow: 0 0 5px #000;
+}
+
+.toolbar-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  font-size: 1.8rem;
+  color: #fff;
+  transition: transform 0.1s ease;
+}
+
+.toolbar-button:hover {
+  transform: scale(1.2);
+}
+
+.toolbar-button.active {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+}
+
+.emoji {
+  display: inline-block;
+  pointer-events: none;
+}
+
+@keyframes flyInFromBottom {
+  from {
+    transform: translate(-50%, 100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+.interaction-toolbar {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20, 20, 20, 0.85);
+  border-radius: 12px;
+  padding: 4px 10px;
+  display: flex;
+  gap: 8px;
+  z-index: 100;
+  box-shadow: 0 0 5px #000;
+
+  animation: flyInFromBottom 0.35s ease-out;
+}
+@keyframes flyOutToBottom {
+  from {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, 100%);
+    opacity: 0;
+  }
+}
+
+.interaction-toolbar.exit {
+  animation: flyOutToBottom 0.3s ease-in forwards;
+}

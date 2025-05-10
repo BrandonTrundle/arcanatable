@@ -18,8 +18,11 @@ const RenderedMap = ({
   activeLayer = "dm",
   onTokenMove,
   isDM = false,
+  selectedTokenId,
+  setSelectedTokenId,
   socket,
   user,
+  activeInteractionMode,
 }) => {
   const { stageRef, cellSize, gridWidth, gridHeight } = useStageContext(map);
   const {
@@ -73,21 +76,26 @@ const RenderedMap = ({
     }
   };
 
-  // Use the hook, renaming internal clear to avoid conflict
+  // Use the hook, renaming internal values to avoid conflict
   const {
-    selectedTokenId,
+    selectedTokenId: internalSelectedTokenId,
     selectToken,
     clearSelection: internalClearSelection,
   } = useTokenSelection(tokens, hasControl, emitSelection, emitDeselection);
 
-  // This is the public clearSelection you’ll use in your component
+  // Sync internal selection with DMView's state
+  useEffect(() => {
+    if (typeof setSelectedTokenId === "function") {
+      setSelectedTokenId(internalSelectedTokenId);
+    }
+  }, [internalSelectedTokenId, setSelectedTokenId]);
+
   const clearSelection = () => {
     internalClearSelection();
     emitDeselection();
   };
 
   const [image] = useImage(map.content.imageUrl);
-
   useOutsideClickHandler("token-context-menu", () => setContextMenu(null));
 
   useEffect(() => {
@@ -150,14 +158,30 @@ const RenderedMap = ({
                 t.id === id ? { ...t, x, y } : t
               );
               setTokens(updated);
-              emitTokenUpdate(updated);
+
+              if (isDM) {
+                emitTokenUpdate(updated);
+              } else if (socket) {
+                socket.emit("playerMovedToken", {
+                  campaignId: map.content?.campaign,
+                  mapId: map._id,
+                  tokenId: id,
+                  x,
+                  y,
+                });
+              }
+
               if (onTokenMove) onTokenMove(id, x, y);
             }}
             onRightClick={(e, id) => handleTokenRightClick(e, id, stageRef)}
             onClick={selectToken}
-            selectedTokenId={selectedTokenId}
+            selectedTokenId={internalSelectedTokenId}
             activeLayer={activeLayer}
-            canMove={hasControl}
+            canMove={(token) =>
+              activeInteractionMode === "select" &&
+              hasControl(token) &&
+              selectedTokenId === token.id
+            }
             externalSelections={externalSelections}
           />
         </Layer>

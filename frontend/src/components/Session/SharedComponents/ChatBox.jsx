@@ -47,7 +47,8 @@ const ChatBox = ({ socket, campaignId, username }) => {
         ) : (
           messages.map((msg, index) => (
             <div key={index} className="chat-message">
-              <strong>{msg.username}:</strong> <span>{msg.text}</span>
+              <strong className="chat-user-name">{msg.username}:</strong>{" "}
+              <span className="chat-messages-text">{msg.text}</span>
             </div>
           ))
         )}

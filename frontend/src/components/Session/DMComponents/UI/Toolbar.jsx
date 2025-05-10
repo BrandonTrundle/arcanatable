@@ -1,5 +1,5 @@
 // components/Session/Toolbar.js
-import "../../../styles/SessionStyles/DMStyles/DMView.css";
+import "../../../../styles/SessionStyles/DMStyles/DMView.css";
 import React from "react";
 
 const Toolbar = ({ setActiveTool, sidebarOpen, setSidebarOpen }) => {

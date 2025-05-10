@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Auth/Navbar";
@@ -15,11 +15,13 @@ import "../styles/CharacterSheetStyles/PersonalityTraits.css";
 import "../styles/CharacterSheetStyles/CharacterInfo.css";
 import PageTwo from "../components/CharacterForm/PageTwo";
 import PageThree from "../components/CharacterForm/PageThree";
+import axios from "axios";
 
 const CharacterCreate = () => {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("basics");
+  const [campaigns, setCampaigns] = useState([]);
 
   const renderTabButton = (id, label) => (
     <button
@@ -75,6 +77,27 @@ const CharacterCreate = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchCampaigns = async () => {
+      try {
+        const res = await axios.get("/api/campaigns", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        const allCampaigns = res.data;
+        const playerCampaigns = allCampaigns.filter(
+          (camp) => camp.creator !== user._id
+        );
+        setCampaigns(playerCampaigns);
+      } catch (err) {
+        console.error("Failed to fetch campaigns:", err);
+      }
+    };
+
+    if (user?._id) {
+      fetchCampaigns();
+    }
+  }, [user]);
+
   return (
     <>
       <Navbar />
@@ -123,6 +146,22 @@ const CharacterCreate = () => {
                 setFormData={setFormData}
               />
             )}
+            <div className="form-group">
+              <label htmlFor="campaign">Assign to Campaign (optional)</label>
+              <select
+                name="campaign"
+                value={formData.campaign || ""}
+                onChange={handleChange}
+                className="form-control"
+              >
+                <option value="">-- Select a Campaign --</option>
+                {campaigns.map((camp) => (
+                  <option key={camp._id} value={camp._id}>
+                    {camp.name}
+                  </option>
+                ))}
+              </select>
+            </div>
             <button type="submit" className="create-character-btn">
               Save Character
             </button>

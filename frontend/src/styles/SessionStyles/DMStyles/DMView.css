@@ -5,6 +5,7 @@
   display: flex;
   height: 100vh;
   overflow: hidden;
+  position: relative;
 }
 
 .dm-sidebar {
@@ -251,4 +252,18 @@
   border-top: 1px solid #555;
   border-left: 1px solid #555;
   box-sizing: border-box;
+}
+
+.player-token-panel {
+  position: absolute;
+  top: 80px;
+  left: 240px; /* avoids sidebar overlap */
+  width: 280px;
+  background: rgba(30, 30, 30, 0.95);
+  border: 1px solid #444;
+  padding: 12px;
+  border-radius: 8px;
+  z-index: 150; /* higher than map + chat */
+  color: white;
+  box-shadow: 0 0 10px #000;
 }

@@ -2,39 +2,39 @@ import React, { useContext, useState, useEffect } from "react";
 import "../../styles/SessionStyles/DMStyles/DMView.css";
 import ChatBox from "../Session/SharedComponents/ChatBox";
 import { UserContext } from "../../context/UserContext";
-import TokenManager from "../Session/DMComponents/Tokens/TokenManager"; // import TokenManager component
-import Toolbar from "../Session/DMComponents/Toolbar"; // import the new Toolbar component
+import TokenManager from "../Session/DMComponents/Tokens/TokenManager";
+import Toolbar from "../Session/DMComponents/UI/Toolbar";
 import MapLoaderPanel from "../Session/DMComponents/Maps/MapLoaderPanel";
 import RenderedMap from "../Session/DMComponents/Maps/RenderedMap";
+import InteractionToolbar from "../Session/DMComponents/UI/InteractionToolbar";
 import loadMapFallback from "../../assets/LoadMapToProceed.png";
 
 const DMView = ({ campaign, socket, sessionMap }) => {
   const { user } = useContext(UserContext);
+
   const [activeMap, setActiveMap] = useState(sessionMap || null);
-  useEffect(() => {
-    if (sessionMap) {
-      setActiveMap(sessionMap);
-    }
-  }, [sessionMap]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTool, setActiveTool] = useState(null);
   const [panelPosition, setPanelPosition] = useState({ x: 220, y: 80 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [activeLayer, setActiveLayer] = useState("dm");
+  const [selectedTokenId, setSelectedTokenId] = useState(null);
+  const [activeInteractionMode, setActiveInteractionMode] = useState("select");
+  const [showToolbar, setShowToolbar] = useState(false);
+  const [toolbarExiting, setToolbarExiting] = useState(false);
 
-  const startDrag = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setIsDragging(true);
-    setDragOffset({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-  };
+  useEffect(() => {
+    if (sessionMap) {
+      setActiveMap(sessionMap);
+    }
+  }, [sessionMap]);
 
   useEffect(() => {
     socket.on("loadMap", (map) => {
       console.log("📥 DM received map:", map);
       setActiveMap(map);
     });
-
     return () => socket.off("loadMap");
   }, [socket]);
 
@@ -57,6 +57,27 @@ const DMView = ({ campaign, socket, sessionMap }) => {
     };
   }, [isDragging, dragOffset]);
 
+  useEffect(() => {
+    if (selectedTokenId) {
+      setShowToolbar(true);
+      setToolbarExiting(false);
+    } else if (showToolbar) {
+      setToolbarExiting(true);
+      const timeout = setTimeout(() => {
+        setShowToolbar(false);
+        setToolbarExiting(false);
+      }, 300); // matches CSS animation duration
+
+      return () => clearTimeout(timeout);
+    }
+  }, [selectedTokenId, showToolbar]);
+
+  const startDrag = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setIsDragging(true);
+    setDragOffset({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+
   return (
     <div className="dm-session-container">
       <aside className={`dm-sidebar ${sidebarOpen ? "open" : "collapsed"}`}>
@@ -72,8 +93,11 @@ const DMView = ({ campaign, socket, sessionMap }) => {
           map={activeMap}
           activeLayer={activeLayer}
           isDM={true}
-          socket={socket} // ✅ This is what’s missing!
+          socket={socket}
           user={user}
+          selectedTokenId={selectedTokenId}
+          setSelectedTokenId={setSelectedTokenId}
+          activeInteractionMode={activeInteractionMode}
         />
       ) : (
         <div className="map-placeholder">
@@ -89,7 +113,7 @@ const DMView = ({ campaign, socket, sessionMap }) => {
       {activeTool === "tokens" && (
         <TokenManager
           token={user.token}
-          campaign={campaign} // ⬅️ send full campaign object
+          campaign={campaign}
           setActiveTool={setActiveTool}
         />
       )}
@@ -98,6 +122,14 @@ const DMView = ({ campaign, socket, sessionMap }) => {
         <div className="dm-maps-panel">
           <MapLoaderPanel campaign={campaign} socket={socket} />
         </div>
+      )}
+
+      {showToolbar && (
+        <InteractionToolbar
+          activeMode={activeInteractionMode}
+          setActiveMode={setActiveInteractionMode}
+          className={toolbarExiting ? "exit" : ""}
+        />
       )}
 
       <aside className="dm-chat-panel">
