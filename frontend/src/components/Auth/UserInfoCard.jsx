@@ -1,8 +1,8 @@
-import React, { useRef, useState } from 'react';
-import '../../styles/UserInfoCard.css'; // Adjust if this is now under /styles/
-import { useNavigate } from 'react-router-dom';
-import defaultAvatar from '../../assets/defaultav.png';
-import { UserContext } from '../../context/UserContext';
+import React, { useRef, useState } from "react";
+import "../../styles/UserInfoCard.css"; // Adjust if this is now under /styles/
+import { useNavigate } from "react-router-dom";
+import defaultAvatar from "../../assets/defaultav.png";
+import { UserContext } from "../../context/UserContext";
 
 const UserInfoCard = ({
   user,
@@ -21,71 +21,91 @@ const UserInfoCard = ({
   };
 
   const handleFileChange = async (e) => {
+    console.log("[Avatar Upload] File input change triggered");
+
     const file = e.target.files?.[0];
-    if (!file) return;
-  
+    if (!file) {
+      console.warn("[Avatar Upload] No file selected");
+      return;
+    }
+
+    console.log("[Avatar Upload] File selected:", file.name);
+
     const formData = new FormData();
-    formData.append('avatar', file);
-  
+    formData.append("avatar", file);
+
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/users/avatar', {
-        method: 'PATCH',
+      const token = localStorage.getItem("token");
+      console.log(
+        "[Avatar Upload] Sending request with token:",
+        token ? "Present" : "Missing"
+      );
+
+      const response = await fetch("http://localhost:5000/api/users/avatar", {
+        method: "PATCH",
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: formData
+        body: formData,
       });
-  
+
+      console.log("[Avatar Upload] Response status:", response.status);
+
       if (!response.ok) {
-        throw new Error('Failed to upload avatar');
+        const errText = await response.text();
+        console.error("[Avatar Upload] Server error:", errText);
+        throw new Error("Failed to upload avatar");
       }
-  
+
       const data = await response.json();
-      setAvatarUrl(data.avatarUrl); // Update the visible avatar
-      console.log('Avatar uploaded:', data.avatarUrl);
+      console.log(
+        "[Avatar Upload] Avatar updated successfully:",
+        data.avatarUrl
+      );
+      setAvatarUrl(data.avatarUrl);
     } catch (err) {
-      console.error(err);
-      alert('Avatar upload failed.');
+      console.error("[Avatar Upload] Upload failed:", err);
+      alert("Avatar upload failed.");
     }
   };
-  
 
   return (
     <>
       <div className="user-info-card">
-      <img
-        src={avatarUrl}
-        alt="User Avatar"
-        onClick={handleAvatarClick}
-        onError={() => setAvatarUrl(defaultAvatar)}
-        className="user-avatar"
-      />
+        <img
+          src={avatarUrl}
+          alt="User Avatar"
+          onClick={handleAvatarClick}
+          onError={() => setAvatarUrl(defaultAvatar)}
+          className="user-avatar"
+        />
         <input
           type="file"
           name="avatar"
           accept="image/*"
           ref={fileInputRef}
-          style={{ display: 'none' }}
+          style={{ display: "none" }}
           onChange={handleFileChange}
         />
-  
+
         <div className="user-details">
-          <h3 className="user-name">{user?.username || 'Adventurer'}</h3>
-          <p className="user-subscription">Tier: {user?.subscriptionTier || 'Free'}</p>
+          <h3 className="user-name">{user?.username || "Adventurer"}</h3>
+          <p className="user-subscription">
+            Tier: {user?.subscriptionTier || "Free"}
+          </p>
           <p className="user-date">
-            Member since:{' '}
-            {memberSince ? new Date(memberSince).toLocaleDateString() : 'N/A'}
+            Member since:{" "}
+            {memberSince ? new Date(memberSince).toLocaleDateString() : "N/A"}
           </p>
           <p className="user-hours">Hours Played: {hoursPlayed ?? 0}</p>
-  
+
           <button className="manage-account-btn">Manage Account</button>
-  
+
           <div className="user-actions">
             {/* Notifications icon (no routing assigned yet) */}
             <div className="action-item">
               <svg
-                className={`icon ${hasUnseenNotifications ? 'ringing' : ''}`}
+                className={`icon ${hasUnseenNotifications ? "ringing" : ""}`}
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="currentColor"
@@ -94,11 +114,11 @@ const UserInfoCard = ({
               </svg>
               <span>Notifications</span>
             </div>
-  
+
             {/* Messages icon with routing */}
-            <div className="action-item" onClick={() => navigate('/messages')}>
+            <div className="action-item" onClick={() => navigate("/messages")}>
               <svg
-                className={`icon ${hasUnseenMessages ? 'ringing' : ''}`}
+                className={`icon ${hasUnseenMessages ? "ringing" : ""}`}
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="currentColor"
@@ -112,7 +132,6 @@ const UserInfoCard = ({
       </div>
     </>
   );
-  
 };
 
 export default UserInfoCard;
