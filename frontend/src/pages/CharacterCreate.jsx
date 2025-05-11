@@ -56,14 +56,42 @@ const CharacterCreate = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const formDataToSend = new FormData();
+
+    // Include all fields except preview and File objects
+    Object.entries(formData).forEach(([key, value]) => {
+      if (
+        key !== "portraitImageFile" &&
+        key !== "portraitImagePreview" &&
+        key !== "orgSymbolImageFile" &&
+        key !== "orgSymbolImagePreview"
+      ) {
+        const isObjectOrArray = typeof value === "object" && value !== null;
+        formDataToSend.append(
+          key,
+          isObjectOrArray ? JSON.stringify(value) : value ?? ""
+        );
+      }
+    });
+
+    // Attach image files if present
+    if (formData.portraitImageFile) {
+      formDataToSend.append("portraitImage", formData.portraitImageFile);
+    }
+
+    if (formData.orgSymbolImageFile) {
+      formDataToSend.append("orgSymbolImage", formData.orgSymbolImageFile);
+    }
+
     try {
       const response = await fetch("/api/characters", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
+          // ❌ Do NOT manually set Content-Type, let the browser handle it
         },
-        body: JSON.stringify(formData),
+        body: formDataToSend,
       });
 
       if (response.ok) {
@@ -73,7 +101,7 @@ const CharacterCreate = () => {
         console.error("Failed to create character:", err.message);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Error submitting character:", err);
     }
   };
 

@@ -147,7 +147,9 @@ const staticPaths = [
   "maps",
   "tokenImages",
   "campaigns",
+  "characters", // ✅ Add this line
 ];
+
 staticPaths.forEach((folder) => {
   app.use(
     `/uploads/${folder}`,

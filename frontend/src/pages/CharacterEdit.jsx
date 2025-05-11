@@ -97,15 +97,42 @@ const CharacterEdit = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const formDataToSend = new FormData();
+
+    // Include all fields except preview and File objects
+    Object.entries(formData).forEach(([key, value]) => {
+      if (
+        key !== "portraitImageFile" &&
+        key !== "portraitImagePreview" &&
+        key !== "orgSymbolImageFile" &&
+        key !== "orgSymbolImagePreview"
+      ) {
+        const isObjectOrArray = typeof value === "object" && value !== null;
+        formDataToSend.append(
+          key,
+          isObjectOrArray ? JSON.stringify(value) : value ?? ""
+        );
+      }
+    });
+
+    // Attach image files if new ones were uploaded
+    if (formData.portraitImageFile) {
+      formDataToSend.append("portraitImage", formData.portraitImageFile);
+    }
+
+    if (formData.orgSymbolImageFile) {
+      formDataToSend.append("orgSymbolImage", formData.orgSymbolImageFile);
+    }
+
     try {
-      console.log("Submitting character:", formData);
       const res = await fetch(`/api/characters/${id}`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
+          // Do not set Content-Type manually when using FormData
         },
-        body: JSON.stringify(formData),
+        body: formDataToSend,
       });
 
       if (res.ok) {
@@ -114,7 +141,7 @@ const CharacterEdit = () => {
         console.error("Update failed");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Error updating character:", err);
     }
   };
 

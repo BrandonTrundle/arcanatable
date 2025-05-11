@@ -30,8 +30,14 @@ const AppearanceAndAllies = ({ formData, handleChange, setFormData }) => {
         />
         <label>Symbol</label>
         <div className="org-symbol-preview">
-          {formData.orgSymbolImage ? (
-            <img src={formData.orgSymbolImage} alt="Org Symbol" />
+          {formData.orgSymbolImagePreview || formData.orgSymbolImage ? (
+            <img
+              src={
+                formData.orgSymbolImagePreview ||
+                `http://localhost:5000${formData.orgSymbolImage}`
+              }
+              alt="Org Symbol"
+            />
           ) : (
             <span>No symbol uploaded</span>
           )}
@@ -43,14 +49,13 @@ const AppearanceAndAllies = ({ formData, handleChange, setFormData }) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              setFormData((prev) => ({
-                ...prev,
-                orgSymbolImage: reader.result,
-              }));
-            };
-            reader.readAsDataURL(file);
+            const previewUrl = URL.createObjectURL(file);
+
+            setFormData((prev) => ({
+              ...prev,
+              orgSymbolImageFile: file,
+              orgSymbolImagePreview: previewUrl,
+            }));
           }}
         />
       </div>

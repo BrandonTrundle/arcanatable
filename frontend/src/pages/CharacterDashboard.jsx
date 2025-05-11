@@ -90,7 +90,9 @@ const CharacterDashboard = () => {
               {characters.map((char) => (
                 <li key={char._id} className="character-card">
                   <img
-                    src={char.portraitImage || "/default-portrait.png"} // fallback image
+                    src={`http://localhost:5000${
+                      char.portraitImage || "/default-portrait.png"
+                    }`}
                     alt={`${char.charname} portrait`}
                     className="character-portrait"
                   />

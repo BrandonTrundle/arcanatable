@@ -6,21 +6,26 @@ const CharacterImageUpload = ({ formData, setFormData }) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setFormData((prev) => ({
-        ...prev,
-        portraitImage: reader.result, // base64 string
-      }));
-    };
-    reader.readAsDataURL(file);
+    const previewUrl = URL.createObjectURL(file);
+
+    setFormData((prev) => ({
+      ...prev,
+      portraitImageFile: file, // store the File object
+      portraitImagePreview: previewUrl, // store preview URL
+    }));
   };
 
   return (
     <div className="character-image-upload">
       <div className="image-preview">
-        {formData.portraitImage ? (
-          <img src={formData.portraitImage} alt="Portrait Preview" />
+        {formData.portraitImagePreview || formData.portraitImage ? (
+          <img
+            src={
+              formData.portraitImagePreview ||
+              `http://localhost:5000${formData.portraitImage}`
+            }
+            alt="Portrait Preview"
+          />
         ) : (
           <span>No image uploaded</span>
         )}
