@@ -7,35 +7,45 @@ const CreateCampaign = () => {
   const [name, setName] = useState("");
   const [gameSystem, setGameSystem] = useState("");
   const [image, setImage] = useState(null);
-  const [imageUrl, setImageUrl] = useState("");
+  const [imagePreviewUrl, setImagePreviewUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleImageUpload = async (file) => {
-    const formData = new FormData();
-    formData.append("image", file);
-
-    try {
-      const res = await fetch("/api/uploads/campaigns", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: formData,
-      });
-
-      const data = await res.json();
-      setImageUrl(data.url);
-    } catch (err) {
-      console.error("Image upload failed:", err);
-    }
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setImage(file);
+    setImagePreviewUrl(URL.createObjectURL(file));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
+    let finalImageUrl = "";
+
     try {
+      // Upload image only if one was selected
+      if (image) {
+        const formData = new FormData();
+        formData.append("image", image);
+
+        const uploadRes = await fetch("/api/uploads/campaigns", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: formData,
+        });
+
+        if (!uploadRes.ok) {
+          throw new Error("Image upload failed");
+        }
+
+        const uploadData = await uploadRes.json();
+        finalImageUrl = uploadData.url;
+      }
+
       const res = await fetch("/api/campaigns", {
         method: "POST",
         headers: {
@@ -45,7 +55,7 @@ const CreateCampaign = () => {
         body: JSON.stringify({
           name,
           gameSystem,
-          imageUrl,
+          imageUrl: finalImageUrl,
         }),
       });
 
@@ -59,12 +69,6 @@ const CreateCampaign = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setImage(file);
-    handleImageUpload(file);
   };
 
   return (
@@ -98,9 +102,9 @@ const CreateCampaign = () => {
             <input type="file" accept="image/*" onChange={handleImageChange} />
           </label>
 
-          {imageUrl && (
+          {imagePreviewUrl && (
             <div className="preview-image">
-              <img src={imageUrl} alt="Preview" />
+              <img src={imagePreviewUrl} alt="Preview" />
             </div>
           )}
 

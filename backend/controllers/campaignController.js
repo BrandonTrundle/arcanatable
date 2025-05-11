@@ -1,5 +1,7 @@
 const Campaign = require("../models/campaignModel");
 const asyncHandler = require("express-async-handler");
+const path = require("path");
+const fs = require("fs");
 
 // @desc    Create a new campaign
 // @route   POST /api/campaigns
@@ -77,6 +79,18 @@ const deleteCampaign = asyncHandler(async (req, res) => {
   if (campaign.creator.toString() !== req.user.id) {
     res.status(403);
     throw new Error("Not authorized to delete this campaign");
+  }
+
+  // ✅ Attempt to delete the campaign image
+  if (campaign.imageUrl?.startsWith("/uploads/campaigns/")) {
+    const imagePath = path.join(__dirname, "..", campaign.imageUrl);
+    fs.unlink(imagePath, (err) => {
+      if (err) {
+        console.warn("⚠️ Failed to delete campaign image:", err.message);
+      } else {
+        console.log("🗑 Deleted campaign image:", imagePath);
+      }
+    });
   }
 
   await campaign.deleteOne();
