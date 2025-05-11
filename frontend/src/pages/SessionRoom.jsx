@@ -67,7 +67,7 @@ const SessionRoom = () => {
     }
 
     socket.on("userJoined", ({ socketId }) => {
-      console.log(`🔔 User joined: ${socketId}`);
+      //    console.log(`🔔 User joined: ${socketId}`);
     });
 
     return () => {

@@ -25,7 +25,7 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
 
   useEffect(() => {
     socket.on("loadMap", (map) => {
-      console.log("📥 Player received map:", map);
+      //   console.log("📥 Player received map:", map);
       setActiveMap(map);
     });
 

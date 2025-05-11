@@ -89,7 +89,7 @@ const MapListItem = ({
       <button
         onClick={(e) => {
           e.stopPropagation();
-          console.log("Saving map:", map); // 👈 Add this
+          //    console.log("Saving map:", map); // 👈 Add this
           onUpdate(map);
         }}
         style={{

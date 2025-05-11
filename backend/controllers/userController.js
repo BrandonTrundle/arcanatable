@@ -75,7 +75,7 @@ exports.lookupUserByUsername = async (req, res) => {
 };
 
 exports.uploadAvatar = async (req, res) => {
-  console.log("[uploadAvatar] ⬅️ Avatar upload request received");
+  // console.log("[uploadAvatar] ⬅️ Avatar upload request received");
 
   try {
     if (!req.file) {
@@ -83,16 +83,16 @@ exports.uploadAvatar = async (req, res) => {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    console.log("[uploadAvatar] 📂 Uploaded file:", {
-      originalname: req.file.originalname,
-      mimetype: req.file.mimetype,
-      size: req.file.size,
-      filename: req.file.filename,
-      path: req.file.path,
-    });
+    //  console.log("[uploadAvatar] 📂 Uploaded file:", {
+    //    originalname: req.file.originalname,
+    //     mimetype: req.file.mimetype,
+    //     size: req.file.size,
+    //    filename: req.file.filename,
+    //     path: req.file.path,
+    //    });
 
     const user = await User.findById(req.user._id);
-    console.log("[uploadAvatar] 🔍 Found user:", user.username);
+    // console.log("[uploadAvatar] 🔍 Found user:", user.username);
 
     const oldAvatar = user.avatarUrl;
     const oldFilename = oldAvatar?.split("/").pop();
@@ -109,10 +109,10 @@ exports.uploadAvatar = async (req, res) => {
       oldAvatar.startsWith("/uploads/avatars/");
 
     if (isCustomAvatar) {
-      console.log(
-        "[uploadAvatar] 🧹 Attempting to delete old avatar at:",
-        oldPath
-      );
+      // console.log(
+      //    "[uploadAvatar] 🧹 Attempting to delete old avatar at:",
+      //    oldPath
+      //   );
 
       fs.stat(oldPath, (err, stats) => {
         if (!err && stats.isFile()) {
@@ -123,7 +123,7 @@ exports.uploadAvatar = async (req, res) => {
                 unlinkErr.message
               );
             } else {
-              console.log("🗑 Old avatar deleted successfully:", oldAvatar);
+              //   console.log("🗑 Old avatar deleted successfully:", oldAvatar);
             }
           });
         } else {
@@ -136,7 +136,7 @@ exports.uploadAvatar = async (req, res) => {
     user.avatarUrl = newAvatarPath;
     await user.save();
 
-    console.log("[uploadAvatar] ✅ New avatar saved:", newAvatarPath);
+    // console.log("[uploadAvatar] ✅ New avatar saved:", newAvatarPath);
 
     res.status(200).json({ avatarUrl: newAvatarPath });
   } catch (error) {

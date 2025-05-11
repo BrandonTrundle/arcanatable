@@ -20,7 +20,7 @@ const CharacterDashboard = () => {
           },
         });
         const data = await response.json();
-        console.log("Fetched characters:", data); // Debug output
+        //   console.log("Fetched characters:", data); // Debug output
         // If response is wrapped, adjust accordingly:
         const charList = Array.isArray(data) ? data : data.characters || [];
         setCharacters(charList);

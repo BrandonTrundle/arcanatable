@@ -32,7 +32,7 @@ const DMView = ({ campaign, socket, sessionMap }) => {
 
   useEffect(() => {
     socket.on("loadMap", (map) => {
-      console.log("📥 DM received map:", map);
+      //   console.log("📥 DM received map:", map);
       setActiveMap(map);
     });
     return () => socket.off("loadMap");

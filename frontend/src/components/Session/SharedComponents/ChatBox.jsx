@@ -8,7 +8,7 @@ const ChatBox = ({ socket, campaignId, username }) => {
 
   useEffect(() => {
     socket.on("chatMessage", (message) => {
-      console.log("Received message:", message);
+      //     console.log("Received message:", message);
       setMessages((prev) => [...prev, message]);
     });
 
@@ -34,7 +34,7 @@ const ChatBox = ({ socket, campaignId, username }) => {
       timestamp: new Date().toISOString(),
     };
 
-    console.log("Sending message:", message);
+    //  console.log("Sending message:", message);
     socket.emit("chatMessage", message);
     setInput("");
   };

@@ -109,7 +109,7 @@ const updateCharacter = asyncHandler(async (req, res) => {
         if (err) {
           console.warn("⚠️ Failed to delete old portrait image:", err.message);
         } else {
-          console.log("🗑 Old portrait image deleted:", oldPath);
+          // console.log("🗑 Old portrait image deleted:", oldPath);
         }
       });
     }
@@ -165,7 +165,7 @@ const deleteCharacter = asyncHandler(async (req, res) => {
         if (err) {
           console.warn("⚠️ Failed to delete character image:", err.message);
         } else {
-          console.log("🗑 Deleted character image:", fullPath);
+          //  console.log("🗑 Deleted character image:", fullPath);
         }
       });
     }

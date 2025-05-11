@@ -171,13 +171,13 @@ exports.deleteToolkitItem = async (req, res) => {
         imageFile
       );
 
-      console.log(`🧪 Attempting to delete image: ${imagePath}`);
+      // console.log(`🧪 Attempting to delete image: ${imagePath}`);
 
       fs.unlink(imagePath, (err) => {
         if (err) {
           console.warn("⚠️ Failed to delete image:", err.message);
         } else {
-          console.log("🗑 Successfully deleted image:", imageFile);
+          //    console.log("🗑 Successfully deleted image:", imageFile);
         }
       });
     }

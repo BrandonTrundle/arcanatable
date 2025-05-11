@@ -21,7 +21,7 @@ const UserInfoCard = ({
   };
 
   const handleFileChange = async (e) => {
-    console.log("[Avatar Upload] File input change triggered");
+    //console.log("[Avatar Upload] File input change triggered");
 
     const file = e.target.files?.[0];
     if (!file) {
@@ -29,17 +29,17 @@ const UserInfoCard = ({
       return;
     }
 
-    console.log("[Avatar Upload] File selected:", file.name);
+    // console.log("[Avatar Upload] File selected:", file.name);
 
     const formData = new FormData();
     formData.append("avatar", file);
 
     try {
       const token = localStorage.getItem("token");
-      console.log(
-        "[Avatar Upload] Sending request with token:",
-        token ? "Present" : "Missing"
-      );
+      //  console.log(
+      //    "[Avatar Upload] Sending request with token:",
+      //    token ? "Present" : "Missing"
+      //  );
 
       const response = await fetch("http://localhost:5000/api/users/avatar", {
         method: "PATCH",
@@ -49,7 +49,7 @@ const UserInfoCard = ({
         body: formData,
       });
 
-      console.log("[Avatar Upload] Response status:", response.status);
+      //  console.log("[Avatar Upload] Response status:", response.status);
 
       if (!response.ok) {
         const errText = await response.text();
@@ -58,10 +58,10 @@ const UserInfoCard = ({
       }
 
       const data = await response.json();
-      console.log(
-        "[Avatar Upload] Avatar updated successfully:",
-        data.avatarUrl
-      );
+      //   console.log(
+      //     "[Avatar Upload] Avatar updated successfully:",
+      //     data.avatarUrl
+      //   );
       setAvatarUrl(data.avatarUrl);
     } catch (err) {
       console.error("[Avatar Upload] Upload failed:", err);

@@ -40,7 +40,7 @@ const MapLoaderPanel = ({ campaign, socket }) => {
         body: JSON.stringify({ mapId: map._id }),
       });
 
-      console.log("📤 Emitting map to socket:", map);
+      //   console.log("📤 Emitting map to socket:", map);
       socket.emit("loadMap", map);
     } catch (err) {
       console.error("❌ Failed to set current map:", err);

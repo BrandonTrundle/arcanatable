@@ -77,14 +77,14 @@ const MapsManager = () => {
   };
 
   const handleMapUpdateInline = async (updatedMap) => {
-    console.log("handleMapUpdateInline →", updatedMap); // 👈 Add this
+    //   console.log("handleMapUpdateInline →", updatedMap); // 👈 Add this
     try {
       const saved = await updateMap(
         updatedMap._id,
         updatedMap.content,
         user.token
       );
-      console.log("Map saved on server →", saved); // 👈 Add this too
+      //     console.log("Map saved on server →", saved); // 👈 Add this too
       setMaps((prev) => prev.map((m) => (m._id === saved._id ? saved : m)));
     } catch (err) {
       console.error("Failed to update map:", err);

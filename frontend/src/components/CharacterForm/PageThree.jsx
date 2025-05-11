@@ -23,7 +23,7 @@ const PageThree = ({ formData, handleChange, setFormData }) => {
 
     return null; // wait for re-render
   }
-  console.log("spells data:", spellLevels);
+  //  console.log("spells data:", spellLevels);
   const updateSpellLevel = (levelIndex, spellIndex, field, value) => {
     const updatedLevels = [...spellLevels];
 

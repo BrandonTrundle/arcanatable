@@ -88,7 +88,7 @@ const deleteCampaign = asyncHandler(async (req, res) => {
       if (err) {
         console.warn("⚠️ Failed to delete campaign image:", err.message);
       } else {
-        console.log("🗑 Deleted campaign image:", imagePath);
+        // console.log("🗑 Deleted campaign image:", imagePath);
       }
     });
   }

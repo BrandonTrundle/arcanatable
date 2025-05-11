@@ -29,7 +29,7 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log(`🔌 Client connected: ${socket.id}`);
+  //console.log(`🔌 Client connected: ${socket.id}`);
 
   socket.on("joinRoom", (campaignId) => {
     socket.join(campaignId);
@@ -55,7 +55,7 @@ io.on("connection", (socket) => {
       return;
     }
 
-    console.log(`📡 Broadcasting map to room ${campaignId}`);
+    //console.log(`📡 Broadcasting map to room ${campaignId}`);
     io.to(campaignId).emit("loadMap", map);
   });
 
@@ -68,14 +68,14 @@ io.on("connection", (socket) => {
   });
 
   socket.on("tokensUpdated", (payload) => {
-    console.log("📥 Player received tokensUpdated:", payload);
+    //console.log("📥 Player received tokensUpdated:", payload);
     if (String(payload.mapId) === String(map._id)) {
       setTokens(payload.tokens || []);
     }
   });
 
   socket.on("tokenSelected", (payload) => {
-    console.log("🛬 Received tokenSelected payload:", payload);
+    //console.log("🛬 Received tokenSelected payload:", payload);
 
     const { mapId, campaignId, tokenId, userId, username } = payload;
 
@@ -84,9 +84,9 @@ io.on("connection", (socket) => {
       return;
     }
 
-    console.log(
-      `🎯 Token selected: ${tokenId} by ${username} in campaign ${campaignId}`
-    );
+    //console.log(
+    //  `🎯 Token selected: ${tokenId} by ${username} in campaign ${campaignId}`
+    // );
     io.to(campaignId).emit("tokenSelected", {
       mapId,
       tokenId,
@@ -96,7 +96,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("tokenDeselected", ({ campaignId, mapId, userId }) => {
-    console.log(`🧹 Deselection received from ${userId} in ${campaignId}`);
+    //console.log(`🧹 Deselection received from ${userId} in ${campaignId}`);
     io.to(campaignId).emit("tokenDeselected", { mapId, userId });
   });
 
@@ -110,9 +110,9 @@ io.on("connection", (socket) => {
       return;
     }
 
-    console.log(
-      `📤 Token dropped by player in campaign ${campaignId}: ${token.title}`
-    );
+    //console.log(
+    //  `📤 Token dropped by player in campaign ${campaignId}: ${token.title}`
+    // );
     socket.to(campaignId).emit("tokenDropped", { mapId, token });
   });
 

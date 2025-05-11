@@ -37,10 +37,10 @@ const MapEditorContextMenu = ({ contextMenu, onAction, onClose }) => {
           value={selectedSize}
           onChange={(e) => {
             const value = e.target.value;
-            console.log("Dropdown value selected:", value); // 🐞 Debug log
+            //   console.log("Dropdown value selected:", value); // 🐞 Debug log
             setSelectedSize(value);
             if (value && tokenId) {
-              console.log("Resize dropdown changed →", tokenId, value);
+              //    console.log("Resize dropdown changed →", tokenId, value);
               onAction("apply-resize", tokenId, value);
               onClose();
             }

@@ -6,7 +6,7 @@ const { protect: authenticateToken } = require("../middleware/authMiddleware");
 // GET session state by campaign ID
 router.get("/:campaignId", authenticateToken, async (req, res) => {
   const campaignId = req.params.campaignId;
-  console.log("🔍 Incoming session state request for campaign:", campaignId);
+  // console.log("🔍 Incoming session state request for campaign:", campaignId);
 
   try {
     const session = await SessionState.findOne({ campaignId }).populate(

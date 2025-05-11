@@ -52,16 +52,16 @@ const RenderedMap = ({
         userId,
         username: user.username,
       };
-      console.log("📤 Emitting tokenSelected:", payload);
+      //    console.log("📤 Emitting tokenSelected:", payload);
       socket.emit("tokenSelected", payload);
     } else {
       console.warn("🚫 emitSelection called with missing socket/map/user");
-      console.log("🧩 Debug emitSelection check:", {
-        socket,
-        mapId,
-        campaignId,
-        userId,
-      });
+      //    console.log("🧩 Debug emitSelection check:", {
+      //     socket,
+      //    mapId,
+      //     campaignId,
+      //      userId,
+      //      });
     }
   };
 
@@ -129,7 +129,7 @@ const RenderedMap = ({
             fill="rgba(0,0,0,0.01)"
             listening={true}
             onClick={() => {
-              console.log("🟡 Background clicked");
+              //        console.log("🟡 Background clicked");
               clearSelection();
             }}
           />
