@@ -1,4 +1,21 @@
 const DMToolkit = require("../models/dmToolkitModel");
+const fs = require("fs");
+const path = require("path");
+
+const getFolderForToolkitType = (type) => {
+  switch (type) {
+    case "Map":
+      return "maps";
+    case "Token":
+      return "tokenImages";
+    case "Monster":
+      return "monsters";
+    case "NPC":
+      return "npcs";
+    default:
+      return null;
+  }
+};
 
 // --- Map Upload Handler ---
 exports.uploadMap = async (req, res) => {
@@ -128,15 +145,48 @@ exports.updateToolkitItem = async (req, res) => {
 
 exports.deleteToolkitItem = async (req, res) => {
   try {
-    const result = await DMToolkit.deleteOne({
+    const item = await DMToolkit.findOne({
       _id: req.params.id,
       userId: req.user._id,
     });
-    if (result.deletedCount === 0) {
+
+    if (!item) {
       return res.status(404).json({ message: "Toolkit item not found" });
     }
+
+    const folder = getFolderForToolkitType(item.toolkitType);
+
+    // ✅ Check both image keys: "image" and "imageUrl"
+    const imagePathRaw = ["Token", "Map"].includes(item.toolkitType)
+      ? item.content?.imageUrl
+      : item.content?.image;
+
+    if (imagePathRaw && folder) {
+      const imageFile = path.basename(imagePathRaw); // e.g. "goblin.png"
+      const imagePath = path.join(
+        __dirname,
+        "..",
+        "uploads",
+        folder,
+        imageFile
+      );
+
+      console.log(`🧪 Attempting to delete image: ${imagePath}`);
+
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          console.warn("⚠️ Failed to delete image:", err.message);
+        } else {
+          console.log("🗑 Successfully deleted image:", imageFile);
+        }
+      });
+    }
+
+    await DMToolkit.deleteOne({ _id: req.params.id, userId: req.user._id });
+
     res.status(204).end();
   } catch (err) {
+    console.error("❌ Error deleting toolkit item:", err);
     res
       .status(500)
       .json({ message: "Failed to delete toolkit item", error: err.message });

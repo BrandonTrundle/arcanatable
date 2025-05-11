@@ -57,6 +57,31 @@ const MonsterForm = ({ monster, setMonster, closeForm, onSubmit }) => {
     setMonster((prev) => ({ ...prev, [field]: updated }));
   };
 
+  const handleSubmit = async () => {
+    const dataToSubmit = { ...monster };
+
+    if (useUpload && monster.image instanceof File) {
+      const formData = new FormData();
+      formData.append("image", monster.image);
+
+      try {
+        const res = await axios.post("/api/uploads/monsters", formData, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        dataToSubmit.image = res.data.url;
+      } catch (err) {
+        console.error("Image upload failed:", err);
+        alert("Failed to upload image.");
+        return;
+      }
+    }
+
+    onSubmit(dataToSubmit);
+  };
+
   return (
     <div className="monster-form-panel">
       <button className="close-btn" onClick={closeForm}>
@@ -340,37 +365,17 @@ const MonsterForm = ({ monster, setMonster, closeForm, onSubmit }) => {
           <input
             type="file"
             accept="image/*"
-            onChange={async (e) => {
+            onChange={(e) => {
               const file = e.target.files[0];
               if (file) {
-                const formData = new FormData();
-                formData.append("image", file);
-
-                try {
-                  const res = await axios.post(
-                    "/api/uploads/monsters",
-                    formData,
-                    {
-                      headers: {
-                        Authorization: `Bearer ${localStorage.getItem(
-                          "token"
-                        )}`,
-                        "Content-Type": "multipart/form-data",
-                      },
-                    }
-                  );
-                  handleChange("image", res.data.url);
-                } catch (err) {
-                  console.error("Image upload failed:", err);
-                  alert("Failed to upload image. See console for details.");
-                }
+                handleChange("image", file); // store the File object temporarily
               }
             }}
           />
         </>
       )}
 
-      <button className="submit-btn" onClick={() => onSubmit(monster)}>
+      <button className="submit-btn" onClick={handleSubmit}>
         {monster._id ? "Update Monster" : "Save Monster"}
       </button>
     </div>

@@ -53,9 +53,30 @@ const NPCForm = ({ npc, setNPC, closeForm, onSubmit }) => {
     setNPC((prev) => ({ ...prev, [field]: updated }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(npc);
+    const npcData = { ...npc };
+
+    if (npc.image instanceof File) {
+      const formData = new FormData();
+      formData.append("image", npc.image);
+
+      try {
+        const res = await axios.post("/api/uploads/npcs", formData, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        npcData.image = res.data.url;
+      } catch (err) {
+        console.error("Image upload failed:", err);
+        alert("Failed to upload image.");
+        return;
+      }
+    }
+
+    onSubmit(npcData);
   };
 
   const handleImageUpload = async (e) => {
@@ -110,11 +131,24 @@ const NPCForm = ({ npc, setNPC, closeForm, onSubmit }) => {
 
       {/* Image Upload */}
       <h3>Image</h3>
-      <input type="file" accept="image/*" onChange={handleImageUpload} />
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          const file = e.target.files[0];
+          if (file) {
+            handleChange("image", file); // store the File object temporarily
+          }
+        }}
+      />
       {npc.image && (
         <div style={{ marginTop: "1rem" }}>
           <img
-            src={npc.image}
+            src={
+              npc.image instanceof File
+                ? URL.createObjectURL(npc.image)
+                : npc.image
+            }
             alt="NPC portrait"
             style={{ width: "100%", borderRadius: "8px", marginTop: "0.5rem" }}
           />
