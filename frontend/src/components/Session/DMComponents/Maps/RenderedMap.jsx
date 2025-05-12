@@ -1,37 +1,22 @@
-import React, { useEffect } from "react";
+import React from "react";
 import useImage from "use-image";
-import { Layer, Rect } from "react-konva";
-import { Image as KonvaImage } from "react-konva";
+import { Layer, Rect, Circle, Image as KonvaImage } from "react-konva";
 
 import ZoomableStage from "../../../DMToolkit/Maps/ZoomableStage";
 import GridOverlay from "../../../DMToolkit/Maps/GridOverlay";
 import TokenLayer from "../../../DMToolkit/Maps/TokenLayer";
 import SessionContextMenu from "../Tokens/SessionContextMenu";
+import AoEToolbox from "../UI/AoEToolbox";
 
-import { useTokenManager } from "../../hooks/useTokenManager";
 import { useStageContext } from "../../hooks/useStageContext";
 import { useOutsideClickHandler } from "../../hooks/useOutsideClickHandler";
+import { useTokenManager } from "../../hooks/useTokenManager";
 import { useTokenSelection } from "../../hooks/useTokenSelection";
-let saveTimeout = null;
-
-const debounceTokenSave = (mapId, content) => {
-  if (!mapId || !content) return;
-
-  if (saveTimeout) clearTimeout(saveTimeout);
-
-  saveTimeout = setTimeout(() => {
-    fetch(`/api/dmtoolkit/${mapId}`, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ content }),
-    }).catch((err) => {
-      console.error("❌ Debounced token save failed:", err);
-    });
-  }, 1000); // waits 1 second after last change
-};
+import { useAoEManager } from "../../hooks/useAoEManager";
+import { useTokenMovement } from "../../hooks/useTokenMovement";
+import { useDropHandler } from "../../hooks/useDropHandler";
+import { useSelectionSync } from "../../hooks/useSelectionSync";
+import { emitSelection, emitDeselection } from "../../hooks/useTokenEmitters";
 
 const RenderedMap = ({
   map,
@@ -43,9 +28,12 @@ const RenderedMap = ({
   socket,
   user,
   activeInteractionMode,
-  setExternalTokens, // ✅ New prop to sync tokens back to DMView
+  setActiveInteractionMode, // 👈 ADD THIS
+  setExternalTokens,
 }) => {
   const { stageRef, cellSize, gridWidth, gridHeight } = useStageContext(map);
+  const [image] = useImage(map.content.imageUrl);
+
   const {
     tokens,
     setTokens,
@@ -59,121 +47,68 @@ const RenderedMap = ({
     externalSelections,
   } = useTokenManager({ map, socket, isDM, user });
 
-  useEffect(() => {
+  const {
+    selectedTokenId: internalSelectedTokenId,
+    selectToken,
+    clearSelection: internalClearSelection,
+  } = useTokenSelection(
+    tokens,
+    hasControl,
+    (id) => emitSelection(socket, map, user, id),
+    () => emitDeselection(socket, map, user)
+  );
+
+  const { clearSelection } = useSelectionSync({
+    internalSelectedTokenId,
+    internalClearSelection,
+    setSelectedTokenId,
+    map,
+    user,
+    socket,
+  });
+
+  const {
+    aoeDraft,
+    aoeShapes,
+    showAoEToolbox,
+    mousePosition,
+    handleMouseMove,
+    handleMapClick,
+    confirmAoE,
+    removeAoE,
+  } = useAoEManager(activeInteractionMode, cellSize, setActiveInteractionMode);
+
+  const { handleTokenMove } = useTokenMovement({
+    map,
+    tokens,
+    setTokens,
+    hasControl,
+    socket,
+    isDM,
+    emitTokenUpdate,
+    onTokenMove,
+  });
+
+  const { onDrop, onDragOver } = useDropHandler(handleDrop, stageRef);
+  useOutsideClickHandler("token-context-menu", () => setContextMenu(null));
+
+  React.useEffect(() => {
     if (typeof setExternalTokens === "function") {
       setExternalTokens(tokens);
     }
   }, [tokens, setExternalTokens]);
 
-  // Emits when a token is selected
-  const emitSelection = (tokenId) => {
-    const campaignId = map?.content?.campaign;
-    const mapId = map?._id;
-    const userId = user?._id;
-
-    if (socket && mapId && userId && campaignId) {
-      const payload = {
-        mapId,
-        campaignId,
-        tokenId,
-        userId,
-        username: user.username,
-      };
-      //    console.log("📤 Emitting tokenSelected:", payload);
-      socket.emit("tokenSelected", payload);
-    } else {
-      console.warn("🚫 emitSelection called with missing socket/map/user");
-      //    console.log("🧩 Debug emitSelection check:", {
-      //     socket,
-      //    mapId,
-      //     campaignId,
-      //      userId,
-      //      });
-    }
-  };
-
-  // Emits when a selection is cleared
-  const emitDeselection = () => {
-    if (socket && map?._id && user?._id) {
-      socket.emit("tokenDeselected", {
-        mapId: map._id,
-        campaignId: map.content?.campaign,
-        userId: user._id,
-      });
-    }
-  };
-
-  // Use the hook, renaming internal values to avoid conflict
-  const {
-    selectedTokenId: internalSelectedTokenId,
-    selectToken,
-    clearSelection: internalClearSelection,
-  } = useTokenSelection(tokens, hasControl, emitSelection, emitDeselection);
-
-  // Sync internal selection with DMView's state
-  useEffect(() => {
-    if (typeof setSelectedTokenId === "function") {
-      setSelectedTokenId(internalSelectedTokenId);
-    }
-  }, [internalSelectedTokenId, setSelectedTokenId]);
-
-  const clearSelection = () => {
-    internalClearSelection();
-    emitDeselection();
-  };
-
-  const [image] = useImage(map.content.imageUrl);
-  useOutsideClickHandler("token-context-menu", () => setContextMenu(null));
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape") {
-        clearSelection();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [clearSelection]);
-
-  const saveTokenStateToBackend = async () => {
-    if (!map?._id || !tokens || !Array.isArray(tokens)) return;
-
-    try {
-      const res = await fetch(`/api/dmtoolkit/${map._id}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          content: {
-            ...map.content,
-            placedTokens: tokens,
-          },
-        }),
-      });
-
-      if (!res.ok) {
-        console.error("❌ Failed to save tokens to backend.");
-      } else {
-        console.log("✅ Token state successfully saved.");
-      }
-    } catch (err) {
-      console.error("🚫 Error saving token state:", err);
-    }
-  };
-
   return (
-    <div
-      className="map-rendered-view"
-      onDrop={(e) => handleDrop(e, stageRef)}
-      onDragOver={(e) => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = "copy";
-      }}
-    >
-      <ZoomableStage ref={stageRef} width={gridWidth} height={gridHeight}>
+    <div className="map-rendered-view" onDrop={onDrop} onDragOver={onDragOver}>
+      <ZoomableStage
+        ref={stageRef}
+        width={gridWidth}
+        height={gridHeight}
+        onMouseMove={(e) => {
+          console.log("🖱️ Mouse move detected");
+          handleMouseMove(e);
+        }}
+      >
         <Layer>
           {image && (
             <KonvaImage image={image} width={gridWidth} height={gridHeight} />
@@ -183,9 +118,9 @@ const RenderedMap = ({
             height={gridHeight}
             fill="rgba(0,0,0,0.01)"
             listening={true}
-            onClick={() => {
-              //        console.log("🟡 Background clicked");
-              clearSelection();
+            onClick={(e) => {
+              console.log("📍 Rect clicked (background layer)");
+              handleMapClick(e);
             }}
           />
         </Layer>
@@ -199,42 +134,78 @@ const RenderedMap = ({
         </Layer>
 
         <Layer>
+          {aoeDraft && !aoeDraft.placed && mousePosition && (
+            <Circle
+              x={mousePosition.x}
+              y={mousePosition.y}
+              radius={aoeDraft.radius}
+              fill={aoeDraft.color}
+              stroke="gray"
+              strokeWidth={1}
+              dash={[4, 4]}
+              listening={false}
+              opacity={0.5}
+            />
+          )}
+          {aoeShapes.map((aoe) => (
+            <Circle
+              key={aoe.id}
+              x={aoe.x}
+              y={aoe.y}
+              radius={aoe.radius}
+              fill={aoe.color}
+              stroke="black"
+              strokeWidth={2}
+              onContextMenu={(e) => {
+                e.evt.preventDefault();
+                console.log("🗑️ AoE right-clicked for removal:", aoe.id);
+                removeAoE(aoe.id);
+              }}
+            />
+          ))}
+        </Layer>
+
+        <Layer>
           <TokenLayer
+            isInteractive={activeInteractionMode !== "aoe"}
             tokens={
               activeLayer === "dm"
                 ? tokens
                 : tokens.filter((t) => t.layer === activeLayer)
             }
-            onDragEnd={(id, x, y) => {
-              const token = tokens.find((t) => t.id === id);
-              if (!token || !hasControl(token)) return;
-
-              const updated = tokens.map((t) =>
-                t.id === id ? { ...t, x, y } : t
-              );
-              setTokens(updated);
-
-              if (isDM) {
-                emitTokenUpdate(updated);
-
-                debounceTokenSave(map._id, {
-                  ...map.content,
-                  placedTokens: updated,
-                });
-              } else if (socket) {
-                socket.emit("playerMovedToken", {
-                  campaignId: map.content?.campaign,
-                  mapId: map._id,
-                  tokenId: id,
-                  x,
-                  y,
-                });
+            onDragEnd={handleTokenMove}
+            onRightClick={(e, id) => {
+              console.log("🖱️ Token right-clicked:", id);
+              handleTokenRightClick(e, id, stageRef);
+            }}
+            onClick={(e, id) => {
+              console.log("🖱️ Token clicked in mode:", activeInteractionMode);
+              if (activeInteractionMode !== "aoe") {
+                selectToken(id);
+                return;
               }
 
-              if (onTokenMove) onTokenMove(id, x, y);
+              const stage = stageRef.current?.getStage?.();
+              if (!stage) return;
+
+              const pointerPos = stage.getPointerPosition();
+              const scale = stage.scaleX();
+              const stagePos = stage.position();
+
+              const trueX = (pointerPos.x - stagePos.x) / scale;
+              const trueY = (pointerPos.y - stagePos.y) / scale;
+
+              console.log("📌 Redirecting token click to AoE placement");
+              handleMapClick({
+                stage,
+                pointerPos,
+                trueX,
+                trueY,
+                originalEvent: e,
+              });
+
+              // ✅ After AoE is placed, return to Select mode
             }}
-            onRightClick={(e, id) => handleTokenRightClick(e, id, stageRef)}
-            onClick={selectToken}
             selectedTokenId={internalSelectedTokenId}
             activeLayer={activeLayer}
             canMove={(token) =>
@@ -254,6 +225,8 @@ const RenderedMap = ({
           onClose={() => setContextMenu(null)}
         />
       )}
+
+      {showAoEToolbox && <AoEToolbox onConfirm={confirmAoE} />}
     </div>
   );
 };

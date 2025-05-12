@@ -1,3 +1,4 @@
+// Reverted TokenLayer.jsx and Token component to restore token interactivity
 import React, { memo } from "react";
 import { Group, Rect, Image as KonvaImage, Text } from "react-konva";
 import useImage from "use-image";
@@ -51,11 +52,19 @@ const Token = ({
       draggable={draggable}
       dragBoundFunc={(pos) => pos}
       onDragEnd={(e) => {
+        if (!draggable) return;
         const { x, y } = e.target.position();
+        console.log("📦 Token dragged:", id, "to", x, y);
         onDragEnd(id, x, y);
       }}
-      onContextMenu={onRightClick}
-      onClick={onClick ? () => onClick(id) : undefined}
+      onContextMenu={(e) => {
+        console.log("🖱️ Token context menu:", id);
+        onRightClick?.(e);
+      }}
+      onClick={(e) => {
+        console.log("🖱️ Token clicked:", id);
+        onClick?.(e);
+      }}
       onMouseEnter={(e) => {
         const stage = e.target.getStage();
         if (stage) stage.container().style.cursor = "pointer";
@@ -78,8 +87,6 @@ const Token = ({
             strokeWidth={3}
             dash={[4, 4]}
             cornerRadius={visualSize / 2}
-            listening={false}
-            pointerEvents="none"
           />
           {selectedBy && (
             <Text
@@ -90,8 +97,6 @@ const Token = ({
               x={-offset}
               width={visualSize}
               align="center"
-              listening={false}
-              pointerEvents="none"
             />
           )}
         </>
@@ -108,8 +113,6 @@ const Token = ({
           stroke="gold"
           strokeWidth={4}
           cornerRadius={visualSize / 2}
-          listening={false}
-          pointerEvents="none"
         />
       )}
 
@@ -143,8 +146,9 @@ const TokenLayer = ({
   onClick,
   selectedTokenId,
   activeLayer,
-  canMove = () => true, // safe default
+  canMove = () => true,
   externalSelections = {},
+  isInteractive = true,
 }) => {
   return (
     <>
@@ -164,9 +168,15 @@ const TokenLayer = ({
             layer={token.layer}
             activeLayer={activeLayer}
             onDragEnd={onDragEnd}
-            onRightClick={(e) => onRightClick(e, token.id)}
-            onClick={onClick}
-            draggable={draggable}
+            onRightClick={(e) => {
+              console.log("🖱️ Right-click on token layer:", token.id);
+              isInteractive && onRightClick(e, token.id);
+            }}
+            onClick={(e) => {
+              console.log("🖱️ Click on token layer:", token.id);
+              isInteractive && onClick(e, token.id);
+            }}
+            draggable={isInteractive && draggable}
             isSelected={selectedTokenId === token.id}
             isExternallySelected={!!externalSelections[token.id]}
             selectedBy={externalSelections[token.id]?.username}

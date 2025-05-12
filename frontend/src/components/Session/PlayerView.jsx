@@ -128,6 +128,7 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
             socket={socket}
             user={user}
             activeInteractionMode={activeInteractionMode}
+            setActiveInteractionMode={setActiveInteractionMode} // ✅ ADD THIS
             selectedTokenId={selectedTokenId}
             setSelectedTokenId={setSelectedTokenId}
           />

@@ -155,6 +155,7 @@ const DMView = ({ campaign, socket, sessionMap }) => {
           selectedTokenId={selectedTokenId}
           setSelectedTokenId={setSelectedTokenId}
           activeInteractionMode={activeInteractionMode}
+          setActiveInteractionMode={setActiveInteractionMode} // ✅ THIS FIXES IT
           setExternalTokens={setTokens}
         />
       ) : (

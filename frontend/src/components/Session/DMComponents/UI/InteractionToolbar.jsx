@@ -7,6 +7,7 @@ const InteractionToolbar = ({ activeMode, setActiveMode, className }) => {
     { mode: "measure", label: "📏", title: "Measure" },
     { mode: "hp", label: "🧪", title: "Edit HP" },
     { mode: "combat", label: "⚔️", title: "Combat Mode" },
+    { mode: "aoe", label: "💥", title: "Area of Effect" }, // 🎯 Add this line
   ];
 
   return (
