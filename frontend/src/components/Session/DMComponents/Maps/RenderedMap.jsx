@@ -76,7 +76,14 @@ const RenderedMap = ({
     handleMapClick,
     confirmAoE,
     removeAoE,
-  } = useAoEManager(activeInteractionMode, cellSize, setActiveInteractionMode);
+  } = useAoEManager(
+    activeInteractionMode,
+    cellSize,
+    setActiveInteractionMode,
+    socket,
+    map._id,
+    map.content?.campaign // can be undefined here
+  );
 
   const { handleTokenMove } = useTokenMovement({
     map,
@@ -147,7 +154,7 @@ const RenderedMap = ({
               opacity={0.5}
             />
           )}
-          {aoeShapes.map((aoe) => (
+          {(aoeShapes[map._id] || []).map((aoe) => (
             <Circle
               key={aoe.id}
               x={aoe.x}

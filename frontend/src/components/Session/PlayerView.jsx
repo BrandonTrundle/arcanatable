@@ -30,6 +30,12 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
   }, [sessionMap]);
 
   useEffect(() => {
+    if (campaign?._id && socket) {
+      socket.emit("joinRoom", campaign._id);
+    }
+  }, [campaign?._id, socket]);
+
+  useEffect(() => {
     if (user && socket) {
       socket.emit("registerUser", user._id);
     }

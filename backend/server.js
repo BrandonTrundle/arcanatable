@@ -135,6 +135,26 @@ io.on("connection", (socket) => {
     socket.to(campaignId).emit("tokenDropped", { mapId, token });
   });
 
+  socket.on("aoePlaced", ({ campaignId, mapId, aoe }) => {
+    if (!campaignId || !mapId || !aoe) {
+      console.warn("⚠️ Invalid aoePlaced payload:", { campaignId, mapId, aoe });
+      return;
+    }
+
+    console.log("📡 Broadcasting AoE to campaign:", { campaignId, mapId, aoe });
+
+    // Send to everyone in the same campaign
+    socket.to(campaignId).emit("aoePlaced", { mapId, aoe });
+  });
+
+  socket.on("aoeRemoved", ({ campaignId, mapId, aoeId }) => {
+    if (!campaignId || !mapId || !aoeId) return;
+
+    console.log("📡 Broadcasting AoE removal:", { campaignId, mapId, aoeId });
+
+    socket.to(campaignId).emit("aoeRemoved", { mapId, aoeId });
+  });
+
   socket.on("playerMovedToken", ({ campaignId, mapId, tokenId, x, y }) => {
     if (!campaignId || !mapId || !tokenId) return;
 

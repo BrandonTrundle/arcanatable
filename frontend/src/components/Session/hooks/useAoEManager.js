@@ -4,7 +4,10 @@ import { useState, useEffect } from "react";
 export const useAoEManager = (
   activeInteractionMode,
   cellSize,
-  setActiveInteractionMode
+  setActiveInteractionMode,
+  socket,
+  mapId,
+  campaignId // ✅ new
 ) => {
   const [aoeDraft, setAoeDraft] = useState(null);
   const [aoeShapes, setAoeShapes] = useState([]);
@@ -93,23 +96,95 @@ export const useAoEManager = (
 
   const removeAoE = (id) => {
     console.log("❌ Removing AoE:", id);
-    setAoeShapes((prev) => prev.filter((a) => a.id !== id));
+    setAoeShapes((prev) => {
+      const newMapAoEs = (prev[mapId] || []).filter((a) => a.id !== id);
+      return {
+        ...prev,
+        [mapId]: newMapAoEs,
+      };
+    });
+
+    // 📡 Emit to other clients
+    if (socket && campaignId) {
+      socket.emit("aoeRemoved", { campaignId, mapId, aoeId: id });
+      console.log("📡 Emitted AoE removal:", { campaignId, mapId, aoeId: id });
+    }
   };
 
   useEffect(() => {
-    if (aoeDraft?.placed) {
-      console.log("🎯 AoE placed, saving to shapes:", aoeDraft);
-      setAoeShapes((prev) => [...prev, aoeDraft]);
+    if (!campaignId) return;
 
-      // ✅ Switch to 'select' mode before clearing the draft
-      if (typeof setActiveInteractionMode === "function") {
-        console.log("🔄 Switching back to 'select' mode after AoE placement");
-        setActiveInteractionMode("select");
-      }
+    const handleRemoteAoERemoval = ({ mapId: incomingMapId, aoeId }) => {
+      if (incomingMapId !== mapId) return;
 
-      setAoeDraft(null);
+      console.log("🧽 Received remote AoE removal:", aoeId);
+
+      setAoeShapes((prev) => {
+        const newMapAoEs = (prev[incomingMapId] || []).filter(
+          (a) => a.id !== aoeId
+        );
+        return {
+          ...prev,
+          [incomingMapId]: newMapAoEs,
+        };
+      });
+    };
+
+    socket?.on("aoeRemoved", handleRemoteAoERemoval);
+    return () => {
+      socket?.off("aoeRemoved", handleRemoteAoERemoval);
+    };
+  }, [socket, mapId, campaignId]);
+
+  useEffect(() => {
+    if (!campaignId) return;
+
+    const handleRemoteAoE = ({ mapId: incomingMapId, aoe }) => {
+      if (incomingMapId !== mapId) return;
+
+      console.log("📥 Received remote AoE:", aoe);
+
+      setAoeShapes((prev) => ({
+        ...prev,
+        [incomingMapId]: [...(prev[incomingMapId] || []), aoe],
+      }));
+    };
+
+    socket?.on("aoePlaced", handleRemoteAoE);
+    return () => {
+      socket?.off("aoePlaced", handleRemoteAoE);
+    };
+  }, [socket, mapId, campaignId]);
+
+  useEffect(() => {
+    if (!aoeDraft?.placed || !campaignId) return;
+
+    console.log("🎯 AoE placed, saving to shapes:", aoeDraft);
+
+    setAoeShapes((prev) => ({
+      ...prev,
+      [mapId]: [...(prev[mapId] || []), aoeDraft],
+    }));
+
+    // 📡 Emit AoE placement to other clients
+    socket?.emit("aoePlaced", {
+      campaignId,
+      mapId,
+      aoe: aoeDraft,
+    });
+    console.log("📡 Emitted AoE placement:", {
+      campaignId,
+      mapId,
+      aoe: aoeDraft,
+    });
+
+    if (typeof setActiveInteractionMode === "function") {
+      console.log("🔄 Switching back to 'select' mode after AoE placement");
+      setActiveInteractionMode("select");
     }
-  }, [aoeDraft, setActiveInteractionMode]);
+
+    setAoeDraft(null);
+  }, [aoeDraft, setActiveInteractionMode, socket, mapId, campaignId]);
 
   return {
     aoeDraft,
