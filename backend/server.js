@@ -190,6 +190,7 @@ app.use("/api", appRoutes);
 app.use("/api", uploadRoutes);
 app.use("/api/sessionstate", require("./routes/sessionState"));
 app.use("/api/player-toolkit-tokens", require("./routes/playerToolkitRoutes"));
+app.use("/api/dicerolls", require("./routes/diceRollRoutes"));
 
 // Health check
 app.get("/", (req, res) => {

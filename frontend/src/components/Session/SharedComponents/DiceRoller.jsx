@@ -35,6 +35,27 @@ const DiceRoller = ({ userId, campaignId, username, isDM, socket }) => {
     setSavedRolls([]);
   }, [userId, campaignId]);
 
+  useEffect(() => {
+    const fetchSavedRolls = async () => {
+      try {
+        const res = await fetch(`/api/dicerolls/${campaignId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        if (!res.ok) throw new Error("Failed to load saved rolls");
+
+        const data = await res.json();
+        setSavedRolls(data);
+      } catch (err) {
+        console.error("❌ Error fetching saved rolls:", err);
+      }
+    };
+
+    fetchSavedRolls();
+  }, [campaignId, userId]);
+
   const handleRoll = () => {
     diceAudio.currentTime = 0;
     diceAudio.play().catch((err) => {
@@ -96,16 +117,37 @@ const DiceRoller = ({ userId, campaignId, username, isDM, socket }) => {
     }
   };
 
-  const handleSaveRoll = () => {
-    // TODO: Implement save logic
-    const newRoll = {
-      name: `Custom Roll ${savedRolls.length + 1}`,
-      die: selectedDie,
+  const handleSaveRoll = async () => {
+    const name = prompt("Name this roll:");
+
+    if (!name || name.trim() === "") return;
+
+    const payload = {
+      campaignId,
+      name: name.trim(),
       quantity,
+      die: selectedDie,
       modifier,
       advantage,
     };
-    setSavedRolls([...savedRolls, newRoll]);
+
+    try {
+      const res = await fetch("/api/dicerolls", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error("Failed to save roll");
+
+      const newRoll = await res.json();
+      setSavedRolls((prev) => [newRoll, ...prev]);
+    } catch (err) {
+      console.error("❌ Error saving roll:", err);
+    }
   };
 
   return (
@@ -194,21 +236,44 @@ const DiceRoller = ({ userId, campaignId, username, isDM, socket }) => {
 
       <div className="saved-rolls">
         <h4>📁 Saved Rolls</h4>
-        {savedRolls.length === 0 ? (
-          <p>No saved rolls.</p>
-        ) : (
-          savedRolls.map((roll, index) => (
-            <div key={index} className="saved-roll">
-              <span>{roll.name}</span>
-              <button onClick={() => console.log("TODO: Roll saved roll")}>
-                Roll
-              </button>
-              <button onClick={() => console.log("TODO: Delete roll")}>
-                🗑️
-              </button>
-            </div>
-          ))
-        )}
+        {savedRolls.map((roll) => (
+          <div key={roll._id} className="saved-roll">
+            <span>{roll.name}</span>
+            <button
+              onClick={() => {
+                setSelectedDie(roll.die);
+                setQuantity(roll.quantity);
+                setModifier(roll.modifier);
+                setAdvantage(roll.advantage);
+                handleRoll(); // Use restored state to roll
+              }}
+            >
+              Roll
+            </button>
+            <button
+              onClick={async () => {
+                try {
+                  const res = await fetch(`/api/dicerolls/${roll._id}`, {
+                    method: "DELETE",
+                    headers: {
+                      Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                  });
+
+                  if (!res.ok) throw new Error("Failed to delete");
+
+                  setSavedRolls((prev) =>
+                    prev.filter((r) => r._id !== roll._id)
+                  );
+                } catch (err) {
+                  console.error("❌ Error deleting roll:", err);
+                }
+              }}
+            >
+              🗑️
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );
