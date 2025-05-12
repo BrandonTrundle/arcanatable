@@ -2,24 +2,38 @@ import React from "react";
 import "../../../styles/SessionStyles/DMStyles/DMView.css"; // reuse existing DM styles
 
 const Toolbar = ({ sidebarOpen, setSidebarOpen, setActiveTool }) => {
+  const handleToolClick = (tool) => {
+    console.log(`🛠️ Toolbar: Setting active tool -> ${tool}`);
+    setActiveTool(tool);
+  };
+
   return (
     <div className="dm-toolbar">
       <button
         className="sidebar-toggle"
-        onClick={() => setSidebarOpen(!sidebarOpen)}
+        onClick={() => {
+          console.log(
+            `📂 Sidebar toggled: ${!sidebarOpen ? "open" : "closed"}`
+          );
+          setSidebarOpen(!sidebarOpen);
+        }}
       >
         {sidebarOpen ? "⏴" : "⏵"}
       </button>
 
       <div className="toolbar-buttons">
-        <button>🎲 Dice</button>
-        <button>🧙 Character Sheet</button>
-        <button>📁 Files</button>
-        <button>📝 Notes</button>
+        <button onClick={() => handleToolClick("dice")}>🎲 Dice</button>
+        <button onClick={() => setActiveTool("character-sheet")}>
+          🧙 Character Sheet
+        </button>
+
+        <button onClick={() => handleToolClick("files")}>📁 Files</button>
+        <button onClick={() => handleToolClick("notes")}>📝 Notes</button>
         <button
-          onClick={() =>
-            setActiveTool((prev) => (prev === "tokens" ? null : "tokens"))
-          }
+          onClick={() => {
+            console.log("🎯 Tokens toggled");
+            setActiveTool("tokens");
+          }}
         >
           🎯 Tokens
         </button>

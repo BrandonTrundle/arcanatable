@@ -9,6 +9,11 @@ import RenderedMap from "../Session/DMComponents/Maps/RenderedMap";
 import PlayerTokenManager from "./PlayerComponents/Tokens/PlayerTokenManager";
 import InteractionToolbar from "../Session/DMComponents/UI/InteractionToolbar";
 
+import CharacterPanel from "../Session/PlayerComponents/CharacterPanel";
+import BasicsTab from "../CharacterForm/BasicsTab";
+import PageTwo from "../CharacterForm/PageTwo";
+import PageThree from "../CharacterForm/PageThree";
+
 const PlayerView = ({ campaign, socket, sessionMap }) => {
   const { user } = useContext(UserContext);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -16,21 +21,51 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
   const [activeTool, setActiveTool] = useState(null);
   const [activeInteractionMode, setActiveInteractionMode] = useState("select");
   const [selectedTokenId, setSelectedTokenId] = useState(null);
+  const [selectedCharacter, setSelectedCharacter] = useState(null);
+  const [currentTab, setCurrentTab] = useState("basics");
 
   useEffect(() => {
-    if (sessionMap) {
-      setActiveMap(sessionMap);
-    }
+    if (sessionMap) setActiveMap(sessionMap);
   }, [sessionMap]);
 
   useEffect(() => {
-    socket.on("loadMap", (map) => {
-      //   console.log("📥 Player received map:", map);
-      setActiveMap(map);
-    });
-
+    socket.on("loadMap", (map) => setActiveMap(map));
     return () => socket.off("loadMap");
   }, [socket]);
+
+  const handleFormChange = (e) => {
+    setSelectedCharacter((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const saveCharacter = async () => {
+    if (!selectedCharacter) return;
+
+    try {
+      const res = await fetch(`/api/characters/${selectedCharacter._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(selectedCharacter),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        console.error("❌ Failed to save character:", err.message);
+        return false;
+      }
+
+      console.log("✅ Character auto-saved");
+      return true;
+    } catch (error) {
+      console.error("❌ Auto-save error:", error);
+      return false;
+    }
+  };
 
   return (
     <div className="dm-session-container">
@@ -38,7 +73,11 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
         <Toolbar
           sidebarOpen={sidebarOpen}
           setSidebarOpen={setSidebarOpen}
-          setActiveTool={setActiveTool}
+          setActiveTool={(tool) => {
+            if (selectedCharacter) saveCharacter();
+            setSelectedCharacter(null);
+            setActiveTool((prev) => (prev === tool ? null : tool));
+          }}
         />
       </aside>
 
@@ -78,8 +117,107 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
           <PlayerTokenManager
             campaignId={campaign._id}
             userToken={user.token}
-            onClose={() => setActiveTool(null)} // 👈 this line
+            onClose={() => setActiveTool(null)}
           />
+        </div>
+      )}
+
+      {activeTool === "character-sheet" && (
+        <div className="player-character-panel character-sheet-panel fly-in active">
+          {!selectedCharacter ? (
+            <>
+              <CharacterPanel
+                campaignId={campaign._id}
+                onSelect={(char) => {
+                  setSelectedCharacter(char);
+                  setCurrentTab("basics");
+                }}
+              />
+              <button
+                onClick={async () => {
+                  await saveCharacter();
+                  setActiveTool(null);
+                }}
+                className="close-panel-btn"
+              >
+                Close
+              </button>
+            </>
+          ) : (
+            <div className="character-sheet-panel">
+              <h2>
+                {selectedCharacter.charname} – Level {selectedCharacter.level}{" "}
+                {selectedCharacter.class}
+              </h2>
+              <button
+                onClick={async () => {
+                  await saveCharacter();
+                  setSelectedCharacter(null);
+                }}
+              >
+                ← Back to List
+              </button>
+
+              <div
+                className="character-tab-buttons"
+                style={{ marginBottom: "1rem", display: "flex", gap: "1rem" }}
+              >
+                <button
+                  className={currentTab === "basics" ? "active-tab" : ""}
+                  onClick={async () => {
+                    await saveCharacter();
+                    setCurrentTab("basics");
+                  }}
+                >
+                  Basics
+                </button>
+                <button
+                  className={currentTab === "page2" ? "active-tab" : ""}
+                  onClick={async () => {
+                    await saveCharacter();
+                    setCurrentTab("page2");
+                  }}
+                >
+                  Page 2
+                </button>
+                <button
+                  className={currentTab === "page3" ? "active-tab" : ""}
+                  onClick={async () => {
+                    await saveCharacter();
+                    setCurrentTab("page3");
+                  }}
+                >
+                  Spells
+                </button>
+              </div>
+
+              {currentTab === "basics" && (
+                <BasicsTab
+                  formData={selectedCharacter}
+                  handleChange={handleFormChange}
+                  setFormData={setSelectedCharacter}
+                />
+              )}
+              {currentTab === "page2" && (
+                <PageTwo
+                  formData={selectedCharacter}
+                  handleChange={handleFormChange}
+                  setFormData={setSelectedCharacter}
+                />
+              )}
+              {currentTab === "page3" && (
+                <PageThree
+                  formData={selectedCharacter}
+                  handleChange={handleFormChange}
+                  setFormData={setSelectedCharacter}
+                />
+              )}
+
+              <button onClick={saveCharacter} className="save-character-btn">
+                💾 Save Changes
+              </button>
+            </div>
+          )}
         </div>
       )}
 
