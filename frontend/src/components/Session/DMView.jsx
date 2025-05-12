@@ -3,7 +3,7 @@ import "../../styles/SessionStyles/DMStyles/DMView.css";
 import ChatBox from "../Session/SharedComponents/ChatBox";
 import { UserContext } from "../../context/UserContext";
 import TokenManager from "../Session/DMComponents/Tokens/TokenManager";
-import Toolbar from "../Session/DMComponents/UI/Toolbar";
+import Toolbar from "./DMComponents/UI/DMToolbar";
 import MapLoaderPanel from "../Session/DMComponents/Maps/MapLoaderPanel";
 import RenderedMap from "../Session/DMComponents/Maps/RenderedMap";
 import InteractionToolbar from "../Session/DMComponents/UI/InteractionToolbar";

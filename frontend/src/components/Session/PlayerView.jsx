@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import "../../styles/SessionStyles/DMStyles/DMView.css";
 import "../../styles/SessionStyles/SharedStyles/ChatBox.css";
-import Toolbar from "../Session/PlayerComponents/Toolbar";
+import Toolbar from "./PlayerComponents/PlayerToolbar";
 import ChatBox from "../Session/SharedComponents/ChatBox";
 import { UserContext } from "../../context/UserContext";
 import loadMapFallback from "../../assets/LoadMapToProceed.png";
