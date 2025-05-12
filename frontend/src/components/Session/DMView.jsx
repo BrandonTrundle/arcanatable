@@ -8,6 +8,7 @@ import MapLoaderPanel from "../Session/DMComponents/Maps/MapLoaderPanel";
 import RenderedMap from "../Session/DMComponents/Maps/RenderedMap";
 import InteractionToolbar from "../Session/DMComponents/UI/InteractionToolbar";
 import loadMapFallback from "../../assets/LoadMapToProceed.png";
+import DiceRoller from "../Session/SharedComponents/DiceRoller";
 
 const DMView = ({ campaign, socket, sessionMap }) => {
   const { user } = useContext(UserContext);
@@ -30,6 +31,12 @@ const DMView = ({ campaign, socket, sessionMap }) => {
       setActiveMap(sessionMap);
     }
   }, [sessionMap]);
+
+  useEffect(() => {
+    if (user && socket) {
+      socket.emit("registerUser", user._id);
+    }
+  }, [socket, user]);
 
   useEffect(() => {
     socket.on("loadMap", (map) => {
@@ -173,6 +180,18 @@ const DMView = ({ campaign, socket, sessionMap }) => {
         </div>
       )}
 
+      {activeTool === "dice" && (
+        <div className="dice-panel">
+          <DiceRoller
+            userId={user._id}
+            campaignId={campaign._id}
+            username={user.username}
+            isDM={true}
+            socket={socket}
+          />
+        </div>
+      )}
+
       {showToolbar && (
         <InteractionToolbar
           activeMode={activeInteractionMode}
@@ -186,6 +205,7 @@ const DMView = ({ campaign, socket, sessionMap }) => {
           socket={socket}
           campaignId={campaign._id}
           username={user.username}
+          userId={user._id}
         />
       </aside>
     </div>

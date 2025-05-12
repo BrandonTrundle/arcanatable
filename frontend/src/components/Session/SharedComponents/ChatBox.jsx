@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../../../styles/SessionStyles/SharedStyles/ChatBox.css";
 
-const ChatBox = ({ socket, campaignId, username }) => {
+const ChatBox = ({ socket, campaignId, username, userId }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
@@ -25,6 +25,19 @@ const ChatBox = ({ socket, campaignId, username }) => {
     }
   }, [messages]);
 
+  useEffect(() => {
+    const handleSecretRoll = (message) => {
+      if (message.targetUserId === userId) {
+        setMessages((prev) => [...prev, message]);
+      }
+    };
+
+    socket.on("secretRoll", handleSecretRoll);
+    return () => {
+      socket.off("secretRoll", handleSecretRoll);
+    };
+  }, [socket, userId]);
+
   const sendMessage = (e) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -47,7 +60,7 @@ const ChatBox = ({ socket, campaignId, username }) => {
           <p className="chat-empty">No messages yet</p>
         ) : (
           messages.map((msg, index) => (
-            <div key={index} className="chat-message">
+            <div key={index} className={`chat-message ${msg.colorClass || ""}`}>
               <strong className="chat-user-name">{msg.username}:</strong>{" "}
               <span className="chat-messages-text">{msg.text}</span>
             </div>

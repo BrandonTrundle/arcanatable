@@ -28,6 +28,8 @@ const io = new Server(server, {
   },
 });
 
+const userSocketMap = new Map();
+
 io.on("connection", (socket) => {
   //console.log(`🔌 Client connected: ${socket.id}`);
 
@@ -38,13 +40,30 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    //console.log(`❌ Client disconnected: ${socket.id}`);
-    // Optional: io.to(room).emit("userLeft", ...) if tracking
+    for (const [userId, id] of userSocketMap.entries()) {
+      if (id === socket.id) {
+        userSocketMap.delete(userId);
+        break;
+      }
+    }
+  });
+
+  socket.on("secretRoll", (message) => {
+    const { targetUserId } = message;
+    const targetSocketId = userSocketMap.get(targetUserId);
+
+    if (targetSocketId) {
+      io.to(targetSocketId).emit("secretRoll", message);
+    }
   });
 
   socket.on("chatMessage", (message) => {
     const { campaignId } = message;
     io.to(campaignId).emit("chatMessage", message);
+  });
+
+  socket.on("registerUser", (userId) => {
+    userSocketMap.set(userId, socket.id);
   });
 
   socket.on("loadMap", (map) => {

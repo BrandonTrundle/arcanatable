@@ -30,9 +30,15 @@
 }
 
 .chat-message {
-  margin: 0.25rem 0;
+  background-color: #2b2b2b;
+  margin-bottom: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: #e0e0e0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
-
 .chat-input-form {
   display: flex;
   gap: 0.5rem;
@@ -60,9 +66,25 @@
 }
 
 .chat-user-name {
-  color: white;
+  font-weight: bold;
+  color: #ffc107; /* Amber highlight */
+  display: block;
+  margin-bottom: 2px;
 }
 
 .chat-messages-text {
-  color: white;
+  font-family: "Courier New", monospace;
+  display: block;
+  color: #d1d1d1;
+}
+.chat-message.nat-20 {
+  background-color: rgba(0, 255, 0, 0.15);
+  border-left: 4px solid #3cff00;
+  font-weight: bold;
+}
+
+.chat-message.nat-1 {
+  background-color: rgba(255, 0, 0, 0.15);
+  border-left: 4px solid #ff3333;
+  font-weight: bold;
 }

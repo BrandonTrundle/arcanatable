@@ -1,0 +1,89 @@
+.dice-roller-panel {
+  background-color: #1e1e2f;
+  color: #f0f0f0;
+  padding: 1rem;
+  border-radius: 12px;
+  width: 300px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 0 10px #000;
+  font-family: "Segoe UI", sans-serif;
+  z-index: 9999; /* <-- Add this */
+  position: relative; /* <-- Required for z-index to apply */
+}
+
+.dice-selector {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.dice-icon {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.dice-icon.selected {
+  opacity: 1;
+  transform: scale(1.1);
+  border: 2px solid limegreen;
+  border-radius: 6px;
+}
+
+.dice-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.dice-settings label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.advantage-toggle label {
+  margin-right: 10px;
+}
+
+button {
+  background-color: #444;
+  color: white;
+  padding: 0.4rem 0.6rem;
+  margin: 0.3rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #666;
+}
+
+.saved-rolls {
+  margin-top: 1rem;
+}
+
+.saved-roll {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2a2a3d;
+  padding: 0.4rem;
+  border-radius: 6px;
+  margin-bottom: 0.4rem;
+}
+
+.dice-panel {
+  position: absolute;
+  top: 100px; /* Adjust based on your layout */
+  left: 300px; /* Or wherever it should float */
+  z-index: 9999;
+}

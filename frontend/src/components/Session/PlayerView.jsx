@@ -8,6 +8,7 @@ import loadMapFallback from "../../assets/LoadMapToProceed.png";
 import RenderedMap from "../Session/DMComponents/Maps/RenderedMap";
 import PlayerTokenManager from "./PlayerComponents/Tokens/PlayerTokenManager";
 import InteractionToolbar from "../Session/DMComponents/UI/InteractionToolbar";
+import DiceRoller from "../Session/SharedComponents/DiceRoller";
 
 import CharacterPanel from "../Session/PlayerComponents/CharacterPanel";
 import BasicsTab from "../CharacterForm/BasicsTab";
@@ -27,6 +28,12 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
   useEffect(() => {
     if (sessionMap) setActiveMap(sessionMap);
   }, [sessionMap]);
+
+  useEffect(() => {
+    if (user && socket) {
+      socket.emit("registerUser", user._id);
+    }
+  }, [socket, user]);
 
   useEffect(() => {
     socket.on("loadMap", (map) => setActiveMap(map));
@@ -153,6 +160,17 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
         </div>
       )}
 
+      {activeTool === "dice" && (
+        <div className="dice-panel">
+          <DiceRoller
+            userId={user._id}
+            campaignId={campaign._id}
+            username={user.username} // <-- add this
+            socket={socket}
+          />
+        </div>
+      )}
+
       {activeTool === "character-sheet" && (
         <div className="player-character-panel character-sheet-panel fly-in active">
           {!selectedCharacter ? (
@@ -257,6 +275,7 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
           socket={socket}
           campaignId={campaign._id}
           username={user.username}
+          userId={user._id}
         />
       </aside>
     </div>
