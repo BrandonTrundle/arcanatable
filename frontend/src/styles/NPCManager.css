@@ -1,11 +1,11 @@
-@import './variables.css';
+@import "./variables.css";
 
 .npc-manager-container {
   padding: 2rem;
   background-color: rgba(255, 250, 240, 0.95);
   border-radius: 16px;
   box-shadow: 0 0 20px #0003;
-  font-family: 'Garamond', serif;
+  font-family: "Garamond", serif;
   color: #3a2a1a;
   max-height: 85vh;
   overflow-y: auto;
@@ -101,7 +101,7 @@
   border-radius: 6px;
   border: 1px solid #cdb79e;
   background-color: #fffaf0;
-  font-family: 'Garamond', serif;
+  font-family: "Garamond", serif;
   font-size: 0.95rem;
   color: #3a2a1a;
   cursor: pointer;
@@ -144,16 +144,40 @@
   margin: 1rem auto;
   display: block;
   padding: 0.5rem 1rem;
-  font-family: 'Garamond', serif;
+  font-family: "Garamond", serif;
   font-size: 1rem;
   background-color: var(--burnt-orange);
   color: #fff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .export-pdf-btn:hover {
   background-color: #7c2d2d;
+}
+.floating-preview-panel {
+  position: fixed;
+  top: 0px;
+  right: 300px;
+  width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background-color: rgba(255, 250, 240, 0.98);
+  border-radius: 16px;
+  box-shadow: 0 0 20px #0004;
+  padding: 1rem;
+  z-index: 1000;
+}
+
+.close-preview-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: #333;
 }

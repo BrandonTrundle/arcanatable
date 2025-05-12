@@ -9,6 +9,10 @@ import RenderedMap from "../Session/DMComponents/Maps/RenderedMap";
 import InteractionToolbar from "../Session/DMComponents/UI/InteractionToolbar";
 import loadMapFallback from "../../assets/LoadMapToProceed.png";
 import DiceRoller from "../Session/SharedComponents/DiceRoller";
+import CampaignNPCListPanel from "../Session/DMComponents/NPC/CampaignNPCListPanel";
+import CampaignMonsterListPanel from "../Session/DMComponents/NPC/CampaignMonsterListPanel";
+import NPCPreview from "../DMToolkit/NPCPreview";
+import MonsterPreview from "../DMToolkit/MonsterPreview";
 
 const DMView = ({ campaign, socket, sessionMap }) => {
   const { user } = useContext(UserContext);
@@ -25,6 +29,8 @@ const DMView = ({ campaign, socket, sessionMap }) => {
   const [showToolbar, setShowToolbar] = useState(false);
   const [toolbarExiting, setToolbarExiting] = useState(false);
   const [tokens, setTokens] = useState([]);
+  const [selectedNPC, setSelectedNPC] = useState(null);
+  const [selectedMonster, setSelectedMonster] = useState(null);
 
   useEffect(() => {
     if (sessionMap) {
@@ -189,6 +195,78 @@ const DMView = ({ campaign, socket, sessionMap }) => {
             isDM={true}
             socket={socket}
           />
+        </div>
+      )}
+
+      {activeTool === "npcs" && (
+        <div
+          className="floating-npc-panel"
+          style={{
+            position: "fixed",
+            top: "10%",
+            left: "calc(15% + 60px)", // accounts for the sidebar
+            width: "660px",
+            maxHeight: "80vh",
+            overflowY: "auto",
+            zIndex: 900,
+            backgroundColor: "rgba(255,250,240,0.98)",
+            borderRadius: "16px",
+            boxShadow: "0 0 20px #0003",
+            padding: "1.5rem",
+          }}
+        >
+          <CampaignNPCListPanel
+            campaignName={campaign.name}
+            onSelect={setSelectedNPC}
+          />
+        </div>
+      )}
+
+      {activeTool === "creatures" && (
+        <div
+          className="floating-npc-panel"
+          style={{
+            position: "fixed",
+            top: "10%",
+            left: "calc(15% + 60px)",
+            width: "600px",
+            maxHeight: "80vh",
+            overflowY: "auto",
+            zIndex: 900,
+            backgroundColor: "rgba(255,250,240,0.98)",
+            borderRadius: "16px",
+            boxShadow: "0 0 20px #0003",
+            padding: "1.5rem",
+          }}
+        >
+          <CampaignMonsterListPanel
+            campaignName={campaign.name}
+            onSelect={setSelectedMonster}
+          />
+        </div>
+      )}
+
+      {selectedNPC && (
+        <div className="floating-preview-panel">
+          <button
+            className="close-preview-btn"
+            onClick={() => setSelectedNPC(null)}
+          >
+            ✖
+          </button>
+          <NPCPreview data={selectedNPC} />
+        </div>
+      )}
+
+      {selectedMonster && (
+        <div className="floating-preview-panel">
+          <button
+            className="close-preview-btn"
+            onClick={() => setSelectedMonster(null)}
+          >
+            ✖
+          </button>
+          <MonsterPreview data={selectedMonster} />
         </div>
       )}
 

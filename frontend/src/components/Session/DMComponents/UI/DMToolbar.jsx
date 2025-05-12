@@ -1,8 +1,16 @@
-// components/Session/Toolbar.js
 import "../../../../styles/SessionStyles/DMStyles/DMView.css";
 import React from "react";
 
-const Toolbar = ({ setActiveTool, sidebarOpen, setSidebarOpen }) => {
+const DMToolbar = ({
+  activeTool,
+  setActiveTool,
+  sidebarOpen,
+  setSidebarOpen,
+}) => {
+  const handleToolClick = (tool) => {
+    setActiveTool((prev) => (prev === tool ? null : tool));
+  };
+
   return (
     <div className="dm-toolbar">
       <button
@@ -13,17 +21,21 @@ const Toolbar = ({ setActiveTool, sidebarOpen, setSidebarOpen }) => {
       </button>
 
       <div className="toolbar-buttons">
-        <button onClick={() => setActiveTool("tokens")}>🎯 Tokens</button>
-        <button onClick={() => setActiveTool("maps")}>🗺️ Maps</button>
-        <button onClick={() => setActiveTool("fog")}>🌫️ Fog</button>
-        <button onClick={() => setActiveTool("combat")}>⚔️ Combat</button>
-        <button onClick={() => setActiveTool("dice")}>🎲 Dice</button>
-        <button onClick={() => setActiveTool("files")}>📁 Files</button>
-        <button onClick={() => setActiveTool("players")}>🧑‍🤝‍🧑 Players</button>
-        <button onClick={() => setActiveTool("notes")}>📝 Notes</button>
+        <button onClick={() => handleToolClick("tokens")}>🎯 Tokens</button>
+        <button onClick={() => handleToolClick("maps")}>🗺️ Maps</button>
+        <button onClick={() => handleToolClick("npcs")}>📝 NPCs</button>
+        <button onClick={() => handleToolClick("creatures")}>
+          📝 Creatures
+        </button>
+        <button onClick={() => handleToolClick("fog")}>🌫️ Fog</button>
+        <button onClick={() => handleToolClick("combat")}>⚔️ Combat</button>
+        <button onClick={() => handleToolClick("dice")}>🎲 Dice</button>
+        <button onClick={() => handleToolClick("files")}>📁 Files</button>
+        <button onClick={() => handleToolClick("players")}>🧑‍🤝‍🧑 Players</button>
+        <button onClick={() => handleToolClick("notes")}>📝 Notes</button>
       </div>
     </div>
   );
 };
 
-export default Toolbar;
+export default DMToolbar;
