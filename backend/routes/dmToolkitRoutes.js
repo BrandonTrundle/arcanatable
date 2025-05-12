@@ -5,6 +5,7 @@ const {
   createToolkitItem,
   getToolkitItems,
   getToolkitItemsByType,
+  getSingleToolkitItem, // ✅ add this import
   updateToolkitItem,
   deleteToolkitItem,
   uploadMap,
@@ -17,6 +18,7 @@ router.use(protect);
 router.post("/", createToolkitItem);
 router.get("/", getToolkitItems);
 router.get("/type/:type", getToolkitItemsByType);
+router.get("/:id", getSingleToolkitItem); // ✅ new route to fetch one item
 router.patch("/:id", updateToolkitItem);
 router.delete("/:id", deleteToolkitItem);
 

@@ -1,4 +1,24 @@
 import { useState, useEffect, useCallback } from "react";
+let saveTimeout = null;
+
+const debounceTokenSave = (mapId, content) => {
+  if (!mapId || !content) return;
+
+  if (saveTimeout) clearTimeout(saveTimeout);
+
+  saveTimeout = setTimeout(() => {
+    fetch(`/api/dmtoolkit/${mapId}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ content }),
+    }).catch((err) => {
+      console.error("❌ Debounced token save failed:", err);
+    });
+  }, 1000); // wait 1 second after last change
+};
 
 const sizeMultiplier = {
   Tiny: 0.5,
@@ -54,12 +74,25 @@ export const useTokenManager = ({ map, socket, isDM, user }) => {
 
     const handleTokenDropped = ({ mapId, token }) => {
       if (String(mapId) !== String(map._id)) return;
-      setTokens((prev) => [...prev, token]);
+
+      setTokens((prev) => {
+        const updated = [...prev, token];
+
+        // ✅ Only the DM persists dropped tokens
+        if (isDM) {
+          debounceTokenSave(map._id, {
+            ...map.content,
+            placedTokens: updated,
+          });
+        }
+
+        return updated;
+      });
     };
 
     socket.on("tokenDropped", handleTokenDropped);
     return () => socket.off("tokenDropped", handleTokenDropped);
-  }, [socket, map._id]);
+  }, [socket, map._id, isDM, map.content]);
 
   useEffect(() => {
     if (!socket) return;

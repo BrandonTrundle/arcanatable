@@ -12,6 +12,26 @@ import { useTokenManager } from "../../hooks/useTokenManager";
 import { useStageContext } from "../../hooks/useStageContext";
 import { useOutsideClickHandler } from "../../hooks/useOutsideClickHandler";
 import { useTokenSelection } from "../../hooks/useTokenSelection";
+let saveTimeout = null;
+
+const debounceTokenSave = (mapId, content) => {
+  if (!mapId || !content) return;
+
+  if (saveTimeout) clearTimeout(saveTimeout);
+
+  saveTimeout = setTimeout(() => {
+    fetch(`/api/dmtoolkit/${mapId}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ content }),
+    }).catch((err) => {
+      console.error("❌ Debounced token save failed:", err);
+    });
+  }, 1000); // waits 1 second after last change
+};
 
 const RenderedMap = ({
   map,
@@ -23,6 +43,7 @@ const RenderedMap = ({
   socket,
   user,
   activeInteractionMode,
+  setExternalTokens, // ✅ New prop to sync tokens back to DMView
 }) => {
   const { stageRef, cellSize, gridWidth, gridHeight } = useStageContext(map);
   const {
@@ -37,6 +58,12 @@ const RenderedMap = ({
     hasControl,
     externalSelections,
   } = useTokenManager({ map, socket, isDM, user });
+
+  useEffect(() => {
+    if (typeof setExternalTokens === "function") {
+      setExternalTokens(tokens);
+    }
+  }, [tokens, setExternalTokens]);
 
   // Emits when a token is selected
   const emitSelection = (tokenId) => {
@@ -109,6 +136,34 @@ const RenderedMap = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [clearSelection]);
 
+  const saveTokenStateToBackend = async () => {
+    if (!map?._id || !tokens || !Array.isArray(tokens)) return;
+
+    try {
+      const res = await fetch(`/api/dmtoolkit/${map._id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: {
+            ...map.content,
+            placedTokens: tokens,
+          },
+        }),
+      });
+
+      if (!res.ok) {
+        console.error("❌ Failed to save tokens to backend.");
+      } else {
+        console.log("✅ Token state successfully saved.");
+      }
+    } catch (err) {
+      console.error("🚫 Error saving token state:", err);
+    }
+  };
+
   return (
     <div
       className="map-rendered-view"
@@ -161,6 +216,11 @@ const RenderedMap = ({
 
               if (isDM) {
                 emitTokenUpdate(updated);
+
+                debounceTokenSave(map._id, {
+                  ...map.content,
+                  placedTokens: updated,
+                });
               } else if (socket) {
                 socket.emit("playerMovedToken", {
                   campaignId: map.content?.campaign,

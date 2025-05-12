@@ -33,6 +33,37 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
     return () => socket.off("loadMap");
   }, [socket]);
 
+  useEffect(() => {
+    const fetchCurrentMap = async () => {
+      try {
+        const sessionRes = await fetch(
+          `/api/sessionstate/${campaign._id}/current-map`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        const { mapId } = await sessionRes.json();
+        if (!mapId) return;
+
+        const mapRes = await fetch(`/api/dmtoolkit/${mapId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        const map = await mapRes.json();
+        setActiveMap(map);
+      } catch (err) {
+        console.error("❌ Failed to fetch map for player:", err);
+      }
+    };
+
+    fetchCurrentMap();
+  }, [campaign._id]);
+
   const handleFormChange = (e) => {
     setSelectedCharacter((prev) => ({
       ...prev,

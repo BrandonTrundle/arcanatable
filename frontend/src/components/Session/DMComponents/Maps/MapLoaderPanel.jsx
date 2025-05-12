@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../../../../styles/SessionStyles/DMStyles/MapLoaderPanel.css";
 import MapCreationForm from "./MapCreationForm";
 
-const MapLoaderPanel = ({ campaign, socket }) => {
+const MapLoaderPanel = ({ campaign, socket, saveCurrentMap }) => {
   const [maps, setMaps] = useState([]);
   const [showCreate, setShowCreate] = useState(false);
 
@@ -30,7 +30,12 @@ const MapLoaderPanel = ({ campaign, socket }) => {
 
   const handleLoadMap = async (map) => {
     try {
-      // Persist current map to session state
+      // ✅ Step 1: Save current map state before switching
+      if (typeof saveCurrentMap === "function") {
+        await saveCurrentMap();
+      }
+
+      // ✅ Step 2: Set new map in backend session
       await fetch(`/api/sessionstate/${campaign._id}/set-map`, {
         method: "PUT",
         headers: {
@@ -40,8 +45,17 @@ const MapLoaderPanel = ({ campaign, socket }) => {
         body: JSON.stringify({ mapId: map._id }),
       });
 
-      //   console.log("📤 Emitting map to socket:", map);
-      socket.emit("loadMap", map);
+      // ✅ Step 3: Emit new map to clients
+      // Fetch the latest map (with updated tokens) from the backend
+      const refreshed = await fetch(`/api/dmtoolkit/${map._id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const latestMap = await refreshed.json();
+
+      // Now emit the full latest version
+      socket.emit("loadMap", latestMap);
     } catch (err) {
       console.error("❌ Failed to set current map:", err);
       alert("Failed to load map for session.");

@@ -29,6 +29,24 @@ router.get("/:campaignId", authenticateToken, async (req, res) => {
   }
 });
 
+// GET just the current map ID for a campaign (for reconnecting players)
+router.get("/:campaignId/current-map", authenticateToken, async (req, res) => {
+  try {
+    const session = await SessionState.findOne({
+      campaignId: req.params.campaignId,
+    });
+
+    if (!session || !session.currentMapId) {
+      return res.status(404).json({ message: "No active map for campaign." });
+    }
+
+    res.json({ mapId: session.currentMapId });
+  } catch (err) {
+    console.error("❌ Error fetching current map ID:", err);
+    res.status(500).json({ message: "Error retrieving current map ID." });
+  }
+});
+
 // CREATE or UPDATE current map
 router.put("/:campaignId/set-map", authenticateToken, async (req, res) => {
   const { mapId } = req.body;

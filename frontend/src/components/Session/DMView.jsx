@@ -23,6 +23,7 @@ const DMView = ({ campaign, socket, sessionMap }) => {
   const [activeInteractionMode, setActiveInteractionMode] = useState("select");
   const [showToolbar, setShowToolbar] = useState(false);
   const [toolbarExiting, setToolbarExiting] = useState(false);
+  const [tokens, setTokens] = useState([]);
 
   useEffect(() => {
     if (sessionMap) {
@@ -72,6 +73,49 @@ const DMView = ({ campaign, socket, sessionMap }) => {
     }
   }, [selectedTokenId, showToolbar]);
 
+  const saveCurrentMap = async () => {
+    if (!activeMap || !activeMap._id) return;
+
+    try {
+      const res = await fetch(`/api/dmtoolkit/${activeMap._id}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: {
+            ...activeMap.content,
+            placedTokens: tokens, // ✅ use latest token state
+          },
+        }),
+      });
+
+      if (!res.ok) {
+        console.error("❌ Failed to save map state.");
+      } else {
+        console.log("✅ Map state saved before switching.");
+      }
+    } catch (err) {
+      console.error("🚫 Error while saving map state:", err);
+    }
+  };
+
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      // Save token state before leaving
+      if (typeof saveCurrentMap === "function") {
+        saveCurrentMap();
+      }
+      // Optionally trigger a prompt — modern browsers may ignore this.
+      e.preventDefault();
+      e.returnValue = ""; // For older browser support
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [saveCurrentMap]);
+
   const startDrag = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
     setIsDragging(true);
@@ -98,6 +142,7 @@ const DMView = ({ campaign, socket, sessionMap }) => {
           selectedTokenId={selectedTokenId}
           setSelectedTokenId={setSelectedTokenId}
           activeInteractionMode={activeInteractionMode}
+          setExternalTokens={setTokens}
         />
       ) : (
         <div className="map-placeholder">
@@ -120,7 +165,11 @@ const DMView = ({ campaign, socket, sessionMap }) => {
 
       {activeTool === "maps" && (
         <div className="dm-maps-panel">
-          <MapLoaderPanel campaign={campaign} socket={socket} />
+          <MapLoaderPanel
+            campaign={campaign}
+            socket={socket}
+            saveCurrentMap={saveCurrentMap}
+          />
         </div>
       )}
 

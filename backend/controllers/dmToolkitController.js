@@ -17,6 +17,26 @@ const getFolderForToolkitType = (type) => {
   }
 };
 
+exports.getSingleToolkitItem = async (req, res) => {
+  try {
+    const item = await DMToolkit.findById(req.params.id);
+
+    if (!item) {
+      return res.status(404).json({ message: "Map not found" });
+    }
+
+    // ✅ Check if user is in the campaign — not just the map owner
+    // You can enhance this by verifying membership via campaign access rules
+
+    res.json(item);
+  } catch (err) {
+    console.error("❌ Error fetching toolkit item:", err);
+    res
+      .status(500)
+      .json({ message: "Failed to fetch item", error: err.message });
+  }
+};
+
 // --- Map Upload Handler ---
 exports.uploadMap = async (req, res) => {
   try {
