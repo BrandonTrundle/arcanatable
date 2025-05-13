@@ -1,15 +1,28 @@
 /* src/styles/MapsManager.css */
-@import './variables.css';
+@import "./variables.css";
 
 .maps-manager {
   padding: 2rem;
   background-color: rgba(245, 245, 220, 0.95); /* parchment tone */
   border-radius: 16px;
   box-shadow: 0 0 20px #0003;
-  font-family: 'Garamond', serif;
+  font-family: "Garamond", serif;
   color: var(--dark-brown);
   max-height: 85vh;
   overflow-y: auto;
+
+  /* Initial position off-screen */
+  transform: translateX(-100%);
+  animation: flyInFromLeft 0.5s ease-out forwards;
+}
+
+@keyframes flyInFromLeft {
+  0% {
+    transform: translateX(-100%); /* Start off-screen to the left */
+  }
+  100% {
+    transform: translateX(0); /* End at normal position */
+  }
 }
 
 .maps-manager h2 {
@@ -31,7 +44,7 @@
   padding: 0.5rem;
   border-radius: 6px;
   border: 1px solid #d5c1a5;
-  font-family: 'Garamond', serif;
+  font-family: "Garamond", serif;
   font-size: 1rem;
 }
 
@@ -79,7 +92,7 @@
   margin-top: 0.3rem;
   padding: 0.4rem;
   border-radius: 6px;
-  font-family: 'Garamond', serif;
+  font-family: "Garamond", serif;
   font-size: 1rem;
   width: 100%;
 }

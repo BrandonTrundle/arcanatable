@@ -9,6 +9,19 @@
   color: #3a2a1a;
   max-height: 85vh;
   overflow-y: auto;
+
+  /* Initial position off-screen */
+  transform: translateX(-100%);
+  animation: flyInFromLeft 0.5s ease-out forwards;
+}
+
+@keyframes flyInFromLeft {
+  0% {
+    transform: translateX(-100%); /* Start off-screen to the left */
+  }
+  100% {
+    transform: translateX(0); /* End at normal position */
+  }
 }
 
 .npc-manager-header {
