@@ -1,82 +1,79 @@
 import { useState, useCallback, useEffect } from "react";
-import { v4 as uuidv4 } from "uuid";
 
-export const useAoEShapes = (mapId, socket = null) => {
+export const useAoEShapes = (mapId, socket, campaignId) => {
   const [aoeShapes, setAoEShapes] = useState({});
 
   const addAoEShape = useCallback(
     (shape) => {
-      const newShape = {
-        ...shape,
-        id: uuidv4(),
-      };
-
       setAoEShapes((prev) => {
         const updated = {
           ...prev,
-          [mapId]: [...(prev[mapId] || []), newShape],
+          [mapId]: [...(prev[mapId] || []), shape],
         };
-
-        if (socket) {
-          socket.emit("aoe:add", { mapId, shape: newShape });
-        }
-
         return updated;
       });
     },
-    [mapId, socket]
+    [mapId]
   );
 
   const removeAoEShape = useCallback(
-    (id) => {
+    (id, { silent = false } = {}) => {
       setAoEShapes((prev) => {
         const updated = {
           ...prev,
           [mapId]: (prev[mapId] || []).filter((shape) => shape.id !== id),
         };
 
-        if (socket) {
-          socket.emit("aoe:remove", { mapId, id });
+        if (!silent && socket) {
+          console.log("📤 Emitting aoeRemoved:", {
+            mapId,
+            aoeId: id,
+            campaignId,
+          });
+          socket.emit("aoeRemoved", {
+            mapId,
+            aoeId: id,
+            campaignId,
+          });
         }
 
         return updated;
       });
     },
-    [mapId, socket]
+    [mapId, socket, campaignId]
   );
 
-  // 🔧 Add this useEffect for syncing with other clients
   useEffect(() => {
     if (!socket) return;
 
-    const handleRemoteAdd = ({ mapId: incomingMapId, shape }) => {
+    const handleRemoteAdd = ({ mapId: incomingMapId, aoe }) => {
       setAoEShapes((prev) => {
         const updated = {
           ...prev,
-          [incomingMapId]: [...(prev[incomingMapId] || []), shape],
+          [incomingMapId]: [...(prev[incomingMapId] || []), aoe],
         };
         return updated;
       });
     };
 
-    const handleRemoteRemove = ({ mapId: incomingMapId, id }) => {
+    const handleRemoteRemove = ({ mapId: incomingMapId, aoeId }) => {
       setAoEShapes((prev) => {
         const updated = {
           ...prev,
           [incomingMapId]: (prev[incomingMapId] || []).filter(
-            (shape) => shape.id !== id
+            (shape) => shape.id !== aoeId
           ),
         };
         return updated;
       });
     };
 
-    socket.on("aoe:add", handleRemoteAdd);
-    socket.on("aoe:remove", handleRemoteRemove);
+    socket.on("aoePlaced", handleRemoteAdd);
+    socket.on("aoeRemoved", handleRemoteRemove);
 
     return () => {
-      socket.off("aoe:add", handleRemoteAdd);
-      socket.off("aoe:remove", handleRemoteRemove);
+      socket.off("aoePlaced", handleRemoteAdd);
+      socket.off("aoeRemoved", handleRemoteRemove);
     };
   }, [socket]);
 

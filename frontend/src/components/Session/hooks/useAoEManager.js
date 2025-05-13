@@ -11,7 +11,6 @@ export const useAoEManager = (
   campaignId,
   stageRef
 ) => {
-  //console.log("🧪 AoE Manager socket:", socket); // ← Add here
   const [showAoEToolbox, setShowAoEToolbox] = useState(false);
 
   const {
@@ -25,7 +24,8 @@ export const useAoEManager = (
 
   const { aoeShapes, addAoEShape, removeAoEShape } = useAoEShapes(
     mapId,
-    socket
+    socket,
+    campaignId
   );
 
   const handleMapClick = () => {
@@ -64,14 +64,12 @@ export const useAoEManager = (
   };
 
   const confirmAoE = ({ type, radius, color }) => {
-    startAoE(type, radius, color); // Now this is the *first and only* time it's called
-    setShowAoEToolbox(false); // Close the settings window once done
+    startAoE(type, radius, color);
+    setShowAoEToolbox(false);
   };
 
   useEffect(() => {
     if (activeInteractionMode === "aoe") {
-      // Remove this:
-      // startAoE("circle", 20, "rgba(255,0,0,0.4)");
       setShowAoEToolbox(true);
     } else {
       clearDraft();
@@ -87,12 +85,20 @@ export const useAoEManager = (
       addAoEShape(aoe);
     };
 
+    const handleRemoteAoERemoval = ({ mapId: incomingMapId, aoeId }) => {
+      if (incomingMapId !== mapId) return;
+      console.log("🧹 Remote AoE removal received:", aoeId);
+      removeAoEShape(aoeId, { silent: true });
+    };
+
     socket.on("aoePlaced", handleRemoteAoE);
+    socket.on("aoeRemoved", handleRemoteAoERemoval);
 
     return () => {
       socket.off("aoePlaced", handleRemoteAoE);
+      socket.off("aoeRemoved", handleRemoteAoERemoval);
     };
-  }, [socket, mapId, addAoEShape]);
+  }, [socket, mapId, addAoEShape, removeAoEShape]);
 
   return {
     aoeDraft,
