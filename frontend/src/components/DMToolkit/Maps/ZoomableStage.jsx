@@ -2,7 +2,8 @@ import React, { forwardRef } from "react";
 import { Stage } from "react-konva";
 
 const ZoomableStage = forwardRef(
-  ({ width, height, children, onDrop, onDragOver }, ref) => {
+  ({ width, height, children, onDrop, onDragOver, onMouseMove }, ref) => {
+    // ⬅️ Accept onMouseMove
     const handleWheel = (e) => {
       e.evt.preventDefault();
       if (!ref?.current) return;
@@ -33,7 +34,7 @@ const ZoomableStage = forwardRef(
 
     return (
       <Stage
-        tabIndex={0} // ✅ required to receive keyboard/mouse focus
+        tabIndex={0}
         draggable
         ref={ref}
         width={width}
@@ -41,6 +42,7 @@ const ZoomableStage = forwardRef(
         onWheel={handleWheel}
         onDrop={onDrop}
         onDragOver={onDragOver}
+        onMouseMove={onMouseMove} // ⬅️ Forward it here
       >
         {children}
       </Stage>

@@ -81,7 +81,8 @@ const RefactoredMap = ({
     setActiveInteractionMode,
     socket,
     map._id,
-    map.content?.campaign
+    map.content?.campaign,
+    stageRef // ⬅️ Added here
   );
 
   const { handleTokenMove } = useTokenMovement({
@@ -111,7 +112,7 @@ const RefactoredMap = ({
         width={gridWidth}
         height={gridHeight}
         onMouseMove={(e) => {
-          console.log("🖱️ Mouse move detected");
+          //console.log("🖱️ Mouse move detected");
           handleMouseMove(e);
         }}
       >

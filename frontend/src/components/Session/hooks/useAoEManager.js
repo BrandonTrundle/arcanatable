@@ -7,7 +7,8 @@ export const useAoEManager = (
   setActiveInteractionMode,
   socket,
   mapId,
-  campaignId // ✅ new
+  campaignId,
+  stageRef // ⬅️ Add this!
 ) => {
   const [aoeDraft, setAoeDraft] = useState(null);
   const [aoeShapes, setAoeShapes] = useState([]);
@@ -75,8 +76,8 @@ export const useAoEManager = (
       return;
     }
 
-    const feetPerSquare = 5;
-    const pixelRadius = (aoeDraft.radius / feetPerSquare) * cellSize;
+    const pixelRadius = aoeDraft.radius;
+
     const snappedX = Math.floor(trueX / cellSize) * cellSize + cellSize / 2;
     const snappedY = Math.floor(trueY / cellSize) * cellSize + cellSize / 2;
 
@@ -99,21 +100,51 @@ export const useAoEManager = (
   const confirmAoE = ({ type, radius, color }) => {
     const defaultX = mousePosition?.x || 0;
     const defaultY = mousePosition?.y || 0;
-
+    const pixelRadius = (radius / 5) * cellSize;
     const defaultDirection = 0;
 
     console.log("📤 AoE confirmed from toolbox:", { type, radius, color });
 
-    setAoeDraft({
+    const newDraft = {
       id: `aoe-${Date.now()}`,
       x: defaultX,
       y: defaultY,
-      radius,
+      radius: pixelRadius,
       color,
       type,
       direction: type === "cone" ? defaultDirection : undefined,
       placed: false,
-    });
+    };
+
+    setAoeDraft(newDraft);
+
+    const stage = stageRef?.current?.getStage?.();
+    if (stage) {
+      const pos = stage.getPointerPosition();
+      if (pos) {
+        const scale = stage.scaleX();
+        const stagePos = stage.position();
+        const trueX = (pos.x - stagePos.x) / scale;
+        const trueY = (pos.y - stagePos.y) / scale;
+
+        setMousePosition({ x: trueX, y: trueY });
+
+        handleMouseMove({
+          target: {
+            getStage: () => stage,
+          },
+        });
+
+        // 🧠 Simulate a mouse move to trigger AoE update immediately
+        const syntheticMove = new MouseEvent("mousemove", {
+          bubbles: true,
+          cancelable: true,
+          clientX: pos.x,
+          clientY: pos.y,
+        });
+        stage.content.dispatchEvent(syntheticMove);
+      }
+    }
 
     setShowAoEToolbox(false);
   };

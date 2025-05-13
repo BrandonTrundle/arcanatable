@@ -2,6 +2,8 @@ import React from "react";
 import { Layer, Circle, Line } from "react-konva";
 
 const AoELayer = ({ aoeShapes, aoeDraft, mapId, mousePosition, removeAoE }) => {
+  console.log("🔍 AoE Draft:", aoeDraft);
+  console.log("🖱️ Mouse Position:", mousePosition);
   const renderCone = (
     x,
     y,
