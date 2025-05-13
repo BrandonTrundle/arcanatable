@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import MonsterForm from "./MonsterForm";
 import MonsterPreview from "./MonsterPreview";
 import "../../styles/MonsterManager.css";
+import { useUserContext } from "../../context/UserContext";
 import axios from "axios";
 import {
   fetchMonsters,
@@ -62,6 +63,7 @@ const MonsterManager = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [campaigns, setCampaigns] = useState([]);
+  const { user } = useUserContext();
 
   useEffect(() => {
     fetchMonsters()
@@ -80,7 +82,9 @@ const MonsterManager = () => {
         const res = await axios.get("/api/campaigns", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
-        setCampaigns(res.data);
+
+        const ownedCampaigns = res.data.filter((c) => c.creator === user._id);
+        setCampaigns(ownedCampaigns);
       } catch (err) {
         console.error("Failed to fetch campaigns:", err);
       }
@@ -131,28 +135,38 @@ const MonsterManager = () => {
     setIsEditing(false);
   };
 
-  const assignCampaign = (monsterId, campaignName) => {
-    setMonsters((prev) =>
-      prev.map((mon) => {
-        if (mon._id !== monsterId) return mon;
-        const alreadyAssigned = mon.campaigns?.includes(campaignName);
-        return {
-          ...mon,
-          campaigns: alreadyAssigned
-            ? mon.campaigns
-            : [...(mon.campaigns || []), campaignName],
-        };
-      })
-    );
+  const assignCampaign = async (monsterId, campaignId) => {
+    const original = monsters.find((mon) => mon._id === monsterId);
+    if (!original) return;
+
+    const alreadyAssigned = original.campaigns?.includes(campaignId);
+    const updated = {
+      ...original,
+      campaigns: alreadyAssigned
+        ? original.campaigns
+        : [...(original.campaigns || []), campaignId],
+    };
+
+    // ✅ Save to backend using correct structure
+    try {
+      await updateMonster(monsterId, updated); // monsterId is required
+      setMonsters((prev) =>
+        prev.map((mon) => (mon._id === monsterId ? updated : mon))
+      );
+    } catch (err) {
+      console.error("❌ Failed to update monster:", err);
+      alert("Failed to assign campaign. Please try again.");
+    }
   };
 
-  const removeCampaign = (monsterId, campaignName) => {
+  const removeCampaign = (monsterId, campaignId) => {
     setMonsters((prev) =>
       prev.map((mon) => {
         if (mon._id !== monsterId) return mon;
         return {
           ...mon,
-          campaigns: mon.campaigns.filter((c) => c !== campaignName),
+
+          campaigns: mon.campaigns.filter((c) => c !== campaignId),
         };
       })
     );
@@ -195,7 +209,7 @@ const MonsterManager = () => {
                     Assign to Campaign
                   </option>
                   {campaigns.map((c) => (
-                    <option key={c._id} value={c.name}>
+                    <option key={c._id} value={c._id}>
                       {c.name}
                     </option>
                   ))}
@@ -203,18 +217,21 @@ const MonsterManager = () => {
 
                 {mon.campaigns?.length > 0 && (
                   <ul className="assigned-campaigns">
-                    {mon.campaigns.map((camp, idx) => (
-                      <li key={idx}>
-                        {camp}
-                        <button
-                          className="remove-campaign-btn"
-                          onClick={() => removeCampaign(mon._id, camp)}
-                          title={`Remove ${camp}`}
-                        >
-                          ✖
-                        </button>
-                      </li>
-                    ))}
+                    {mon.campaigns.map((campId, idx) => {
+                      const campaign = campaigns.find((c) => c._id === campId);
+                      return (
+                        <li key={idx}>
+                          {campaign?.name || "Unknown"}
+                          <button
+                            className="remove-campaign-btn"
+                            onClick={() => removeCampaign(mon._id, campId)}
+                            title={`Remove ${campaign?.name || "Unknown"}`}
+                          >
+                            ✖
+                          </button>
+                        </li>
+                      );
+                    })}
                   </ul>
                 )}
               </div>

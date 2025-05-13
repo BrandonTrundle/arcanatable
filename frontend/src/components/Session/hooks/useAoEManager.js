@@ -11,7 +11,7 @@ export const useAoEManager = (
   campaignId,
   stageRef
 ) => {
-  console.log("🧪 AoE Manager socket:", socket); // ← Add here
+  //console.log("🧪 AoE Manager socket:", socket); // ← Add here
   const [showAoEToolbox, setShowAoEToolbox] = useState(false);
 
   const {
@@ -29,18 +29,32 @@ export const useAoEManager = (
   );
 
   const handleMapClick = () => {
-    if (activeInteractionMode !== "aoe" || !aoeDraft) return;
+    console.log("🖱️ handleMapClick triggered");
+
+    if (activeInteractionMode !== "aoe" || !aoeDraft) {
+      console.log("⚠️ Ignored click: wrong mode or no draft");
+      return;
+    }
 
     const shape = confirmPlacement();
+    console.log("📐 confirmPlacement returned:", shape);
+
     if (!shape) return;
+    if (shape.rotating) {
+      console.log("↪️ Still rotating, waiting for second click");
+      return;
+    }
 
-    addAoEShape(shape);
+    const finalShape = { ...shape, id: crypto.randomUUID() };
+    console.log("🛰️ Emitting AoE:", finalShape);
 
-    // ✅ Emit to other users
+    addAoEShape(finalShape);
+
     if (socket && socket.emit) {
       socket.emit("aoePlaced", {
         mapId,
-        aoe: shape,
+        campaignId,
+        aoe: finalShape,
       });
     }
 

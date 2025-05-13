@@ -8,12 +8,25 @@ const AoELayer = ({ aoeShapes, aoeDraft, mapId, mousePosition, removeAoE }) => {
     x,
     y,
     radius,
-    angle,
-    direction,
+    angle = 90,
+    direction = 0,
     color,
     key,
     options = {}
   ) => {
+    if (
+      typeof x !== "number" ||
+      typeof y !== "number" ||
+      typeof radius !== "number"
+    ) {
+      console.warn("❌ Invalid AoE cone coordinates or radius", {
+        x,
+        y,
+        radius,
+      });
+      return null;
+    }
+
     const segments = 30;
     const angleRad = (angle * Math.PI) / 180;
     const directionRad = (direction * Math.PI) / 180;
@@ -99,7 +112,7 @@ const AoELayer = ({ aoeShapes, aoeDraft, mapId, mousePosition, removeAoE }) => {
 
       <Layer id="aoe-preview-layer">
         {aoeDraft &&
-          !aoeDraft.placed &&
+          (!aoeDraft.placed || aoeDraft.rotating) &&
           mousePosition &&
           (aoeDraft.type === "cone"
             ? renderCone(

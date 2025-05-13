@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import NPCForm from "./NPCForm";
 import NPCPreview from "./NPCPreview";
 import axios from "axios";
+import { useUserContext } from "../../context/UserContext";
 import "../../styles/NPCManager.css";
 import {
   fetchNPCs,
@@ -58,6 +59,7 @@ const NPCManager = () => {
   const [isEditing, setIsEditing] = useState(false);
   const previewRef = useRef();
   const [campaigns, setCampaigns] = useState([]);
+  const { user } = useUserContext();
 
   useEffect(() => {
     fetchNPCs()
@@ -76,7 +78,8 @@ const NPCManager = () => {
         const res = await axios.get("/api/campaigns", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
-        setCampaigns(res.data);
+        const ownedCampaigns = res.data.filter((c) => c.creator === user._id);
+        setCampaigns(ownedCampaigns);
       } catch (err) {
         console.error("Failed to fetch campaigns:", err);
       }

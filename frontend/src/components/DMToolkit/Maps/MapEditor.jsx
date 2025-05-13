@@ -205,12 +205,10 @@ const MapEditor = ({ map, onClose, onMapUpdate }) => {
             onDragEnd={updateTokenPosition}
             onRightClick={(e, id) => {
               e.evt.preventDefault();
-
               const stage = stageRef.current.getStage();
               const token = placedTokens.find((t) => t.id === id);
               if (!token) return;
 
-              // Convert token coordinates to screen space
               const scale = stage.scaleX();
               const pos = stage.position();
               const screenX = token.x * scale + pos.x;
@@ -220,11 +218,12 @@ const MapEditor = ({ map, onClose, onMapUpdate }) => {
                 tokenId: id,
                 x: screenX,
                 y: screenY,
-                currentSize: token.tokenSize || "Medium", // ✅ pass it here
+                currentSize: token.tokenSize || "Medium",
                 mode: null,
               });
             }}
-            activeLayer={activeLayer} // ✅ include this line
+            onClick={() => {}} // 👈 ADD THIS TO AVOID onClick undefined
+            activeLayer={activeLayer}
           />
         </Layer>
       </ZoomableStage>

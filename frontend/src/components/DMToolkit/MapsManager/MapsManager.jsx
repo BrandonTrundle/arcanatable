@@ -36,7 +36,8 @@ const MapsManager = () => {
         const res = await axios.get("/api/campaigns", {
           headers: { Authorization: `Bearer ${user.token}` },
         });
-        setCampaigns(res.data);
+        const ownedCampaigns = res.data.filter((c) => c.creator === user._id);
+        setCampaigns(ownedCampaigns);
       } catch (err) {
         console.error("Failed to load campaigns:", err);
       }

@@ -3,7 +3,11 @@ import MonsterPreview from "../../../DMToolkit/MonsterPreview";
 import { fetchMonsters } from "../../../../services/monsterService";
 import "../../../../styles/MonsterManager.css"; // Reuse styling
 
-const CampaignMonsterListPanel = ({ campaignName, onSelect }) => {
+const CampaignMonsterListPanel = ({
+  campaignId,
+  campaignName = "",
+  onSelect,
+}) => {
   const [monsters, setMonsters] = useState([]);
 
   useEffect(() => {
@@ -13,7 +17,7 @@ const CampaignMonsterListPanel = ({ campaignName, onSelect }) => {
         console.log("📋 All fetched monsters:", data);
 
         const campaignMonsters = data
-          .filter((mon) => mon.content?.campaigns?.includes(campaignName))
+          .filter((mon) => mon.content?.campaigns?.includes(campaignId))
           .map((mon) => ({
             _id: mon._id,
             ...mon.content,
@@ -26,14 +30,14 @@ const CampaignMonsterListPanel = ({ campaignName, onSelect }) => {
       }
     };
 
-    if (campaignName) {
+    if (campaignId) {
       fetchCampaignMonsters();
     }
-  }, [campaignName]);
+  }, [campaignId]);
 
   return (
     <div className="npc-manager-container">
-      <h3>Monsters for {campaignName}</h3>
+      <h3>Monsters for {campaignName || campaignId}</h3>
       <ul className="npc-list">
         {monsters.map((mon) => (
           <li key={mon._id} className="npc-list-item">

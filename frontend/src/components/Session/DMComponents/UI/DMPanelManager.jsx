@@ -63,6 +63,7 @@ const DMPanelManager = ({
       {activeTool === "creatures" && (
         <div className="floating-npc-panel" style={floatingStyle(600)}>
           <CampaignMonsterListPanel
+            campaignId={campaign._id}
             campaignName={campaign.name}
             onSelect={setSelectedMonster}
           />
