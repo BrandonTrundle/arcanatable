@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+
 let saveTimeout = null;
 
 const debounceTokenSave = (mapId, content) => {
@@ -17,7 +18,7 @@ const debounceTokenSave = (mapId, content) => {
     }).catch((err) => {
       console.error("❌ Debounced token save failed:", err);
     });
-  }, 1000); // wait 1 second after last change
+  }, 1000);
 };
 
 const sizeMultiplier = {
@@ -30,10 +31,12 @@ const sizeMultiplier = {
 };
 
 export const useTokenManager = ({ map, socket, isDM, user }) => {
-  const [tokens, setTokens] = useState(map.content.placedTokens || []);
+  const [tokens, setTokens] = useState(() => map?.content?.placedTokens || []);
   const [contextMenu, setContextMenu] = useState(null);
   const [externalSelections, setExternalSelections] = useState({});
 
+  const mapId = map?._id ?? null;
+  const campaignId = map?.content?.campaign ?? null;
   const cellSize = 70;
 
   const hasControl = useCallback(
@@ -43,45 +46,44 @@ export const useTokenManager = ({ map, socket, isDM, user }) => {
   );
 
   useEffect(() => {
-    if (!socket) return;
-
-    const handleTokensUpdate = (payload) => {
-      if (String(payload.mapId) === String(map._id)) {
-        setTokens(payload.tokens || []);
-      }
-    };
-
-    socket.on("tokensUpdated", handleTokensUpdate);
-    return () => socket.off("tokensUpdated", handleTokensUpdate);
-  }, [socket, map._id]);
-
-  useEffect(() => {
-    setTokens(map.content.placedTokens || []);
-  }, [map._id]);
+    setTokens(map?.content?.placedTokens || []);
+  }, [mapId]);
 
   const emitTokenUpdate = (updatedTokens) => {
     if (socket && isDM) {
       socket.emit("updateTokens", {
-        campaignId: map.content?.campaign,
-        mapId: map._id,
+        campaignId,
+        mapId,
         tokens: updatedTokens,
       });
     }
   };
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !mapId) return;
 
-    const handleTokenDropped = ({ mapId, token }) => {
-      if (String(mapId) !== String(map._id)) return;
+    const handleTokensUpdate = (payload) => {
+      if (String(payload.mapId) === String(mapId)) {
+        setTokens(payload.tokens || []);
+      }
+    };
+
+    socket.on("tokensUpdated", handleTokensUpdate);
+    return () => socket.off("tokensUpdated", handleTokensUpdate);
+  }, [socket, mapId]);
+
+  useEffect(() => {
+    if (!socket || !mapId) return;
+
+    const handleTokenDropped = ({ mapId: incomingId, token }) => {
+      if (String(incomingId) !== String(mapId)) return;
 
       setTokens((prev) => {
         const updated = [...prev, token];
 
-        // ✅ Only the DM persists dropped tokens
         if (isDM) {
-          debounceTokenSave(map._id, {
-            ...map.content,
+          debounceTokenSave(mapId, {
+            ...(map?.content || {}),
             placedTokens: updated,
           });
         }
@@ -92,13 +94,18 @@ export const useTokenManager = ({ map, socket, isDM, user }) => {
 
     socket.on("tokenDropped", handleTokenDropped);
     return () => socket.off("tokenDropped", handleTokenDropped);
-  }, [socket, map._id, isDM, map.content]);
+  }, [socket, mapId, isDM, map?.content]);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !mapId) return;
 
-    const handleTokenSelected = ({ mapId, tokenId, userId, username }) => {
-      if (String(mapId) !== String(map._id)) return;
+    const handleTokenSelected = ({
+      mapId: incomingId,
+      tokenId,
+      userId,
+      username,
+    }) => {
+      if (String(incomingId) !== String(mapId)) return;
       if (user && user._id === userId) return;
 
       setExternalSelections((prev) => ({
@@ -109,13 +116,13 @@ export const useTokenManager = ({ map, socket, isDM, user }) => {
 
     socket.on("tokenSelected", handleTokenSelected);
     return () => socket.off("tokenSelected", handleTokenSelected);
-  }, [socket, map._id, user]);
+  }, [socket, mapId, user]);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !mapId) return;
 
-    const handleDeselection = ({ mapId, userId }) => {
-      if (String(mapId) !== String(map._id)) return;
+    const handleDeselection = ({ mapId: incomingId, userId }) => {
+      if (String(incomingId) !== String(mapId)) return;
 
       setExternalSelections((prev) => {
         const updated = { ...prev };
@@ -130,13 +137,13 @@ export const useTokenManager = ({ map, socket, isDM, user }) => {
 
     socket.on("tokenDeselected", handleDeselection);
     return () => socket.off("tokenDeselected", handleDeselection);
-  }, [socket, map._id]);
+  }, [socket, mapId]);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !mapId) return;
 
-    const handlePlayerMovedToken = ({ mapId, tokenId, x, y }) => {
-      if (String(mapId) !== String(map._id)) return;
+    const handlePlayerMovedToken = ({ mapId: incomingId, tokenId, x, y }) => {
+      if (String(incomingId) !== String(mapId)) return;
 
       setTokens((prev) =>
         prev.map((t) => (t.id === tokenId ? { ...t, x, y } : t))
@@ -145,7 +152,7 @@ export const useTokenManager = ({ map, socket, isDM, user }) => {
 
     socket.on("playerMovedToken", handlePlayerMovedToken);
     return () => socket.off("playerMovedToken", handlePlayerMovedToken);
-  }, [socket, map._id]);
+  }, [socket, mapId]);
 
   const handleTokenRightClick = (e, id, stageRef) => {
     const token = tokens.find((t) => t.id === id);
@@ -250,8 +257,8 @@ export const useTokenManager = ({ map, socket, isDM, user }) => {
         emitTokenUpdate(updated);
       } else if (socket) {
         socket.emit("tokenDrop", {
-          campaignId: map.content?.campaign,
-          mapId: map._id,
+          campaignId,
+          mapId,
           token: newToken,
         });
       }

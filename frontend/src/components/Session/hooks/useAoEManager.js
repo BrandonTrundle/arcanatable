@@ -1,5 +1,6 @@
-// Revised useAoEManager.js with console logging for debugging
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useAoEDraft } from "./useAoEDraft";
+import { useAoEShapes } from "./useAoEShapes";
 
 export const useAoEManager = (
   activeInteractionMode,
@@ -8,247 +9,85 @@ export const useAoEManager = (
   socket,
   mapId,
   campaignId,
-  stageRef // ⬅️ Add this!
+  stageRef
 ) => {
-  const [aoeDraft, setAoeDraft] = useState(null);
-  const [aoeShapes, setAoeShapes] = useState([]);
+  console.log("🧪 AoE Manager socket:", socket); // ← Add here
   const [showAoEToolbox, setShowAoEToolbox] = useState(false);
-  const [mousePosition, setMousePosition] = useState(null);
 
-  useEffect(() => {
-    console.log("🔁 Interaction mode changed:", activeInteractionMode);
-    if (activeInteractionMode === "aoe") {
-      console.log("🎯 Entering AoE mode");
-      setShowAoEToolbox(true);
-    } else {
-      console.log("⬅️ Exiting AoE mode");
-      setShowAoEToolbox(false);
-      setAoeDraft(null);
-    }
-  }, [activeInteractionMode]);
+  const {
+    aoeDraft,
+    mousePosition,
+    handleMouseMove,
+    startAoE,
+    confirmPlacement,
+    clearDraft,
+  } = useAoEDraft(cellSize);
 
-  const handleMouseMove = (stageEvent) => {
-    const stage = stageEvent.target.getStage();
-    const pointer = stage.getPointerPosition();
-    const scale = stage.scaleX();
-    const stagePos = stage.position();
-    const trueX = (pointer.x - stagePos.x) / scale;
-    const trueY = (pointer.y - stagePos.y) / scale;
+  const { aoeShapes, addAoEShape, removeAoEShape } = useAoEShapes(
+    mapId,
+    socket
+  );
 
-    setMousePosition({ x: trueX, y: trueY });
+  const handleMapClick = () => {
+    if (activeInteractionMode !== "aoe" || !aoeDraft) return;
 
-    if (aoeDraft?.type === "cone") {
-      // Point direction from AoE origin (or current pointer pos if not set yet)
-      const originX = aoeDraft.x || trueX;
-      const originY = aoeDraft.y || trueY;
-      const dx = trueX - originX;
-      const dy = trueY - originY;
-      const direction = (Math.atan2(dy, dx) * 180) / Math.PI;
+    const shape = confirmPlacement();
+    if (!shape) return;
 
-      setAoeDraft((prev) => ({
-        ...prev,
-        direction,
-        x: originX,
-        y: originY,
-      }));
-    }
-  };
+    addAoEShape(shape);
 
-  const handleMapClick = (input) => {
-    let trueX, trueY;
-
-    if ("stage" in input) {
-      trueX = input.trueX;
-      trueY = input.trueY;
-      console.log("🧭 AoE click (manual):", { trueX, trueY });
-    } else {
-      const stage = input.target.getStage();
-      const pointerPos = stage.getPointerPosition();
-      const scale = stage.scaleX();
-      const stagePos = stage.position();
-      trueX = (pointerPos.x - stagePos.x) / scale;
-      trueY = (pointerPos.y - stagePos.y) / scale;
-      console.log("🧭 AoE click (rect):", { trueX, trueY });
+    // ✅ Emit to other users
+    if (socket && socket.emit) {
+      socket.emit("aoePlaced", {
+        mapId,
+        aoe: shape,
+      });
     }
 
-    if (activeInteractionMode !== "aoe" || !aoeDraft) {
-      console.log("⛔ Ignoring click — wrong mode or no draft");
-      return;
-    }
-
-    const pixelRadius = aoeDraft.radius;
-
-    const snappedX = Math.floor(trueX / cellSize) * cellSize + cellSize / 2;
-    const snappedY = Math.floor(trueY / cellSize) * cellSize + cellSize / 2;
-
-    console.log("✅ Placing AoE at:", {
-      x: snappedX,
-      y: snappedY,
-      radius: pixelRadius,
-    });
-    setAoeDraft((prev) => ({
-      ...prev,
-      x: snappedX,
-      y: snappedY,
-      radius: pixelRadius,
-      placed: true,
-    }));
-
+    clearDraft();
     setShowAoEToolbox(false);
+    setActiveInteractionMode("select");
   };
 
   const confirmAoE = ({ type, radius, color }) => {
-    const defaultX = mousePosition?.x || 0;
-    const defaultY = mousePosition?.y || 0;
-    const pixelRadius = (radius / 5) * cellSize;
-    const defaultDirection = 0;
-
-    console.log("📤 AoE confirmed from toolbox:", { type, radius, color });
-
-    const newDraft = {
-      id: `aoe-${Date.now()}`,
-      x: defaultX,
-      y: defaultY,
-      radius: pixelRadius,
-      color,
-      type,
-      direction: type === "cone" ? defaultDirection : undefined,
-      placed: false,
-    };
-
-    setAoeDraft(newDraft);
-
-    const stage = stageRef?.current?.getStage?.();
-    if (stage) {
-      const pos = stage.getPointerPosition();
-      if (pos) {
-        const scale = stage.scaleX();
-        const stagePos = stage.position();
-        const trueX = (pos.x - stagePos.x) / scale;
-        const trueY = (pos.y - stagePos.y) / scale;
-
-        setMousePosition({ x: trueX, y: trueY });
-
-        handleMouseMove({
-          target: {
-            getStage: () => stage,
-          },
-        });
-
-        // 🧠 Simulate a mouse move to trigger AoE update immediately
-        const syntheticMove = new MouseEvent("mousemove", {
-          bubbles: true,
-          cancelable: true,
-          clientX: pos.x,
-          clientY: pos.y,
-        });
-        stage.content.dispatchEvent(syntheticMove);
-      }
-    }
-
-    setShowAoEToolbox(false);
-  };
-
-  const removeAoE = (id) => {
-    console.log("❌ Removing AoE:", id);
-    setAoeShapes((prev) => {
-      const newMapAoEs = (prev[mapId] || []).filter((a) => a.id !== id);
-      return {
-        ...prev,
-        [mapId]: newMapAoEs,
-      };
-    });
-
-    // 📡 Emit to other clients
-    if (socket && campaignId) {
-      socket.emit("aoeRemoved", { campaignId, mapId, aoeId: id });
-      console.log("📡 Emitted AoE removal:", { campaignId, mapId, aoeId: id });
-    }
+    startAoE(type, radius, color); // Now this is the *first and only* time it's called
+    setShowAoEToolbox(false); // Close the settings window once done
   };
 
   useEffect(() => {
-    if (!campaignId) return;
-
-    const handleRemoteAoERemoval = ({ mapId: incomingMapId, aoeId }) => {
-      if (incomingMapId !== mapId) return;
-
-      console.log("🧽 Received remote AoE removal:", aoeId);
-
-      setAoeShapes((prev) => {
-        const newMapAoEs = (prev[incomingMapId] || []).filter(
-          (a) => a.id !== aoeId
-        );
-        return {
-          ...prev,
-          [incomingMapId]: newMapAoEs,
-        };
-      });
-    };
-
-    socket?.on("aoeRemoved", handleRemoteAoERemoval);
-    return () => {
-      socket?.off("aoeRemoved", handleRemoteAoERemoval);
-    };
-  }, [socket, mapId, campaignId]);
+    if (activeInteractionMode === "aoe") {
+      // Remove this:
+      // startAoE("circle", 20, "rgba(255,0,0,0.4)");
+      setShowAoEToolbox(true);
+    } else {
+      clearDraft();
+      setShowAoEToolbox(false);
+    }
+  }, [activeInteractionMode]);
 
   useEffect(() => {
-    if (!campaignId) return;
+    if (!socket) return;
 
     const handleRemoteAoE = ({ mapId: incomingMapId, aoe }) => {
       if (incomingMapId !== mapId) return;
-
-      console.log("📥 Received remote AoE:", aoe);
-
-      setAoeShapes((prev) => ({
-        ...prev,
-        [incomingMapId]: [...(prev[incomingMapId] || []), aoe],
-      }));
+      addAoEShape(aoe);
     };
 
-    socket?.on("aoePlaced", handleRemoteAoE);
+    socket.on("aoePlaced", handleRemoteAoE);
+
     return () => {
-      socket?.off("aoePlaced", handleRemoteAoE);
+      socket.off("aoePlaced", handleRemoteAoE);
     };
-  }, [socket, mapId, campaignId]);
-
-  useEffect(() => {
-    if (!aoeDraft?.placed || !campaignId) return;
-
-    console.log("🎯 AoE placed, saving to shapes:", aoeDraft);
-
-    setAoeShapes((prev) => ({
-      ...prev,
-      [mapId]: [...(prev[mapId] || []), aoeDraft],
-    }));
-
-    // 📡 Emit AoE placement to other clients
-    socket?.emit("aoePlaced", {
-      campaignId,
-      mapId,
-      aoe: aoeDraft,
-    });
-    console.log("📡 Emitted AoE placement:", {
-      campaignId,
-      mapId,
-      aoe: aoeDraft,
-    });
-
-    if (typeof setActiveInteractionMode === "function") {
-      console.log("🔄 Switching back to 'select' mode after AoE placement");
-      setActiveInteractionMode("select");
-    }
-
-    setAoeDraft(null);
-  }, [aoeDraft, setActiveInteractionMode, socket, mapId, campaignId]);
+  }, [socket, mapId, addAoEShape]);
 
   return {
     aoeDraft,
+    mousePosition,
     aoeShapes,
     showAoEToolbox,
-    mousePosition,
-    handleMouseMove,
+    handleMouseMove: (e) => handleMouseMove(e, stageRef),
     handleMapClick,
     confirmAoE,
-    removeAoE,
+    removeAoE: removeAoEShape,
   };
 };

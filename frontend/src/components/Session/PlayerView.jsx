@@ -8,6 +8,8 @@ import TokenPanel from "./PlayerComponents/TokenPanel";
 import DicePanel from "./PlayerComponents/DicePanel";
 import CharacterSheetPanel from "./PlayerComponents/CharacterSheetPanel";
 import ChatPanel from "./PlayerComponents/ChatPanel";
+import RefactoredMap from "./DMComponents/Maps/RefactoredMap";
+import InteractionToolbar from "./DMComponents/UI/InteractionToolbar";
 
 const PlayerView = ({ campaign, socket, sessionMap }) => {
   const { user } = useContext(UserContext);
@@ -120,8 +122,8 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
         />
       </aside>
 
-      <MapArea
-        activeMap={activeMap}
+      <RefactoredMap
+        map={activeMap}
         socket={socket}
         user={user}
         activeInteractionMode={activeInteractionMode}
@@ -135,6 +137,13 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
           campaignId={campaign._id}
           userToken={user.token}
           onClose={() => setActiveTool(null)}
+        />
+      )}
+
+      {selectedTokenId && (
+        <InteractionToolbar
+          activeMode={activeInteractionMode}
+          setActiveMode={setActiveInteractionMode}
         />
       )}
 

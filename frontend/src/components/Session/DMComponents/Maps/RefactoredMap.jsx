@@ -30,8 +30,10 @@ const RefactoredMap = ({
   setActiveInteractionMode,
   setExternalTokens,
 }) => {
-  const { stageRef, cellSize, gridWidth, gridHeight } = useStageContext(map);
-  const [image] = useImage(map.content.imageUrl);
+  const { stageRef, cellSize, gridWidth, gridHeight } = useStageContext(
+    map || {}
+  );
+  const [image] = useImage(map?.content?.imageUrl || "");
 
   const {
     tokens,
@@ -80,9 +82,9 @@ const RefactoredMap = ({
     cellSize,
     setActiveInteractionMode,
     socket,
-    map._id,
-    map.content?.campaign,
-    stageRef // ⬅️ Added here
+    map?._id,
+    map?.content?.campaign,
+    stageRef
   );
 
   const { handleTokenMove } = useTokenMovement({
@@ -105,16 +107,18 @@ const RefactoredMap = ({
     }
   }, [tokens, setExternalTokens]);
 
+  // ✅ Now do the rendering guard here
+  if (!map || !map._id || !map.content) {
+    return null;
+  }
+
   return (
     <div className="map-rendered-view" onDrop={onDrop} onDragOver={onDragOver}>
       <ZoomableStage
         ref={stageRef}
         width={gridWidth}
         height={gridHeight}
-        onMouseMove={(e) => {
-          //console.log("🖱️ Mouse move detected");
-          handleMouseMove(e);
-        }}
+        onMouseMove={(e) => handleMouseMove(e)}
       >
         <MapBackground
           imageUrl={map.content.imageUrl}
