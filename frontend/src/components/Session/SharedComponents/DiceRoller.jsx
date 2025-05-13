@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import d4 from "../../../assets/d4logo.png";
 import d6 from "../../../assets/d6logo.png";
 import d8 from "../../../assets/d8logo.png";
@@ -26,8 +26,13 @@ const DiceRoller = ({ userId, campaignId, username, isDM, socket }) => {
   const [advantage, setAdvantage] = useState("normal"); // 'normal' | 'advantage' | 'disadvantage'
   const [isSecret, setIsSecret] = useState(false);
   const [savedRolls, setSavedRolls] = useState([]);
-  const diceAudio = new Audio(diceRollSfx);
-  diceAudio.volume = 0.6; // optional: tone it down
+  const diceAudioRef = useRef(null);
+
+  useEffect(() => {
+    const audio = new Audio(diceRollSfx);
+    audio.volume = 0.6;
+    diceAudioRef.current = audio;
+  }, []);
 
   // Placeholder: fetch saved rolls on load
   useEffect(() => {
@@ -57,9 +62,8 @@ const DiceRoller = ({ userId, campaignId, username, isDM, socket }) => {
   }, [campaignId, userId]);
 
   const handleRoll = () => {
-    diceAudio.currentTime = 0;
-    diceAudio.play().catch((err) => {
-      // Some browsers block autoplay — this prevents errors in console
+    diceAudioRef.current.currentTime = 0;
+    diceAudioRef.current.play().catch((err) => {
       console.warn("🎵 Dice roll sound blocked or failed:", err);
     });
     const rolls = [];

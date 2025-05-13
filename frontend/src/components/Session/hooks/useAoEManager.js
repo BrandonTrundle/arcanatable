@@ -33,8 +33,24 @@ export const useAoEManager = (
     const stagePos = stage.position();
     const trueX = (pointer.x - stagePos.x) / scale;
     const trueY = (pointer.y - stagePos.y) / scale;
-    console.log("🖱️ Mouse moved to:", { trueX, trueY });
+
     setMousePosition({ x: trueX, y: trueY });
+
+    if (aoeDraft?.type === "cone") {
+      // Point direction from AoE origin (or current pointer pos if not set yet)
+      const originX = aoeDraft.x || trueX;
+      const originY = aoeDraft.y || trueY;
+      const dx = trueX - originX;
+      const dy = trueY - originY;
+      const direction = (Math.atan2(dy, dx) * 180) / Math.PI;
+
+      setAoeDraft((prev) => ({
+        ...prev,
+        direction,
+        x: originX,
+        y: originY,
+      }));
+    }
   };
 
   const handleMapClick = (input) => {
@@ -81,16 +97,24 @@ export const useAoEManager = (
   };
 
   const confirmAoE = ({ type, radius, color }) => {
+    const defaultX = mousePosition?.x || 0;
+    const defaultY = mousePosition?.y || 0;
+
+    const defaultDirection = 0;
+
     console.log("📤 AoE confirmed from toolbox:", { type, radius, color });
+
     setAoeDraft({
       id: `aoe-${Date.now()}`,
-      x: 0,
-      y: 0,
+      x: defaultX,
+      y: defaultY,
       radius,
       color,
       type,
+      direction: type === "cone" ? defaultDirection : undefined,
       placed: false,
     });
+
     setShowAoEToolbox(false);
   };
 
