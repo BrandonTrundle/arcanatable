@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../../styles/TokenList.css";
+import { buildImageUrl } from "../../utils/imageUtils";
 
 const TokenList = ({ user }) => {
   const [tokens, setTokens] = useState([]);
@@ -55,7 +56,8 @@ const TokenList = ({ user }) => {
             e.dataTransfer.setData("application/json", JSON.stringify(token));
           }}
         >
-          <img src={getImage(token)} alt={token.title} />
+          <img src={buildImageUrl(getImage(token))} alt={token.title} />
+
           <span>{token.title}</span>
         </div>
       ))}

@@ -158,7 +158,7 @@ const MapsManager = () => {
                 isSelected={selectedMap?._id === map._id}
                 onSelect={setSelectedMap}
                 onUpdate={handleMapUpdateInline}
-                onDelete={handleDeleteMap} // ← Add this line
+                onDelete={handleDeleteMap}
                 campaigns={campaigns}
               />
             ))}

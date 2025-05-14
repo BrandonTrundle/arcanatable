@@ -17,7 +17,7 @@ const SessionRoom = () => {
   // ✅ useSocket must be inside the component
   const socket = useMemo(
     () =>
-      io("http://localhost:5000", {
+      io(import.meta.env.VITE_API_URL, {
         withCredentials: true,
         transports: ["websocket"],
       }),

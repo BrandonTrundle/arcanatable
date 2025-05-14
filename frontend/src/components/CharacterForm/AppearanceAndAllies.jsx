@@ -34,7 +34,7 @@ const AppearanceAndAllies = ({ formData, handleChange, setFormData }) => {
             <img
               src={
                 formData.orgSymbolImagePreview ||
-                `http://localhost:5000${formData.orgSymbolImage}`
+                `${import.meta.env.VITE_API_URL}${formData.orgSymbolImage}`
               }
               alt="Org Symbol"
             />

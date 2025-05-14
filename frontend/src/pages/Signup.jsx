@@ -1,82 +1,94 @@
-import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { UserContext } from '../context/UserContext'; // Adjust path as needed
-import axios from 'axios';
-import '../styles/Signup.css';
-import fantasyMap from '../assets/FantasyMapBackground.png';
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../context/UserContext"; // Adjust path as needed
+import axios from "axios";
+import "../styles/Signup.css";
+import fantasyMap from "../assets/FantasyMapBackground.png";
 
 const Signup = () => {
   const navigate = useNavigate();
   const { setUser } = useContext(UserContext);
 
   const [form, setForm] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
     newsletter: false,
     terms: false,
   });
 
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
+    setForm({ ...form, [name]: type === "checkbox" ? checked : value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (form.password !== form.confirmPassword) {
-      setMessage('Passwords do not match.');
+      setMessage("Passwords do not match.");
       return;
     }
 
     if (!form.terms) {
-      setMessage('You must agree to the terms of service.');
+      setMessage("You must agree to the terms of service.");
       return;
     }
 
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/signup', {
-        username: form.username,
-        email: form.email,
-        password: form.password
-      });
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/auth/signup`,
+        {
+          username: form.username,
+          email: form.email,
+          password: form.password,
+        }
+      );
 
       const { token } = res.data;
       if (token) {
-        localStorage.setItem('token', token);
-      
+        localStorage.setItem("token", token);
+
         // ✅ Fetch full user profile
-        const userDetails = await axios.get('http://localhost:5000/api/users/me', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-      
+        const userDetails = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/users/me`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
         setUser({ ...userDetails.data, token });
-        navigate('/user-onboarding');
+        navigate("/user-onboarding");
       } else {
-        setMessage('Signup succeeded but no token returned.');
+        setMessage("Signup succeeded but no token returned.");
       }
     } catch (err) {
       console.error(err);
-      setMessage(err.response?.data?.error || 'Signup failed. Try again.');
+      setMessage(err.response?.data?.error || "Signup failed. Try again.");
     }
   };
 
   return (
-    <div className="signup-page" style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
     <div
-      className="signup-page-bg"
-      style={{
-        backgroundImage: `url(${fantasyMap})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    />
+      className="signup-page"
+      style={{ position: "relative", minHeight: "100vh", overflow: "hidden" }}
+    >
+      <div
+        className="signup-page-bg"
+        style={{
+          backgroundImage: `url(${fantasyMap})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
 
-      <div className="signup-container" style={{ position: 'relative', zIndex: 1 }}>
+      <div
+        className="signup-container"
+        style={{ position: "relative", zIndex: 1 }}
+      >
         <h2 className="signup-title">Create your ArcanaTable account</h2>
 
         <form onSubmit={handleSubmit} className="signup-form">

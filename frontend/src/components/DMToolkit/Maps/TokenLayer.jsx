@@ -21,7 +21,12 @@ const Token = ({
   isExternallySelected,
   selectedBy,
 }) => {
-  const [img] = useImage(imageUrl, "anonymous");
+  const [img] = useImage(
+    imageUrl?.startsWith("/uploads")
+      ? `${import.meta.env.VITE_API_URL}${imageUrl}`
+      : imageUrl,
+    "anonymous"
+  );
   if (!img) return null;
 
   const isDM = activeLayer === "dm";

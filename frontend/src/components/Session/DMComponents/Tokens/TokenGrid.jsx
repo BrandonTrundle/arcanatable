@@ -1,4 +1,5 @@
 import React from "react";
+import { buildImageUrl } from "../../../../utils/imageUtils";
 
 const TokenGrid = ({
   toolkitTokens,
@@ -52,7 +53,7 @@ const TokenGrid = ({
               >
                 <div className="token-image-container">
                   <img
-                    src={imageUrl}
+                    src={buildImageUrl(imageUrl)}
                     alt={name}
                     className="token-thumbnail"
                     draggable
@@ -115,7 +116,7 @@ const TokenGrid = ({
               >
                 <div className="token-image-container">
                   <img
-                    src={imageUrl}
+                    src={buildImageUrl(imageUrl)}
                     alt={name}
                     className="token-thumbnail"
                     draggable

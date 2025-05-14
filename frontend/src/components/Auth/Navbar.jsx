@@ -1,48 +1,54 @@
-import React, { useState, useContext } from 'react';
-import axios from 'axios';
-import '../../styles/Navbar.css';
-import logo from '../../assets/ArcanaTableLogo.png';
-import { UserContext } from '../../context/UserContext';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useContext } from "react";
+import axios from "axios";
+import "../../styles/Navbar.css";
+import logo from "../../assets/ArcanaTableLogo.png";
+import { UserContext } from "../../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const { user, setUser, logout } = useContext(UserContext);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/auth/login`,
+        { email, password }
+      );
+
       const { token } = res.data;
-  
-      localStorage.setItem('token', token);
-  
+
+      localStorage.setItem("token", token);
+
       // ✅ Fetch full user profile after login
-      const userDetails = await axios.get('http://localhost:5000/api/users/me', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-  
+      const userDetails = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/users/me`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
       setUser({ ...userDetails.data, token });
-  
+
       // ✅ Route based on onboardingComplete
       if (userDetails.data.onboardingComplete) {
-        navigate('/dashboard');
+        navigate("/dashboard");
       } else {
-        navigate('/user-onboarding');
+        navigate("/user-onboarding");
       }
-  
-      setEmail('');
-      setPassword('');
+
+      setEmail("");
+      setPassword("");
       setMenuOpen(false);
     } catch (err) {
       console.error(err);
-      alert('Login failed.');
+      alert("Login failed.");
     }
   };
-  
 
   return (
     <nav className="navbar">
@@ -61,7 +67,10 @@ const Navbar = () => {
       <div className="navbar-user">
         {!user ? (
           <>
-            <button className="sign-in-btn" onClick={() => setMenuOpen(!menuOpen)}>
+            <button
+              className="sign-in-btn"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
               Sign In ▾
             </button>
 
@@ -94,21 +103,22 @@ const Navbar = () => {
                 </form>
 
                 <div className="signin-links">
-                  <button type="button" onClick={() => navigate('/signup')}>
+                  <button type="button" onClick={() => navigate("/signup")}>
                     New to ArcanaTable? Sign up
                   </button>
                   <button type="button" disabled>
                     Forgot password?
                   </button>
                 </div>
-
               </div>
             )}
           </>
         ) : (
           <div className="user-info">
             <span>🧙 Logged In</span>
-            <button onClick={logout} className="sign-out">Sign Out</button>
+            <button onClick={logout} className="sign-out">
+              Sign Out
+            </button>
           </div>
         )}
       </div>

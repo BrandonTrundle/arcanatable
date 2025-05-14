@@ -6,6 +6,7 @@ import backgroundImage from "../assets/Campaigns.png";
 import defaultAvatar from "../assets/defaultav.png";
 import placeholderImg from "../assets/FantasyMapBackground.png";
 import "../styles/CampaignDashboard.css";
+import { buildImageUrl } from "../utils/imageUtils";
 
 const CampaignDashboard = () => {
   const { user } = useContext(UserContext);
@@ -94,7 +95,7 @@ const CampaignDashboard = () => {
               {campaigns.map((campaign) => (
                 <li key={campaign._id} className="campaign-card">
                   <img
-                    src={campaign.imageUrl || placeholderImg}
+                    src={buildImageUrl(campaign.imageUrl) || placeholderImg}
                     alt={campaign.name}
                     className="campaign-image"
                     onError={(e) => (e.currentTarget.src = placeholderImg)}
@@ -119,7 +120,7 @@ const CampaignDashboard = () => {
                     {campaign.players?.map((player) => (
                       <img
                         key={player._id}
-                        src={player.avatarUrl || defaultAvatar}
+                        src={buildImageUrl(player.avatarUrl) || defaultAvatar}
                         alt={player.username}
                         title={`${player.username} – ${
                           player._id === campaign.creator ? "DM" : "Player"

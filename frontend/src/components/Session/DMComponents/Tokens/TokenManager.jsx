@@ -9,6 +9,7 @@ const TokenManager = ({ token, setActiveTool, campaign }) => {
   const [campaignTokens, setCampaignTokens] = useState([]);
   const [loadingTokens, setLoadingTokens] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   const handleLoadToolkitTokens = async () => {
     setActiveTokenTab("toolkit");
@@ -19,10 +20,10 @@ const TokenManager = ({ token, setActiveTool, campaign }) => {
         fetch("/api/dmtoolkit/type/AllTokens", {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch("http://localhost:5000/api/dmtoolkit/type/NPC", {
+        fetch(`${API_BASE}/api/dmtoolkit/type/NPC`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch("http://localhost:5000/api/dmtoolkit/type/Monster", {
+        fetch(`${API_BASE}/api/dmtoolkit/type/Monster`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);

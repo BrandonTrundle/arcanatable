@@ -22,7 +22,7 @@ const CharacterImageUpload = ({ formData, setFormData }) => {
           <img
             src={
               formData.portraitImagePreview ||
-              `http://localhost:5000${formData.portraitImage}`
+              `${import.meta.env.VITE_API_URL}${formData.portraitImage}`
             }
             alt="Portrait Preview"
           />

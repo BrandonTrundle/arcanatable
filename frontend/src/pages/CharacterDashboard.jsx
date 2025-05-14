@@ -71,7 +71,6 @@ const CharacterDashboard = () => {
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: "cover",
-          backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           minHeight: "100vh",
           paddingTop: "10rem",
@@ -90,12 +89,13 @@ const CharacterDashboard = () => {
               {characters.map((char) => (
                 <li key={char._id} className="character-card">
                   <img
-                    src={`http://localhost:5000${
+                    src={`${import.meta.env.VITE_API_URL}${
                       char.portraitImage || "/default-portrait.png"
                     }`}
                     alt={`${char.charname} portrait`}
                     className="character-portrait"
                   />
+
                   <div className="character-info">
                     <strong>{char.charname}</strong> – {char.class} lvl{" "}
                     {char.level}

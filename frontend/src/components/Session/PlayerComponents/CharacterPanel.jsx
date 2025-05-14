@@ -46,12 +46,13 @@ const CharacterPanel = ({ campaignId, onSelect }) => {
           onClick={() => onSelect(char)}
         >
           <img
-            src={`http://localhost:5000${
+            src={`${import.meta.env.VITE_API_URL}${
               char.portraitImage || "/default-portrait.png"
             }`}
             alt={`${char.charname} portrait`}
             className="character-portrait"
           />
+
           <div className="character-info">
             <strong>{char.charname}</strong> – {char.class} lvl {char.level}
           </div>

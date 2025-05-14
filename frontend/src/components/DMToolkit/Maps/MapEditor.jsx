@@ -12,7 +12,11 @@ import useImage from "use-image";
 import "../../../styles/MapEditor.css";
 
 const MapEditor = ({ map, onClose, onMapUpdate }) => {
-  const [image] = useImage(map.content.imageUrl);
+  const [image] = useImage(
+    map.content.imageUrl?.startsWith("/uploads")
+      ? `${import.meta.env.VITE_API_URL}${map.content.imageUrl}`
+      : map.content.imageUrl
+  );
   const [activeLayer, setActiveLayer] = useState("dm");
   const [placedTokens, setPlacedTokens] = useState(
     () => map?.content?.placedTokens || []

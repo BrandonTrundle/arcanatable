@@ -12,7 +12,11 @@ const MapBackground = ({
   mapHeight,
   onMapClick,
 }) => {
-  const [image] = useImage(imageUrl);
+  const [image] = useImage(
+    imageUrl?.startsWith("/uploads")
+      ? `${import.meta.env.VITE_API_URL}${imageUrl}`
+      : imageUrl
+  );
 
   return (
     <>

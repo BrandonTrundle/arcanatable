@@ -147,6 +147,8 @@ const NPCForm = ({ npc, setNPC, closeForm, onSubmit }) => {
             src={
               npc.image instanceof File
                 ? URL.createObjectURL(npc.image)
+                : npc.image?.startsWith("/uploads")
+                ? `${import.meta.env.VITE_API_URL}${npc.image}`
                 : npc.image
             }
             alt="NPC portrait"

@@ -3,6 +3,7 @@ import "../../styles/UserInfoCard.css"; // Adjust if this is now under /styles/
 import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../../assets/defaultav.png";
 import { UserContext } from "../../context/UserContext";
+import { getApiUrl } from "../../utils/env";
 
 const UserInfoCard = ({
   user,
@@ -41,7 +42,7 @@ const UserInfoCard = ({
       //    token ? "Present" : "Missing"
       //  );
 
-      const response = await fetch("http://localhost:5000/api/users/avatar", {
+      const response = await fetch(`${getApiUrl()}/api/users/avatar`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -58,10 +59,7 @@ const UserInfoCard = ({
       }
 
       const data = await response.json();
-      //   console.log(
-      //     "[Avatar Upload] Avatar updated successfully:",
-      //     data.avatarUrl
-      //   );
+      console.log("[Avatar Upload] URL returned from backend:", data.avatarUrl);
       setAvatarUrl(data.avatarUrl);
     } catch (err) {
       console.error("[Avatar Upload] Upload failed:", err);
@@ -73,7 +71,11 @@ const UserInfoCard = ({
     <>
       <div className="user-info-card">
         <img
-          src={avatarUrl}
+          src={
+            avatarUrl?.startsWith("/uploads")
+              ? `${getApiUrl()}${avatarUrl}`
+              : avatarUrl
+          }
           alt="User Avatar"
           onClick={handleAvatarClick}
           onError={() => setAvatarUrl(defaultAvatar)}
