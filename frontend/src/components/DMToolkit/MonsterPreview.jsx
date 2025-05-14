@@ -108,9 +108,11 @@ const MonsterPreview = ({ data }) => {
           <div className="monster-image-wrapper">
             <img
               src={
-                image?.startsWith("/uploads")
-                  ? `${import.meta.env.VITE_API_URL}${image}`
-                  : image
+                typeof image === "string"
+                  ? image.startsWith("/uploads")
+                    ? `${import.meta.env.VITE_API_URL}${image}`
+                    : image
+                  : URL.createObjectURL(image)
               }
               alt={`${name} art`}
               className="monster-image"

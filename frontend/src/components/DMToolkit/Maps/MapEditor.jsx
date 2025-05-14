@@ -9,6 +9,7 @@ import { Image as KonvaImage } from "react-konva";
 import { updateMapTokens } from "../../../services/mapService";
 import { useUserContext } from "../../../context/UserContext";
 import useImage from "use-image";
+import { createPortal } from "react-dom";
 import "../../../styles/MapEditor.css";
 
 const MapEditor = ({ map, onClose, onMapUpdate }) => {
@@ -177,10 +178,13 @@ const MapEditor = ({ map, onClose, onMapUpdate }) => {
         💾 Save Changes
       </button>
 
-      <LayerControlPanel
-        activeLayer={activeLayer}
-        onLayerChange={setActiveLayer}
-      />
+      {createPortal(
+        <LayerControlPanel
+          activeLayer={activeLayer}
+          onLayerChange={setActiveLayer}
+        />,
+        document.body // render into root body so it's not clipped
+      )}
 
       <ZoomableStage
         ref={stageRef}

@@ -83,6 +83,8 @@ const MonsterManager = () => {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
 
+        console.log("Campaign fetch response:", res.data);
+
         const ownedCampaigns = res.data.filter((c) => c.creator === user._id);
         setCampaigns(ownedCampaigns);
       } catch (err) {

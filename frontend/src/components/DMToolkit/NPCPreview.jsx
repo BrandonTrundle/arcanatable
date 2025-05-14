@@ -78,9 +78,13 @@ const NPCPreview = ({ data }) => {
         <div style={{ textAlign: "center", marginBottom: "1rem" }}>
           <img
             src={
-              image?.startsWith("/uploads")
-                ? `${import.meta.env.VITE_API_URL}${image}`
-                : image
+              typeof image === "string"
+                ? image.startsWith("/uploads")
+                  ? `${import.meta.env.VITE_API_URL}${image}`
+                  : image
+                : image instanceof File
+                ? URL.createObjectURL(image)
+                : ""
             }
             alt={`${name} portrait`}
             style={{
