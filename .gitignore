@@ -44,3 +44,15 @@ coverage/
 .next/
 out/
 .cache/
+
+# Ignore contents of uploads, but keep folder structure
+backend/uploads/*/*
+!backend/uploads/.gitkeep
+!backend/uploads/avatars/
+!backend/uploads/campaigns/
+!backend/uploads/characters/
+!backend/uploads/maps/
+!backend/uploads/monsters/
+!backend/uploads/npcs/
+!backend/uploads/tokenImages/
+

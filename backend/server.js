@@ -41,12 +41,11 @@ const io = new Server(server, {
         methods: ["GET", "POST"],
         credentials: true,
       }
-    : undefined, // Render handles origin in production
+    : undefined,
 });
 
 const userSocketMap = new Map();
 
-// 🧠 Socket.IO Events
 io.on("connection", (socket) => {
   socket.on("joinRoom", (campaignId) => {
     socket.join(campaignId);
@@ -85,9 +84,7 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("tokensUpdated", { mapId, tokens });
   });
 
-  socket.on("tokensUpdated", (payload) => {
-    // no-op placeholder (can remove or expand if needed)
-  });
+  socket.on("tokensUpdated", () => {});
 
   socket.on("tokenSelected", ({ campaignId, ...rest }) => {
     if (!campaignId) return;
@@ -155,7 +152,7 @@ staticPaths.forEach((folder) => {
   );
 });
 
-// Routes
+// API Routes
 app.use("/api/dmtoolkit", require("./routes/dmToolkitRoutes"));
 app.use("/api/characters", require("./routes/characterRoutes"));
 app.use("/api/campaigns", require("./routes/campaignRoutes"));
@@ -164,6 +161,15 @@ app.use("/api", require("./routes/uploadRoutes"));
 app.use("/api/sessionstate", require("./routes/sessionState"));
 app.use("/api/player-toolkit-tokens", require("./routes/playerToolkitRoutes"));
 app.use("/api/dicerolls", require("./routes/diceRollRoutes"));
+
+// SPA fallback for React routes (only in production)
+if (!isDev) {
+  const distPath = path.join(__dirname, "frontend", "dist");
+  app.use(express.static(distPath));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(distPath, "index.html"));
+  });
+}
 
 // Health check
 app.get("/", (req, res) => {
