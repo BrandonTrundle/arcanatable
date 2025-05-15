@@ -120,10 +120,16 @@ io.on("connection", (socket) => {
 });
 
 // Middleware
-if (isDev) {
-  console.log("🧪 Running in DEV MODE");
-  app.use(cors());
-}
+const allowedOrigins = isDev
+  ? ["http://localhost:3000"]
+  : ["https://arcanatable.onrender.com"];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: "20mb" }));
 
 // Session + Passport
