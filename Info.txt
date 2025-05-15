@@ -1,0 +1,5 @@
+git checkout main
+git merge development
+git push origin main
+
+https://dashboard.render.com/
