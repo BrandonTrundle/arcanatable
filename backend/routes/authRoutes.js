@@ -10,7 +10,7 @@ router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
-
+//This is to make sure the commit is forced
 router.get(
   "/google/callback",
   passport.authenticate("google", {
