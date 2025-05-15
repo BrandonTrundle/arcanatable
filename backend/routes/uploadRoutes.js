@@ -7,12 +7,11 @@ const { protect } = require("../middleware/authMiddleware");
 const router = express.Router();
 
 /**
- * Helper: Create dynamic multer storage
+ * Helper: Create dynamic multer storage for a folder
  */
 const createStorage = (folderName) => {
   const uploadPath = path.join(__dirname, `../uploads/${folderName}`);
 
-  // Ensure folder exists
   if (!fs.existsSync(uploadPath)) {
     fs.mkdirSync(uploadPath, { recursive: true });
   }
@@ -29,30 +28,26 @@ const createStorage = (folderName) => {
 };
 
 /**
- * Helper: Create upload route for a category
+ * Helper: Define an upload route for a specific resource
  */
-const createUploadRoute = (routePath, folderName) => {
+const defineUploadRoute = (urlPath, folderName) => {
   const upload = multer({ storage: createStorage(folderName) });
 
-  router.post(routePath, protect, upload.single("image"), (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ error: "No file uploaded" });
-      }
-      const imageUrl = `/uploads/${folderName}/${req.file.filename}`;
-      res.status(200).json({ url: imageUrl });
-    } catch (err) {
-      console.error(`${folderName} upload error:`, err);
-      res.status(500).json({ error: "Upload failed" });
+  router.post(urlPath, protect, upload.single("image"), (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
     }
+
+    const fileUrl = `/uploads/${folderName}/${req.file.filename}`;
+    res.status(200).json({ url: fileUrl });
   });
 };
 
-// ✅ Define all upload routes
-createUploadRoute("/uploads/monsters", "monsters");
-createUploadRoute("/uploads/npcs", "npcs");
-createUploadRoute("/uploads/maps", "maps");
-createUploadRoute("/uploads/tokenImages", "tokenImages");
-createUploadRoute("/uploads/campaigns", "campaigns"); // ✅ new route
+// ✅ Define routes for each category
+defineUploadRoute("/uploads/monsters", "monsters");
+defineUploadRoute("/uploads/npcs", "npcs");
+defineUploadRoute("/uploads/maps", "maps");
+defineUploadRoute("/uploads/tokenImages", "tokenImages");
+defineUploadRoute("/uploads/campaigns", "campaigns");
 
 module.exports = router;

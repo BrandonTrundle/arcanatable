@@ -5,24 +5,23 @@ const {
   createToolkitItem,
   getToolkitItems,
   getToolkitItemsByType,
-  getSingleToolkitItem, // ✅ add this import
+  getSingleToolkitItem,
   updateToolkitItem,
   deleteToolkitItem,
   uploadMap,
 } = require("../controllers/dmToolkitController");
 
-// Apply auth protection to all routes
 router.use(protect);
 
-// Standard CRUD routes
+// CRUD
 router.post("/", createToolkitItem);
 router.get("/", getToolkitItems);
-router.get("/type/:type", getToolkitItemsByType);
-router.get("/:id", getSingleToolkitItem); // ✅ new route to fetch one item
+router.get("/type/:type", getToolkitItemsByType); // ✅ must be above /:id
+router.get("/:id", getSingleToolkitItem);
 router.patch("/:id", updateToolkitItem);
 router.delete("/:id", deleteToolkitItem);
 
-// Cleaned map metadata route (expects imageUrl from frontend)
+// Map upload
 router.post("/maps/upload", uploadMap);
 
 module.exports = router;

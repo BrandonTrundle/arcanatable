@@ -1,3 +1,4 @@
+require("./tools/patchRouter");
 const express = require("express");
 const http = require("http");
 const path = require("path");
@@ -7,7 +8,9 @@ const session = require("express-session");
 const passport = require("passport");
 const { Server } = require("socket.io");
 
-require("dotenv-flow").config();
+require("dotenv").config(); // ✅ Always load .env
+console.log("✅ Loaded MONGO_URI:", process.env.MONGO_URI);
+
 const isDev = process.env.DEV_MODE === "true";
 
 const connectDB = require("./config/db");
@@ -123,7 +126,7 @@ if (isDev) {
 }
 app.use(express.json({ limit: "20mb" }));
 
-// Session + Auth
+// Session + Passport
 app.use(
   session({
     secret: "sessionsecret",
@@ -136,47 +139,44 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Static uploads
-const staticPaths = [
-  "avatars",
-  "monsters",
-  "npcs",
-  "maps",
-  "tokenImages",
-  "campaigns",
-  "characters",
-];
-staticPaths.forEach((folder) => {
+requiredFolders.forEach((folder) => {
   app.use(
     `/uploads/${folder}`,
     express.static(path.join(__dirname, `uploads/${folder}`))
   );
 });
 
-// API Routes
-app.use("/api/dmtoolkit", require("./routes/dmToolkitRoutes"));
-app.use("/api/characters", require("./routes/characterRoutes"));
-app.use("/api/campaigns", require("./routes/campaignRoutes"));
-app.use("/api", require("./routes"));
-app.use("/api", require("./routes/uploadRoutes"));
-app.use("/api/sessionstate", require("./routes/sessionState"));
-app.use("/api/player-toolkit-tokens", require("./routes/playerToolkitRoutes"));
-app.use("/api/dicerolls", require("./routes/diceRollRoutes"));
+// ✅ Centralized API routing
+console.log("🔍 Mounting central API router...");
+const originalUse = app.use.bind(app);
+app.use = function (...args) {
+  const path = typeof args[0] === "string" ? args[0] : "<no-path>";
+  if (path.includes("?") || path.includes("/:")) {
+    console.log("🛑 Suspicious path passed to app.use:", path);
+  } else {
+    console.log("✅ app.use called with:", path);
+  }
+  return originalUse(...args);
+};
 
-// SPA fallback for React routes (only in production)
-if (!isDev) {
-  const distPath = path.join(__dirname, "frontend", "dist");
-  app.use(express.static(distPath));
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(distPath, "index.html"));
-  });
-}
+app.use("/api", require("./routes")); // 👈 one mount to rule them all
+
+// SPA fallback
 
 // Health check
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-// Start server
+// Route debug output
+if (app._router?.stack) {
+  app._router.stack.forEach((layer) => {
+    if (layer.route?.path) {
+      console.log("✅ ROUTE:", layer.route.path);
+    }
+  });
+}
+
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () =>
   console.log(`🚀 Server running on port ${PORT} [DEV_MODE=${isDev}]`)
