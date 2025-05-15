@@ -47,7 +47,7 @@ const ComposeMessageModal = ({ onClose, onSent, replyTo = null }) => {
       }
 
       await axios.post(
-        "/api/messages",
+        `${import.meta.env.VITE_API_URL}/api/messages`,
         {
           recipientIds,
           subject,

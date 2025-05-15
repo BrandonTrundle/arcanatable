@@ -76,12 +76,17 @@ const MonsterForm = ({ monster, setMonster, closeForm, onSubmit }) => {
       formData.append("image", monster.image);
 
       try {
-        const res = await axios.post("/api/uploads/monsters", formData, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        const res = await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/uploads/monsters`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
         dataToSubmit.image = res.data.url;
       } catch (err) {
         console.error("Image upload failed:", err);

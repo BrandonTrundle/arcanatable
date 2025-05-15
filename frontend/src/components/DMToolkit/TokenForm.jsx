@@ -32,7 +32,11 @@ const TokenForm = ({ onCreated }) => {
       const formData = new FormData();
       formData.append("image", image);
 
-      const uploadRes = await axios.post("/api/uploads/tokenImages", formData);
+      const uploadRes = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/uploads/tokenImages`,
+        formData
+      );
+
       const imageUrl = uploadRes.data.url;
 
       // Create token item
@@ -43,7 +47,7 @@ const TokenForm = ({ onCreated }) => {
       };
 
       const res = await axios.post(
-        "/api/dmtoolkit",
+        `${import.meta.env.VITE_API_URL}/api/dmtoolkit`,
         {
           toolkitType: "Token",
           title,

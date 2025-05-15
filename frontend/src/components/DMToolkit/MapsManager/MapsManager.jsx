@@ -103,9 +103,12 @@ const MapsManager = () => {
 
   const handleDeleteMap = async (id) => {
     try {
-      await axios.delete(`/api/dmtoolkit/${id}`, {
-        headers: { Authorization: `Bearer ${user.token}` },
-      });
+      await axios.delete(
+        `${import.meta.env.VITE_API_URL}/api/dmtoolkit/${id}`,
+        {
+          headers: { Authorization: `Bearer ${user.token}` },
+        }
+      );
       setMaps((prev) => prev.filter((map) => map._id !== id));
       if (selectedMap?._id === id) setSelectedMap(null);
     } catch (err) {

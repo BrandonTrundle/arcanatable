@@ -8,19 +8,25 @@ export const fetchNPCs = async () => {
 };
 
 export const createNPC = async (npc) => {
-  const response = await axios.post("/api/dmtoolkit", {
-    toolkitType: "NPC",
-    title: npc.name || "Untitled",
-    content: npc,
-  });
+  const response = await axios.post(
+    `${import.meta.env.VITE_API_URL}/api/dmtoolkit`,
+    {
+      toolkitType: "NPC",
+      title: npc.name || "Untitled",
+      content: npc,
+    }
+  );
   return response.data;
 };
 
 export const updateNPC = async (id, npc) => {
-  const response = await axios.patch(`/api/dmtoolkit/${id}`, {
-    title: npc.name || "Untitled",
-    content: npc,
-  });
+  const response = await axios.patch(
+    `${import.meta.env.VITE_API_URL}/api/dmtoolkit/${id}`,
+    {
+      title: npc.name || "Untitled",
+      content: npc,
+    }
+  );
   return response.data;
 };
 

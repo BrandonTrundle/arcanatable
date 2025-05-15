@@ -47,7 +47,7 @@ export const deleteMap = async (mapId, token) => {
 export const updateMapTokens = async (mapId, placedTokens, token) => {
   try {
     const response = await axios.patch(
-      `/api/dmtoolkit/${mapId}`,
+      `${import.meta.env.VITE_API_URL}/api/dmtoolkit/${mapId}`,
       {
         "content.placedTokens": placedTokens,
       },
@@ -67,7 +67,7 @@ export const updateMapTokens = async (mapId, placedTokens, token) => {
 
 export const updateMap = async (mapId, updatedContent, token) => {
   const res = await axios.patch(
-    `/api/dmtoolkit/${mapId}`,
+    `${import.meta.env.VITE_API_URL}/api/dmtoolkit/${mapId}`,
     { content: updatedContent },
     {
       headers: { Authorization: `Bearer ${token}` },

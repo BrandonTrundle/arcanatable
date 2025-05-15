@@ -48,11 +48,15 @@ const DMToolkit = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`/api/dmtoolkit/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      await axios.delete(
+        `${import.meta.env.VITE_API_URL}/api/dmtoolkit/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
       fetchTokens(); // refresh list
     } catch (err) {
       console.error("Failed to delete token:", err);

@@ -73,9 +73,15 @@ const MessagePage = () => {
 
     if (viewMode === "inbox" && !msg.readBy.includes(userId)) {
       try {
-        await axios.patch(`/api/messages/${msg._id}/read`, null, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
+        await axios.patch(
+          `${import.meta.env.VITE_API_URL}/api/messages/${msg._id}/read`,
+          null,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
 
         setMessages((prev) =>
           prev.map((m) =>
@@ -92,9 +98,16 @@ const MessagePage = () => {
     if (!selectedMessage) return;
 
     try {
-      await axios.patch(`/api/messages/${selectedMessage._id}/archive`, null, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      await axios.patch(
+        `${import.meta.env.VITE_API_URL}/api/messages/${
+          selectedMessage._id
+        }/archive`,
+        null,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+
       fetchMessages();
       setSelectedMessage(null);
     } catch (err) {
@@ -106,11 +119,15 @@ const MessagePage = () => {
     if (!selectedMessage) return;
 
     try {
-      await axios.delete(`/api/messages/${selectedMessage._id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      await axios.delete(
+        `${import.meta.env.VITE_API_URL}/api/messages/${selectedMessage._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
       fetchMessages();
       setSelectedMessage(null);
     } catch (err) {

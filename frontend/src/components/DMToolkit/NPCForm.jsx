@@ -62,12 +62,17 @@ const NPCForm = ({ npc, setNPC, closeForm, onSubmit }) => {
       formData.append("image", npc.image);
 
       try {
-        const res = await axios.post("/api/uploads/npcs", formData, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        const res = await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/uploads/npcs`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
         npcData.image = res.data.url;
       } catch (err) {
         console.error("Image upload failed:", err);
@@ -87,7 +92,10 @@ const NPCForm = ({ npc, setNPC, closeForm, onSubmit }) => {
     formData.append("image", file);
 
     try {
-      const res = await axios.post("/api/uploads/npcs", formData); // or use `/api/uploads/npcs` if you split folders
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/uploads/npcs`,
+        formData
+      );
       setNPC((prev) => ({ ...prev, image: res.data.url }));
     } catch (err) {
       console.error("Image upload failed:", err);

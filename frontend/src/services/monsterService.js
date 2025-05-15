@@ -21,14 +21,20 @@ export const createMonster = async (monster) => {
     title: monster.name || "Untitled Monster",
     content: monster,
   };
-  const res = await axios.post("/api/dmtoolkit", payload);
+  const res = await axios.post(
+    `${import.meta.env.VITE_API_URL}/api/dmtoolkit`,
+    payload
+  );
   return res.data;
 };
 
 export const updateMonster = async (id, updatedMonster) => {
-  const response = await axios.patch(`/api/dmtoolkit/${id}`, {
-    content: updatedMonster,
-  });
+  const response = await axios.patch(
+    `${import.meta.env.VITE_API_URL}/api/dmtoolkit/${id}`,
+    {
+      content: updatedMonster,
+    }
+  );
   return response.data;
 };
 
