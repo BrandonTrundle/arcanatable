@@ -1,6 +1,7 @@
 const express = require("express");
 const http = require("http");
 const path = require("path");
+const fs = require("fs");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const session = require("express-session");
@@ -18,6 +19,33 @@ connectDB();
 // Express app + HTTP server (for Socket.IO)
 const app = express();
 const server = http.createServer(app);
+
+// Base uploads folder path (adjust if your uploads folder is elsewhere)
+const uploadsBasePath = path.join(__dirname, "uploads");
+
+// List all subfolders you need
+const requiredFolders = [
+  "avatars",
+  "campaigns",
+  "characters",
+  "maps",
+  "monsters",
+  "npcs",
+  "tokenImages",
+];
+
+// Create base uploads folder if missing
+if (!fs.existsSync(uploadsBasePath)) {
+  fs.mkdirSync(uploadsBasePath);
+}
+
+// Create each required subfolder if missing
+requiredFolders.forEach((folder) => {
+  const folderPath = path.join(uploadsBasePath, folder);
+  if (!fs.existsSync(folderPath)) {
+    fs.mkdirSync(folderPath);
+  }
+});
 
 // Socket.IO setup
 const io = new Server(server, {
