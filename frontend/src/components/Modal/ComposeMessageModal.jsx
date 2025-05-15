@@ -1,28 +1,26 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import '../../styles/ComposeMessageModal.css';
+import React, { useState } from "react";
+import axios from "axios";
+import "../../styles/ComposeMessageModal.css";
 
 const ComposeMessageModal = ({ onClose, onSent, replyTo = null }) => {
   const [recipientUsername, setRecipientUsername] = useState(
-    replyTo?.senderId?.username || ''
+    replyTo?.senderId?.username || ""
   );
   const [subject, setSubject] = useState(
-    replyTo ? `Re: ${replyTo.subject}` : ''
+    replyTo ? `Re: ${replyTo.subject}` : ""
   );
-  const [body, setBody] = useState(
-    replyTo ? `\n\n---\n${replyTo.body}` : ''
-  );
-  const [status, setStatus] = useState('');
+  const [body, setBody] = useState(replyTo ? `\n\n---\n${replyTo.body}` : "");
+  const [status, setStatus] = useState("");
 
   const handleSend = async () => {
     try {
       const usernames = recipientUsername
-        .split(',')
+        .split(",")
         .map((name) => name.trim())
         .filter(Boolean);
 
       if (usernames.length === 0) {
-        setStatus('Please enter at least one username.');
+        setStatus("Please enter at least one username.");
         return;
       }
 
@@ -30,11 +28,16 @@ const ComposeMessageModal = ({ onClose, onSent, replyTo = null }) => {
 
       for (const username of usernames) {
         try {
-          const res = await axios.get(`/api/users/lookup?username=${username}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-          });
+          const res = await axios.get(
+            `${
+              import.meta.env.VITE_API_URL
+            }/api/users/lookup?username=${username}`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
           recipientIds.push(res.data._id);
         } catch (err) {
           console.error(`Failed to find user: ${username}`);
@@ -44,26 +47,26 @@ const ComposeMessageModal = ({ onClose, onSent, replyTo = null }) => {
       }
 
       await axios.post(
-        '/api/messages',
+        "/api/messages",
         {
           recipientIds,
           subject,
           body,
-          category: 'personal',
+          category: "personal",
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
 
-      setStatus('Message sent!');
+      setStatus("Message sent!");
       onSent?.();
       setTimeout(() => onClose(), 1000);
     } catch (err) {
       console.error(err);
-      setStatus('Failed to send message.');
+      setStatus("Failed to send message.");
     }
   };
 

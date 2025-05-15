@@ -108,9 +108,15 @@ const CharacterCreate = () => {
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {
-        const res = await axios.get("/api/campaigns", {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/campaigns`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
         const allCampaigns = res.data;
         const playerCampaigns = allCampaigns.filter(
           (camp) => camp.creator !== user._id

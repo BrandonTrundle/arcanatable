@@ -75,9 +75,14 @@ const NPCManager = () => {
 
     const fetchCampaigns = async () => {
       try {
-        const res = await axios.get("/api/campaigns", {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/campaigns`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         const ownedCampaigns = res.data.filter((c) => c.creator === user._id);
         setCampaigns(ownedCampaigns);
       } catch (err) {

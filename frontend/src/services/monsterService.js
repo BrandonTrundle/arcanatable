@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE = "/api/dmtoolkit";
+const API_BASE = `${import.meta.env.VITE_API_URL}/api/dmtoolkit`;
 
 axios.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");

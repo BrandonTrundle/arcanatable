@@ -9,11 +9,14 @@ const TokenList = ({ user }) => {
   useEffect(() => {
     const fetchTokens = async () => {
       try {
-        const res = await axios.get("/api/dmtoolkit", {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        });
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/dmtoolkit`,
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
 
         const tokenItems = res.data.filter((item) =>
           ["Token", "NPC", "Monster"].includes(item.toolkitType)

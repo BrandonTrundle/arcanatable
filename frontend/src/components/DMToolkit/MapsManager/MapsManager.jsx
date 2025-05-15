@@ -21,9 +21,13 @@ const MapsManager = () => {
   useEffect(() => {
     const fetchMaps = async () => {
       try {
-        const res = await axios.get("/api/dmtoolkit", {
-          headers: { Authorization: `Bearer ${user.token}` },
-        });
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/dmtoolkit`,
+          {
+            headers: { Authorization: `Bearer ${user.token}` },
+          }
+        );
+
         const mapItems = res.data.filter((item) => item.toolkitType === "Map");
         setMaps(mapItems);
       } catch (err) {
@@ -33,9 +37,13 @@ const MapsManager = () => {
 
     const fetchCampaigns = async () => {
       try {
-        const res = await axios.get("/api/campaigns", {
-          headers: { Authorization: `Bearer ${user.token}` },
-        });
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/campaigns`,
+          {
+            headers: { Authorization: `Bearer ${user.token}` },
+          }
+        );
+
         const ownedCampaigns = res.data.filter((c) => c.creator === user._id);
         setCampaigns(ownedCampaigns);
       } catch (err) {
