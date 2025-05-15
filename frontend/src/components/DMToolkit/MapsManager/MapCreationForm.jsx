@@ -64,7 +64,13 @@ const MapCreationForm = ({ onSubmit, onImageUpload }) => {
         value={form.height}
         onChange={(e) => handleChange("height", e.target.value)}
       />
-      <input type="file" accept="image/*" onChange={handleImageChange} />
+      <label htmlFor="map-image">Map Image</label>
+      <input
+        id="map-image"
+        type="file"
+        accept="image/*"
+        onChange={handleImageChange}
+      />
 
       {form.previewUrl && (
         <img src={form.previewUrl} alt="Map Preview" className="map-preview" />

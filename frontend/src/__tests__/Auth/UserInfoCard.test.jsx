@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import UserInfoCard from "../components/Auth/UserInfoCard";
+import UserInfoCard from "../../components/Auth/UserInfoCard";
 import { vi } from "vitest";
 
 // Mocks

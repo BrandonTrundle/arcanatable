@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../styles/DMToolkit.css";
 import WizardsTower from "../assets/WizardsTower.png";
 
-import MonsterManager from "../components/DMToolkit/MonsterManager";
+import MonsterManager from "../components/DMToolkit/Monster/MonsterManager";
 import NPCManager from "../components/DMToolkit/NPCManager";
 import MapsManager from "../components/DMToolkit/MapsManager/MapsManager";
 import TokenForm from "../components/DMToolkit/TokenForm";

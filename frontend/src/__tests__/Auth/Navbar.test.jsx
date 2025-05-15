@@ -1,10 +1,10 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import Navbar from "../components/Auth/Navbar";
+import Navbar from "../../components/Auth/Navbar";
 import { BrowserRouter } from "react-router-dom";
 import { vi } from "vitest";
 import axios from "axios";
-import { UserContext } from "../context/UserContext";
+import { UserContext } from "../../context/UserContext";
 
 // Define the navigate mock *before* it's used in the vi.mock block
 const mockNavigate = vi.fn();

@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
-import "../../styles/MonsterPreview.css";
-import ParchmentPaper from "../../assets/ParchmentPaper.png";
+import "../../../styles/MonsterPreview.css";
+import ParchmentPaper from "../../../assets/ParchmentPaper.png";
 import html2pdf from "html2pdf.js";
 
 const MonsterPreview = ({ data }) => {

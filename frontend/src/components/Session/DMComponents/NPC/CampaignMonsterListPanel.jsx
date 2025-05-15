@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import MonsterPreview from "../../../DMToolkit/MonsterPreview";
+import MonsterPreview from "../../../../components/DMToolkit/Monster/MonsterPreview";
 import { fetchMonsters } from "../../../../services/monsterService";
 import "../../../../styles/MonsterManager.css"; // Reuse styling
 

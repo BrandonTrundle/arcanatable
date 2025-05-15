@@ -1,5 +1,5 @@
-import React from 'react';
-import { Line } from 'react-konva';
+import React from "react";
+import { Line } from "react-konva";
 
 const GridOverlay = ({ width, height, cellSize }) => {
   const gridWidth = width * cellSize;

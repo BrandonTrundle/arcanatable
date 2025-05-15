@@ -2,8 +2,8 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
-import RequireOnboarding from "../components/Auth/RequireOnboarding";
-import { UserContext } from "../context/UserContext";
+import RequireOnboarding from "../../components/Auth/RequireOnboarding";
+import { UserContext } from "../../context/UserContext";
 
 // Define mockNavigate
 const mockNavigate = vi.fn();

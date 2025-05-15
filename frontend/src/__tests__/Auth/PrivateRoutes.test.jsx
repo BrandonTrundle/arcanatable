@@ -2,8 +2,8 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
-import PrivateRoute from "../components/Auth/PrivateRoute";
-import { UserContext } from "../context/UserContext";
+import PrivateRoute from "../../components/Auth/PrivateRoute";
+import { UserContext } from "../../context/UserContext";
 
 // Mock Navigate component
 vi.mock("react-router-dom", async () => {

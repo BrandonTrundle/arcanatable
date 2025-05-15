@@ -6,7 +6,6 @@ const MapEditorContextMenu = ({ contextMenu, onAction, onClose }) => {
 
   React.useEffect(() => {
     if (contextMenu?.mode === "resize") {
-      // Grab the current token’s size and default to it
       const currentSize = contextMenu?.currentSize ?? "";
       setSelectedSize(currentSize);
     }
@@ -15,7 +14,6 @@ const MapEditorContextMenu = ({ contextMenu, onAction, onClose }) => {
   if (!contextMenu) return null;
 
   const { x, y, tokenId, mode } = contextMenu;
-  //console.log("Rendering context menu with mode:", mode);
 
   return (
     <div
@@ -37,10 +35,8 @@ const MapEditorContextMenu = ({ contextMenu, onAction, onClose }) => {
           value={selectedSize}
           onChange={(e) => {
             const value = e.target.value;
-            //   console.log("Dropdown value selected:", value); // 🐞 Debug log
             setSelectedSize(value);
             if (value && tokenId) {
-              //    console.log("Resize dropdown changed →", tokenId, value);
               onAction("apply-resize", tokenId, value);
               onClose();
             }
@@ -59,13 +55,46 @@ const MapEditorContextMenu = ({ contextMenu, onAction, onClose }) => {
         </select>
       ) : (
         <>
-          <div onClick={() => onAction("to-dm", tokenId)}>🧙 To DM Layer</div>
-          <div onClick={() => onAction("to-player", tokenId)}>
+          <div
+            onClick={() => {
+              onAction("to-dm", tokenId);
+              onClose();
+            }}
+          >
+            🧙 To DM Layer
+          </div>
+          <div
+            onClick={() => {
+              onAction("to-player", tokenId);
+              onClose();
+            }}
+          >
             🧍 To Player Layer
           </div>
-          <div onClick={() => onAction("number", tokenId)}>🔢 Token Number</div>
-          <div onClick={() => onAction("resize", tokenId)}>📏 Edit Size</div>
-          <div onClick={() => onAction("delete", tokenId)}>🗑 Delete Token</div>
+          <div
+            onClick={() => {
+              onAction("number", tokenId);
+              onClose();
+            }}
+          >
+            🔢 Token Number
+          </div>
+          <div
+            onClick={() => {
+              onAction("resize", tokenId);
+              // Do NOT call onClose(); we want the menu to stay open and transition to resize mode
+            }}
+          >
+            📏 Edit Size
+          </div>
+          <div
+            onClick={() => {
+              onAction("delete", tokenId);
+              onClose();
+            }}
+          >
+            🗑 Delete Token
+          </div>
         </>
       )}
     </div>

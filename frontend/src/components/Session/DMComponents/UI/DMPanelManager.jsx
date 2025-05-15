@@ -5,7 +5,7 @@ import DiceRoller from "../../SharedComponents/DiceRoller";
 import CampaignNPCListPanel from "../NPC/CampaignNPCListPanel";
 import CampaignMonsterListPanel from "../NPC/CampaignMonsterListPanel";
 import NPCPreview from "../../../DMToolkit/NPCPreview";
-import MonsterPreview from "../../../DMToolkit/MonsterPreview";
+import MonsterPreview from "../../../DMToolkit/Monster/MonsterPreview";
 
 const DMPanelManager = ({
   activeTool,
