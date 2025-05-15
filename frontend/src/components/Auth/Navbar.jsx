@@ -57,8 +57,12 @@ const Navbar = () => {
       </div>
 
       <div className="navbar-links">
-        <a href="#">Play Now</a>
-        <a href="#">Join a Game</a>
+        {user ? (
+          <a onClick={() => navigate("/dashboard")}>Dashboard</a>
+        ) : (
+          <a href="#">Play Now</a>
+        )}
+        {/* Join a Game is removed */}
         <button className="navbar-button">Marketplace ▾</button>
         <button className="navbar-button">Tools ▾</button>
         <button className="navbar-button">Community ▾</button>
