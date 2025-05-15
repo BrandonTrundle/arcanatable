@@ -8,7 +8,7 @@ const debounceTokenSave = (mapId, content) => {
   if (saveTimeout) clearTimeout(saveTimeout);
 
   saveTimeout = setTimeout(() => {
-    fetch(`/api/dmtoolkit/${mapId}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/dmtoolkit/${mapId}`, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,

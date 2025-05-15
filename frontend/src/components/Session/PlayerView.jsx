@@ -47,7 +47,9 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
     const fetchCurrentMap = async () => {
       try {
         const sessionRes = await fetch(
-          `/api/sessionstate/${campaign._id}/current-map`,
+          `${import.meta.env.VITE_API_URL}/api/sessionstate/${
+            campaign._id
+          }/current-map`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -58,11 +60,14 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
         const { mapId } = await sessionRes.json();
         if (!mapId) return;
 
-        const mapRes = await fetch(`/api/dmtoolkit/${mapId}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const mapRes = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/dmtoolkit/${mapId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
 
         const map = await mapRes.json();
         setActiveMap(map);
@@ -85,14 +90,19 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
     if (!selectedCharacter) return;
 
     try {
-      const res = await fetch(`/api/characters/${selectedCharacter._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(selectedCharacter),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/characters/${
+          selectedCharacter._id
+        }`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(selectedCharacter),
+        }
+      );
 
       if (!res.ok) {
         const err = await res.json();

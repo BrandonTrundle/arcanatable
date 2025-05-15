@@ -27,11 +27,14 @@ const SessionRoom = () => {
   useEffect(() => {
     const fetchCampaign = async () => {
       try {
-        const res = await fetch(`/api/campaigns/${id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/campaigns/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         const data = await res.json();
         setCampaign(data);
         fetchSessionState(data._id); // ✅ Move this INSIDE success block
@@ -44,11 +47,14 @@ const SessionRoom = () => {
 
     const fetchSessionState = async (campaignId) => {
       try {
-        const res = await fetch(`/api/sessionstate/${campaignId}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/sessionstate/${campaignId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         if (res.ok) {
           const data = await res.json();
           setSessionMap(data.currentMapId || null);

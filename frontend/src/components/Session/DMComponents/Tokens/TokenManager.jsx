@@ -17,7 +17,7 @@ const TokenManager = ({ token, setActiveTool, campaign }) => {
 
     try {
       const [toolkitRes, npcsRes, monstersRes] = await Promise.all([
-        fetch("/api/dmtoolkit/type/AllTokens", {
+        fetch(`${API_BASE}/api/dmtoolkit/type/AllTokens`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
         fetch(`${API_BASE}/api/dmtoolkit/type/NPC`, {

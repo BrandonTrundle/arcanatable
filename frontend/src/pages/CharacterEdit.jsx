@@ -23,11 +23,14 @@ const CharacterEdit = () => {
   useEffect(() => {
     const fetchCharacter = async () => {
       try {
-        const res = await fetch(`/api/characters/${id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/characters/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         const data = await res.json();
         setFormData(data);
       } catch (err) {
@@ -43,11 +46,14 @@ const CharacterEdit = () => {
   useEffect(() => {
     const fetchCharacter = async () => {
       try {
-        const res = await fetch(`/api/characters/${id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/characters/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         const data = await res.json();
         setFormData(data);
       } catch (err) {
@@ -132,14 +138,17 @@ const CharacterEdit = () => {
     }
 
     try {
-      const res = await fetch(`/api/characters/${id}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          // Do not set Content-Type manually when using FormData
-        },
-        body: formDataToSend,
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/characters/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            // Do not set Content-Type manually when using FormData
+          },
+          body: formDataToSend,
+        }
+      );
 
       if (res.ok) {
         navigate("/characters");

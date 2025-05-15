@@ -10,11 +10,14 @@ const CharacterPanel = ({ campaignId, onSelect }) => {
   useEffect(() => {
     const fetchCharacters = async () => {
       try {
-        const response = await fetch("/api/characters", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/characters`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         const data = await response.json();
         const charList = Array.isArray(data) ? data : data.characters || [];
         const filtered = charList.filter(

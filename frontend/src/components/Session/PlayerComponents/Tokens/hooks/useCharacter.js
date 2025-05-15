@@ -8,9 +8,12 @@ export const useCharacters = (campaignId, userToken) => {
   const fetchCharacters = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/characters", {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/characters`,
+        {
+          headers: { Authorization: `Bearer ${userToken}` },
+        }
+      );
       const data = await res.json();
       const filtered = data.filter((char) => char.campaign === campaignId);
       setCharacters(filtered);

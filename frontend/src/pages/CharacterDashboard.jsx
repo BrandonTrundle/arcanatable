@@ -14,11 +14,14 @@ const CharacterDashboard = () => {
   useEffect(() => {
     const fetchCharacters = async () => {
       try {
-        const response = await fetch("/api/characters", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/characters`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         const data = await response.json();
         //   console.log("Fetched characters:", data); // Debug output
         // If response is wrapped, adjust accordingly:
@@ -45,12 +48,15 @@ const CharacterDashboard = () => {
       return;
 
     try {
-      const res = await fetch(`/api/characters/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/characters/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       if (res.ok) {
         setCharacters((prev) => prev.filter((char) => char._id !== id));

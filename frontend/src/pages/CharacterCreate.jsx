@@ -85,14 +85,17 @@ const CharacterCreate = () => {
     }
 
     try {
-      const response = await fetch("/api/characters", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          // ❌ Do NOT manually set Content-Type, let the browser handle it
-        },
-        body: formDataToSend,
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/characters`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            // ❌ Do NOT manually set Content-Type, let the browser handle it
+          },
+          body: formDataToSend,
+        }
+      );
 
       if (response.ok) {
         navigate("/characters");

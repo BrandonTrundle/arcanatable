@@ -30,13 +30,16 @@ const CreateCampaign = () => {
         const formData = new FormData();
         formData.append("image", image);
 
-        const uploadRes = await fetch("/api/uploads/campaigns", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: formData,
-        });
+        const uploadRes = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/uploads/campaigns`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: formData,
+          }
+        );
 
         if (!uploadRes.ok) {
           throw new Error("Image upload failed");
@@ -46,7 +49,7 @@ const CreateCampaign = () => {
         finalImageUrl = uploadData.url;
       }
 
-      const res = await fetch("/api/campaigns", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/campaigns`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

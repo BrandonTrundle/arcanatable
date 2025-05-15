@@ -28,19 +28,23 @@ const useDMMapManager = (sessionMap, socket, user) => {
   const saveCurrentMap = useCallback(async () => {
     if (!activeMap || !activeMap._id) return;
     try {
-      const res = await fetch(`/api/dmtoolkit/${activeMap._id}`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          content: {
-            ...activeMap.content,
-            placedTokens: tokens,
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/dmtoolkit/${activeMap._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
           },
-        }),
-      });
+
+          body: JSON.stringify({
+            content: {
+              ...activeMap.content,
+              placedTokens: tokens,
+            },
+          }),
+        }
+      );
 
       if (!res.ok) {
         console.error("❌ Failed to save map state.");

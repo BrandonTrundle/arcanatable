@@ -9,11 +9,14 @@ const MapLoaderPanel = ({ campaign, socket, saveCurrentMap }) => {
   useEffect(() => {
     const fetchMaps = async () => {
       try {
-        const res = await fetch("/api/dmtoolkit", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/dmtoolkit`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         const data = await res.json();
         const filtered = data.filter(
           (item) =>
@@ -36,22 +39,31 @@ const MapLoaderPanel = ({ campaign, socket, saveCurrentMap }) => {
       }
 
       // ✅ Step 2: Set new map in backend session
-      await fetch(`/api/sessionstate/${campaign._id}/set-map`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ mapId: map._id }),
-      });
+      await fetch(
+        `${import.meta.env.VITE_API_URL}/api/sessionstate/${
+          campaign._id
+        }/set-map`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ mapId: map._id }),
+        }
+      );
 
       // ✅ Step 3: Emit new map to clients
       // Fetch the latest map (with updated tokens) from the backend
-      const refreshed = await fetch(`/api/dmtoolkit/${map._id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const refreshed = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/dmtoolkit/${map._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
       const latestMap = await refreshed.json();
 
       // Now emit the full latest version
@@ -73,12 +85,13 @@ const MapLoaderPanel = ({ campaign, socket, saveCurrentMap }) => {
     };
 
     try {
-      const res = await fetch("/api/dmtoolkit", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/dmtoolkit`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "Content-Type": "application/json",
         },
+
         body: JSON.stringify({
           toolkitType: "Map",
           content: completeContent,
@@ -116,13 +129,17 @@ const MapLoaderPanel = ({ campaign, socket, saveCurrentMap }) => {
         <MapCreationForm
           onSubmit={handleMapSubmit}
           onImageUpload={async (file) => {
-            const res = await fetch("/api/upload", {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-              },
-              body: file,
-            });
+            const res = await fetch(
+              `${import.meta.env.VITE_API_URL}/api/upload`,
+              {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: file,
+              }
+            );
+
             const data = await res.json();
             return data.url;
           }}

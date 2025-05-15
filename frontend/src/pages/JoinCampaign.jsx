@@ -15,14 +15,17 @@ const JoinCampaign = () => {
     setJoining(true);
 
     try {
-      const response = await fetch("/api/campaigns/join", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ inviteCode }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/campaigns/join`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ inviteCode }),
+        }
+      );
 
       if (!response.ok) {
         const errData = await response.json();

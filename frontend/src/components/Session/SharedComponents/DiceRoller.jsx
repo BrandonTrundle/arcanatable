@@ -43,11 +43,14 @@ const DiceRoller = ({ userId, campaignId, username, isDM, socket }) => {
   useEffect(() => {
     const fetchSavedRolls = async () => {
       try {
-        const res = await fetch(`/api/dicerolls/${campaignId}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/dicerolls/${campaignId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
 
         if (!res.ok) throw new Error("Failed to load saved rolls");
 
@@ -136,7 +139,7 @@ const DiceRoller = ({ userId, campaignId, username, isDM, socket }) => {
     };
 
     try {
-      const res = await fetch("/api/dicerolls", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/dicerolls`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -257,12 +260,17 @@ const DiceRoller = ({ userId, campaignId, username, isDM, socket }) => {
             <button
               onClick={async () => {
                 try {
-                  const res = await fetch(`/api/dicerolls/${roll._id}`, {
-                    method: "DELETE",
-                    headers: {
-                      Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                  });
+                  const res = await fetch(
+                    `${import.meta.env.VITE_API_URL}/api/dicerolls/${roll._id}`,
+                    {
+                      method: "DELETE",
+                      headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                          "token"
+                        )}`,
+                      },
+                    }
+                  );
 
                   if (!res.ok) throw new Error("Failed to delete");
 

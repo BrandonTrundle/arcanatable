@@ -7,9 +7,12 @@ export const useToolkitTokens = (userToken) => {
   const fetchTokens = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/player-toolkit-tokens", {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/player-toolkit-tokens`,
+        {
+          headers: { Authorization: `Bearer ${userToken}` },
+        }
+      );
       const data = await res.json();
       setTokens(data);
     } catch (err) {
@@ -21,14 +24,17 @@ export const useToolkitTokens = (userToken) => {
 
   const saveToken = async ({ name, imageUrl, size = "Medium" }) => {
     try {
-      const res = await fetch("/api/player-toolkit-tokens", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userToken}`,
-        },
-        body: JSON.stringify({ name, imageUrl, size }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/player-toolkit-tokens`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userToken}`,
+          },
+          body: JSON.stringify({ name, imageUrl, size }),
+        }
+      );
 
       if (!res.ok) throw new Error("Failed to save");
 
@@ -43,10 +49,13 @@ export const useToolkitTokens = (userToken) => {
 
   const deleteToken = async (id) => {
     try {
-      const res = await fetch(`/api/player-toolkit-tokens/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/player-toolkit-tokens/${id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${userToken}` },
+        }
+      );
 
       if (!res.ok) throw new Error("Delete failed");
 

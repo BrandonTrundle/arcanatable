@@ -17,11 +17,14 @@ const CampaignDashboard = () => {
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {
-        const response = await fetch("/api/campaigns", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/campaigns`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         const data = await response.json();
         const list = Array.isArray(data) ? data : data.campaigns || [];
         setCampaigns(list);
@@ -45,12 +48,15 @@ const CampaignDashboard = () => {
       return;
 
     try {
-      const res = await fetch(`/api/campaigns/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/campaigns/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       if (res.ok) {
         setCampaigns((prev) => prev.filter((c) => c._id !== id));
