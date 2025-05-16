@@ -74,14 +74,15 @@ const getCharacterById = asyncHandler(async (req, res) => {
 // @access  Private
 
 const updateCharacter = asyncHandler(async (req, res) => {
-  const { files, body, params, user } = req;
+  const { body, params, user } = req;
 
-  parseStructuredFields(body);
-
-  // Convert "" to null for optional ObjectId fields
+  // Optional cleanup (if using old utility)
   if (body.campaign === "") {
     body.campaign = null;
   }
+
+  // Only allow updates to fields defined in schema
+  const allowedFields = Object.keys(Character.schema.paths);
 
   const character = await Character.findOne({
     _id: params.id,
@@ -93,50 +94,14 @@ const updateCharacter = asyncHandler(async (req, res) => {
     throw new Error("Character not found or not authorized");
   }
 
-  // Update scalar and structured fields
-  Object.entries(body).forEach(([key, value]) => {
-    character[key] = value;
-  });
+  for (const [key, value] of Object.entries(body)) {
+    if (!allowedFields.includes(key)) continue;
 
-  // Handle portrait image update
-  if (files?.portraitImage) {
-    if (
-      character.portraitImage &&
-      character.portraitImage.startsWith("/uploads/characters/")
-    ) {
-      const oldPath = path.join(__dirname, "..", character.portraitImage);
-      fs.unlink(oldPath, (err) => {
-        if (err) {
-          console.warn("⚠️ Failed to delete old portrait image:", err.message);
-        } else {
-          // console.log("🗑 Old portrait image deleted:", oldPath);
-        }
-      });
+    try {
+      character[key] = JSON.parse(value);
+    } catch {
+      character[key] = value;
     }
-
-    character.portraitImage = `/uploads/characters/${files.portraitImage[0].filename}`;
-  }
-
-  // Handle org symbol image update
-  if (files?.orgSymbolImage) {
-    if (
-      character.orgSymbolImage &&
-      character.orgSymbolImage.startsWith("/uploads/characters/")
-    ) {
-      const oldPath = path.join(__dirname, "..", character.orgSymbolImage);
-      fs.unlink(oldPath, (err) => {
-        if (err) {
-          console.warn(
-            "⚠️ Failed to delete old org symbol image:",
-            err.message
-          );
-        } else {
-          console.log("🗑 Old org symbol image deleted:", oldPath);
-        }
-      });
-    }
-
-    character.orgSymbolImage = `/uploads/characters/${files.orgSymbolImage[0].filename}`;
   }
 
   await character.save();
