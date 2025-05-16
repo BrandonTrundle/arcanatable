@@ -141,11 +141,15 @@ app.use("/api", require("./routes"));
 
 // Serve React in production
 if (!isDev) {
-  const buildPath = path.join(__dirname, "client", "build");
+  // point to frontend/dist instead of client/build
+  const buildPath = path.resolve(__dirname, "..", "frontend", "dist");
   app.use(express.static(buildPath));
+
+  // catch-all: hand off non-API/non-upload routes to index.html
   app.get("*", (req, res, next) => {
-    if (req.path.startsWith("/api") || req.path.startsWith("/uploads"))
+    if (req.path.startsWith("/api") || req.path.startsWith("/uploads")) {
       return next();
+    }
     res.sendFile(path.join(buildPath, "index.html"));
   });
 }
