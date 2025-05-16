@@ -57,45 +57,49 @@ const CharacterCreate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ 1. Upload images first
-    if (formData.portraitImageFile) {
-      formData.portraitImage = await uploadImageToSupabase(
-        formData.portraitImageFile
-      );
-    }
-    if (formData.orgSymbolImageFile) {
-      formData.orgSymbolImage = await uploadImageToSupabase(
-        formData.orgSymbolImageFile
-      );
-    }
+    try {
+      let portraitImageURL = formData.portraitImage;
+      let orgSymbolImageURL = formData.orgSymbolImage;
 
-    // ✅ 2. THEN build the FormData
-    const formDataToSend = new FormData();
-
-    Object.entries(formData).forEach(([key, value]) => {
-      if (
-        key !== "portraitImageFile" &&
-        key !== "portraitImagePreview" &&
-        key !== "orgSymbolImageFile" &&
-        key !== "orgSymbolImagePreview"
-      ) {
-        const isObjectOrArray = typeof value === "object" && value !== null;
-        formDataToSend.append(
-          key,
-          isObjectOrArray ? JSON.stringify(value) : value ?? ""
+      // ✅ 1. Explicitly handle image upload to Supabase and set URLs
+      if (formData.portraitImageFile) {
+        portraitImageURL = await uploadImageToSupabase(
+          formData.portraitImageFile
         );
       }
-    });
 
-    // ✅ 3. These are now safe to include because upload already happened
-    if (formData.portraitImage) {
-      formDataToSend.append("portraitImage", formData.portraitImage);
-    }
-    if (formData.orgSymbolImage) {
-      formDataToSend.append("orgSymbolImage", formData.orgSymbolImage);
-    }
+      if (formData.orgSymbolImageFile) {
+        orgSymbolImageURL = await uploadImageToSupabase(
+          formData.orgSymbolImageFile
+        );
+      }
 
-    try {
+      // ✅ 2. THEN build the FormData clearly
+      const formDataToSend = new FormData();
+
+      Object.entries(formData).forEach(([key, value]) => {
+        if (
+          ![
+            "portraitImageFile",
+            "portraitImagePreview",
+            "orgSymbolImageFile",
+            "orgSymbolImagePreview",
+            "portraitImage",
+            "orgSymbolImage",
+          ].includes(key)
+        ) {
+          const isObjectOrArray = typeof value === "object" && value !== null;
+          formDataToSend.append(
+            key,
+            isObjectOrArray ? JSON.stringify(value) : value ?? ""
+          );
+        }
+      });
+
+      // ✅ 3. Explicitly ensure images are strings
+      formDataToSend.append("portraitImage", String(portraitImageURL));
+      formDataToSend.append("orgSymbolImage", String(orgSymbolImageURL));
+
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/characters`,
         {
