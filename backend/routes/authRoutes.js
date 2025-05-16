@@ -1,3 +1,4 @@
+router.get("/ping", (req, res) => res.json({ status: "auth is alive" }));
 const express = require("express");
 const router = express.Router();
 const { signup, login } = require("../controllers/authController");
