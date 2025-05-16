@@ -1,6 +1,7 @@
-const User = require("../models/userModel");
 const path = require("path");
-const fs = require("fs");
+const { supabase } = require("../utils/supabase");
+const User = require("../models/userModel"); // Keep this consistent
+// Removed: const fs = require("fs");
 
 exports.updateOnboarding = async (req, res) => {
   try {
@@ -75,72 +76,45 @@ exports.lookupUserByUsername = async (req, res) => {
 };
 
 exports.uploadAvatar = async (req, res) => {
-  // console.log("[uploadAvatar] ⬅️ Avatar upload request received");
-
   try {
     if (!req.file) {
       console.warn("[uploadAvatar] ❌ No file uploaded in request");
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    //  console.log("[uploadAvatar] 📂 Uploaded file:", {
-    //    originalname: req.file.originalname,
-    //     mimetype: req.file.mimetype,
-    //     size: req.file.size,
-    //    filename: req.file.filename,
-    //     path: req.file.path,
-    //    });
-
     const user = await User.findById(req.user._id);
-    // console.log("[uploadAvatar] 🔍 Found user:", user.username);
-
-    const oldAvatar = user.avatarUrl;
-    const oldFilename = oldAvatar?.split("/").pop();
-    const oldPath = path.join(
-      __dirname,
-      "..",
-      "uploads",
-      "avatars",
-      oldFilename
-    );
-    const isCustomAvatar =
-      oldAvatar &&
-      oldAvatar !== "/defaultav.png" &&
-      oldAvatar.startsWith("/uploads/avatars/");
-
-    if (isCustomAvatar) {
-      // console.log(
-      //    "[uploadAvatar] 🧹 Attempting to delete old avatar at:",
-      //    oldPath
-      //   );
-
-      fs.stat(oldPath, (err, stats) => {
-        if (!err && stats.isFile()) {
-          fs.unlink(oldPath, (unlinkErr) => {
-            if (unlinkErr) {
-              console.warn(
-                "⚠️ Failed to delete old avatar:",
-                unlinkErr.message
-              );
-            } else {
-              //   console.log("🗑 Old avatar deleted successfully:", oldAvatar);
-            }
-          });
-        } else {
-          console.warn("⚠️ Old avatar not found or is not a file:", oldPath);
-        }
-      });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-    const newAvatarPath = `/uploads/avatars/${req.file.filename}`;
-    user.avatarUrl = newAvatarPath;
+    const ext = path.extname(req.file.originalname);
+    const base = path.basename(req.file.originalname, ext);
+    const uniqueName = `${base}-${Date.now()}-${Math.round(
+      Math.random() * 1e9
+    )}${ext}`;
+    const filePath = `avatars/${uniqueName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("uploads")
+      .upload(filePath, req.file.buffer, {
+        contentType: req.file.mimetype,
+        upsert: false,
+      });
+
+    if (uploadError) {
+      console.error("🛑 Supabase upload error:", uploadError.message);
+      return res.status(500).json({ message: "Failed to upload to Supabase" });
+    }
+
+    const publicUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/uploads/${filePath}`;
+
+    user.avatarUrl = publicUrl;
     await user.save();
 
-    // console.log("[uploadAvatar] ✅ New avatar saved:", newAvatarPath);
-
-    res.status(200).json({ avatarUrl: newAvatarPath });
+    console.log("[uploadAvatar] ✅ Avatar uploaded and saved:", publicUrl);
+    res.status(200).json({ avatarUrl: publicUrl });
   } catch (error) {
     console.error("❌ [uploadAvatar] Server error:", error.message);
-    res.status(500).json({ message: "Server error", error });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
