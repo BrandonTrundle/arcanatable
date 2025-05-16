@@ -44,10 +44,10 @@ const defineUploadRoute = (urlPath, folderName) => {
 };
 
 // ✅ Define routes for each category
-defineUploadRoute("/uploads/monsters", "monsters");
-defineUploadRoute("/uploads/npcs", "npcs");
-defineUploadRoute("/uploads/maps", "maps");
-defineUploadRoute("/uploads/tokenImages", "tokenImages");
-defineUploadRoute("/uploads/campaigns", "campaigns");
+defineUploadRoute("/monsters", "monsters");
+defineUploadRoute("/npcs", "npcs");
+defineUploadRoute("/maps", "maps");
+defineUploadRoute("/tokenImages", "tokenImages");
+defineUploadRoute("/campaigns", "campaigns");
 
 module.exports = router;
