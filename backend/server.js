@@ -13,6 +13,11 @@ console.log("✅ Loaded MONGO_URI:", process.env.MONGO_URI);
 
 const isDev = process.env.DEV_MODE === "true";
 
+// Only patch Express router in dev mode
+if (isDev) {
+  require("./tools/patchRouter");
+}
+
 // Connect to MongoDB
 const connectDB = require("./config/db");
 connectDB();
