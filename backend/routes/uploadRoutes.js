@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const { protect } = require("../middleware/authMiddleware");
-const supabase = require("../config/supabase");
+const { supabase } = require("../config/supabase");
 
 const router = express.Router();
 
