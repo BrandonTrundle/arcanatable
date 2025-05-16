@@ -193,13 +193,20 @@ if (app._router?.stack) {
   });
 }
 
-// ⚠️ Add this LAST — AFTER all other routes
 const frontendPath = path.join(__dirname, "../frontend/dist");
 
+// Serve static frontend files
 app.use(express.static(frontendPath));
 
+// SPA fallback
 app.get("*", (req, res) => {
-  res.sendFile(path.join(frontendPath, "index.html"));
+  const indexPath = path.join(frontendPath, "index.html");
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    console.error("❌ index.html not found at", indexPath);
+    res.status(500).send("Frontend not built or missing.");
+  }
 });
 
 const PORT = process.env.PORT || 5000;
