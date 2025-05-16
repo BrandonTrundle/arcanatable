@@ -1,17 +1,20 @@
-router.get("/ping", (req, res) => res.json({ status: "auth is alive" }));
 const express = require("express");
 const router = express.Router();
+
 const { signup, login } = require("../controllers/authController");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 
+router.get("/ping", (req, res) => res.json({ status: "auth is alive" }));
+
 router.post("/signup", signup);
 router.post("/login", login);
+
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
-//This is to make sure the commit is forced
+
 router.get(
   "/google/callback",
   passport.authenticate("google", {
