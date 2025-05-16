@@ -17,10 +17,16 @@ const defineUploadRoute = (urlPath, folderName) => {
     }
 
     const ext = path.extname(req.file.originalname);
-    const base = path.basename(req.file.originalname, ext);
+
+    // ✅ Sanitize the base filename to remove problematic characters
+    const base = path
+      .basename(req.file.originalname, ext)
+      .replace(/[^a-zA-Z0-9-_]/g, "_"); // only letters, numbers, dash, underscore
+
     const uniqueName = `${base}-${Date.now()}-${Math.round(
       Math.random() * 1e9
     )}${ext}`;
+
     const filePath = `${folderName}/${uniqueName}`;
 
     const { error } = await supabase.storage
