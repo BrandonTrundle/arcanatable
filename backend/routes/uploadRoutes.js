@@ -3,6 +3,7 @@ const multer = require("multer");
 const path = require("path");
 const { protect } = require("../middleware/authMiddleware");
 const { supabase } = require("../config/supabase");
+console.log("[DEBUG] Supabase is:", supabase);
 
 const router = express.Router();
 
