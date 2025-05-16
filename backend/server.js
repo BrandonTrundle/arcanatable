@@ -166,11 +166,10 @@ requiredFolders.forEach((folder) => {
 console.log("🔍 Mounting central API router...");
 const originalUse = app.use.bind(app);
 app.use = function (...args) {
-  const path = typeof args[0] === "string" ? args[0] : "<no-path>";
-  if (path.includes("?") || path.includes("/:")) {
-    console.log("🛑 Suspicious path passed to app.use:", path);
+  if (typeof args[0] === "string") {
+    console.log("✅ app.use called with:", args[0]);
   } else {
-    console.log("✅ app.use called with:", path);
+    console.log("✅ app.use called with middleware only");
   }
   return originalUse(...args);
 };
@@ -192,6 +191,22 @@ if (app._router?.stack) {
     }
   });
 }
+
+const frontendPath = path.join(__dirname, "../frontend/dist");
+
+// Serve static frontend files
+app.use(express.static(frontendPath));
+
+// SPA fallback
+app.get("*", (req, res) => {
+  const indexPath = path.join(frontendPath, "index.html");
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    console.error("❌ index.html not found at", indexPath);
+    res.status(500).send("Frontend not built or missing.");
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () =>
