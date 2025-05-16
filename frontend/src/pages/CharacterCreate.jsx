@@ -57,9 +57,21 @@ const CharacterCreate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // ✅ 1. Upload images first
+    if (formData.portraitImageFile) {
+      formData.portraitImage = await uploadImageToSupabase(
+        formData.portraitImageFile
+      );
+    }
+    if (formData.orgSymbolImageFile) {
+      formData.orgSymbolImage = await uploadImageToSupabase(
+        formData.orgSymbolImageFile
+      );
+    }
+
+    // ✅ 2. THEN build the FormData
     const formDataToSend = new FormData();
 
-    // Include all fields except preview and File objects
     Object.entries(formData).forEach(([key, value]) => {
       if (
         key !== "portraitImageFile" &&
@@ -75,13 +87,12 @@ const CharacterCreate = () => {
       }
     });
 
-    // Attach image files if present
-    if (formData.portraitImageFile) {
-      formDataToSend.append("portraitImage", formData.portraitImageFile);
+    // ✅ 3. These are now safe to include because upload already happened
+    if (formData.portraitImage) {
+      formDataToSend.append("portraitImage", formData.portraitImage);
     }
-
-    if (formData.orgSymbolImageFile) {
-      formDataToSend.append("orgSymbolImage", formData.orgSymbolImageFile);
+    if (formData.orgSymbolImage) {
+      formDataToSend.append("orgSymbolImage", formData.orgSymbolImage);
     }
 
     try {
@@ -91,7 +102,6 @@ const CharacterCreate = () => {
           method: "POST",
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
-            // ❌ Do NOT manually set Content-Type, let the browser handle it
           },
           body: formDataToSend,
         }
@@ -134,6 +144,28 @@ const CharacterCreate = () => {
       fetchCampaigns();
     }
   }, [user]);
+
+  // Utility function to upload image
+  const uploadImageToSupabase = async (file) => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/uploads/characters`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: formData,
+      }
+    );
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Image upload failed");
+
+    return data.url; // Supabase public URL
+  };
 
   return (
     <>

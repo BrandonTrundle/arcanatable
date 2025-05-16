@@ -110,41 +110,56 @@ const CharacterEdit = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formDataToSend = new FormData();
+    try {
+      // ✅ Upload images to Supabase first
+      let updatedPortraitImage = formData.portraitImage;
+      let updatedOrgSymbolImage = formData.orgSymbolImage;
 
-    // Include all fields except preview and File objects
-    Object.entries(formData).forEach(([key, value]) => {
-      if (
-        key !== "portraitImageFile" &&
-        key !== "portraitImagePreview" &&
-        key !== "orgSymbolImageFile" &&
-        key !== "orgSymbolImagePreview"
-      ) {
-        const isObjectOrArray = typeof value === "object" && value !== null;
-        formDataToSend.append(
-          key,
-          isObjectOrArray ? JSON.stringify(value) : value ?? ""
+      if (formData.portraitImageFile) {
+        updatedPortraitImage = await uploadImageToSupabase(
+          formData.portraitImageFile
         );
       }
-    });
 
-    // Attach image files if new ones were uploaded
-    if (formData.portraitImageFile) {
-      formDataToSend.append("portraitImage", formData.portraitImageFile);
-    }
+      if (formData.orgSymbolImageFile) {
+        updatedOrgSymbolImage = await uploadImageToSupabase(
+          formData.orgSymbolImageFile
+        );
+      }
 
-    if (formData.orgSymbolImageFile) {
-      formDataToSend.append("orgSymbolImage", formData.orgSymbolImageFile);
-    }
+      // ✅ Prepare FormData to send to backend
+      const formDataToSend = new FormData();
 
-    try {
+      Object.entries(formData).forEach(([key, value]) => {
+        if (
+          ![
+            "portraitImageFile",
+            "portraitImagePreview",
+            "orgSymbolImageFile",
+            "orgSymbolImagePreview",
+            "portraitImage",
+            "orgSymbolImage",
+          ].includes(key)
+        ) {
+          const isObjectOrArray = typeof value === "object" && value !== null;
+          formDataToSend.append(
+            key,
+            isObjectOrArray ? JSON.stringify(value) : value ?? ""
+          );
+        }
+      });
+
+      // ✅ Append the Supabase URLs (if updated)
+      formDataToSend.append("portraitImage", updatedPortraitImage);
+      formDataToSend.append("orgSymbolImage", updatedOrgSymbolImage);
+
+      // ✅ Send PUT request to backend
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/api/characters/${id}`,
         {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
-            // Do not set Content-Type manually when using FormData
           },
           body: formDataToSend,
         }
@@ -153,7 +168,8 @@ const CharacterEdit = () => {
       if (res.ok) {
         navigate("/characters");
       } else {
-        console.error("Update failed");
+        const err = await res.json();
+        console.error("Update failed:", err.message);
       }
     } catch (err) {
       console.error("Error updating character:", err);
@@ -169,6 +185,28 @@ const CharacterEdit = () => {
       {label}
     </button>
   );
+
+  // Utility function to upload image to Supabase
+  const uploadImageToSupabase = async (file) => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/uploads/characters`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: formData,
+      }
+    );
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Image upload failed");
+
+    return data.url; // Supabase public URL
+  };
 
   if (loading || !formData) return <p>Loading character...</p>;
 

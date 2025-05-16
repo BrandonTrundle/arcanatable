@@ -52,5 +52,6 @@ defineUploadRoute("/maps", "maps");
 defineUploadRoute("/tokenImages", "tokenImages");
 defineUploadRoute("/campaigns", "campaigns");
 defineUploadRoute("/avatars", "avatars");
+defineUploadRoute("/characters", "characters");
 
 module.exports = router;
