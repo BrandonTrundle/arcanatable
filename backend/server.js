@@ -146,9 +146,19 @@ app.use(passport.session());
 
 // Static uploads
 requiredFolders.forEach((folder) => {
+  const folderPath = path.join(__dirname, `uploads/${folder}`);
   app.use(
     `/uploads/${folder}`,
-    express.static(path.join(__dirname, `uploads/${folder}`))
+    (req, res, next) => {
+      res.header(
+        "Access-Control-Allow-Origin",
+        "https://arcanatable.onrender.com"
+      );
+      res.header("Access-Control-Allow-Methods", "GET,OPTIONS");
+      res.header("Access-Control-Allow-Headers", "Content-Type");
+      next();
+    },
+    express.static(folderPath)
   );
 });
 
