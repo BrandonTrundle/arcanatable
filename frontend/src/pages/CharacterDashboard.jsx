@@ -11,6 +11,17 @@ const CharacterDashboard = () => {
   const [characters, setCharacters] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // helper to pick the right URL for images
+  const getImgSrc = (url) => {
+    // if absolute URL, return as-is; otherwise prefix with API URL
+    if (url && url.startsWith("http")) {
+      return url;
+    }
+    // handle null/undefined or relative paths
+    const path = url || "/default-portrait.png";
+    return `${import.meta.env.VITE_API_URL}${path}`;
+  };
+
   useEffect(() => {
     const fetchCharacters = async () => {
       try {
@@ -23,7 +34,6 @@ const CharacterDashboard = () => {
           }
         );
         const data = await response.json();
-        //   console.log("Fetched characters:", data); // Debug output
         // If response is wrapped, adjust accordingly:
         const charList = Array.isArray(data) ? data : data.characters || [];
         setCharacters(charList);
@@ -95,9 +105,7 @@ const CharacterDashboard = () => {
               {characters.map((char) => (
                 <li key={char._id} className="character-card">
                   <img
-                    src={`${import.meta.env.VITE_API_URL}${
-                      char.portraitImage || "/default-portrait.png"
-                    }`}
+                    src={getImgSrc(char.portraitImage)}
                     alt={`${char.charname} portrait`}
                     className="character-portrait"
                   />
