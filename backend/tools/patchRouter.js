@@ -1,26 +1,23 @@
 // tools/patchRouter.js
 
-// Disable patchRouter in production
-if (process.env.DEV_MODE !== "true") {
-  // No-op: skip patching Express router
-  return;
-}
+// Only patch Express router in development mode
+if (process.env.DEV_MODE === "true") {
+  const express = require("express");
+  const originalRouter = express.Router;
 
-const express = require("express");
+  express.Router = function (...args) {
+    const router = originalRouter(...args);
+    const origUse = router.use;
 
-// Monkey-patch express.Router to log invalid uses
-const originalRouter = express.Router;
-express.Router = function (...args) {
-  const router = originalRouter(...args);
-  const origUse = router.use;
+    router.use = function (...useArgs) {
+      const pathArg = useArgs[0];
+      if (typeof pathArg !== "string" && typeof pathArg !== "function") {
+        console.log("🛑 BAD router.use() — invalid first arg:", pathArg);
+      }
+      return origUse.apply(router, useArgs);
+    };
 
-  router.use = function (...useArgs) {
-    const pathArg = useArgs[0];
-    if (typeof pathArg !== "string" && typeof pathArg !== "function") {
-      console.log("🛑 BAD router.use() — invalid first arg:", pathArg);
-    }
-    return origUse.apply(router, useArgs);
+    return router;
   };
-
-  return router;
-};
+}
+// No operations in production (DEV_MODE !== 'true')
