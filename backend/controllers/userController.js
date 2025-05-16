@@ -1,5 +1,5 @@
 const path = require("path");
-const { supabase } = require("../utils/supabase");
+const { supabase } = require("../config/supabase");
 const User = require("../models/userModel"); // Keep this consistent
 // Removed: const fs = require("fs");
 
