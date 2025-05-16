@@ -32,7 +32,6 @@ const uploadDirs = [
   "npcs",
   "tokenImages",
 ];
-
 if (!fs.existsSync(uploadsBase)) fs.mkdirSync(uploadsBase);
 uploadDirs.forEach((dir) => {
   const folderPath = path.join(uploadsBase, dir);
@@ -49,68 +48,54 @@ const io = new Server(server, {
       }
     : undefined,
 });
-
 const userSocketMap = new Map();
+
 io.on("connection", (socket) => {
   socket.on("joinRoom", (campaignId) => {
     socket.join(campaignId);
     io.to(campaignId).emit("userJoined", { socketId: socket.id });
   });
-
-  socket.on("registerUser", (userId) => {
-    userSocketMap.set(userId, socket.id);
-  });
-
+  socket.on("registerUser", (userId) => userSocketMap.set(userId, socket.id));
   socket.on("secretRoll", ({ targetUserId, ...rest }) => {
-    const targetSocket = userSocketMap.get(targetUserId);
-    if (targetSocket) io.to(targetSocket).emit("secretRoll", rest);
+    const target = userSocketMap.get(targetUserId);
+    if (target) io.to(target).emit("secretRoll", rest);
   });
-
-  socket.on("chatMessage", (message) => {
-    io.to(message.campaignId).emit("chatMessage", message);
-  });
-
+  socket.on("chatMessage", (msg) =>
+    io.to(msg.campaignId).emit("chatMessage", msg)
+  );
   socket.on("loadMap", (map) => {
-    const campaignId = map.content?.campaign;
-    if (campaignId) io.to(campaignId).emit("loadMap", map);
+    const cid = map.content?.campaign;
+    if (cid) io.to(cid).emit("loadMap", map);
   });
-
-  socket.on("updateTokens", ({ mapId, tokens }) => {
-    socket.broadcast.emit("tokensUpdated", { mapId, tokens });
-  });
-
+  socket.on("updateTokens", ({ mapId, tokens }) =>
+    socket.broadcast.emit("tokensUpdated", { mapId, tokens })
+  );
   socket.on("tokenSelected", ({ campaignId, ...rest }) => {
     if (campaignId) io.to(campaignId).emit("tokenSelected", rest);
   });
-
   socket.on("tokenDeselected", ({ campaignId, ...rest }) => {
     if (campaignId) io.to(campaignId).emit("tokenDeselected", rest);
   });
-
   socket.on("tokenDrop", ({ campaignId, mapId, token }) => {
     if (campaignId && mapId && token)
       socket.to(campaignId).emit("tokenDropped", { mapId, token });
   });
-
   socket.on("aoePlaced", ({ campaignId, mapId, aoe }) => {
     if (campaignId && mapId && aoe)
       socket.to(campaignId).emit("aoePlaced", { mapId, aoe });
   });
-
   socket.on("aoeRemoved", ({ campaignId, mapId, aoeId }) => {
     if (campaignId && mapId && aoeId)
       socket.to(campaignId).emit("aoeRemoved", { mapId, aoeId });
   });
-
   socket.on("playerMovedToken", ({ campaignId, mapId, tokenId, x, y }) => {
     if (campaignId && mapId && tokenId)
       io.to(campaignId).emit("playerMovedToken", { mapId, tokenId, x, y });
   });
-
   socket.on("disconnect", () => {
-    for (const [userId, sockId] of userSocketMap.entries()) {
-      if (sockId === socket.id) {
-        userSocketMap.delete(userId);
+    for (const [uid, sid] of userSocketMap.entries()) {
+      if (sid === socket.id) {
+        userSocketMap.delete(uid);
         break;
       }
     }
@@ -121,7 +106,6 @@ io.on("connection", (socket) => {
 const allowedOrigins = isDev
   ? ["http://localhost:3000"]
   : ["https://arcanatable.onrender.com"];
-
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json({ limit: "20mb" }));
 
@@ -135,7 +119,7 @@ app.use(passport.session());
 
 // Static uploads with CORS headers
 uploadDirs.forEach((dir) => {
-  const folderPath = path.join(uploadsBase, dir);
+  const folder = path.join(uploadsBase, dir);
   app.use(
     `/uploads/${dir}`,
     (req, res, next) => {
@@ -147,28 +131,18 @@ uploadDirs.forEach((dir) => {
       res.header("Access-Control-Allow-Headers", "Content-Type");
       next();
     },
-    express.static(folderPath)
+    express.static(folder)
   );
 });
 
 // Central API routing
 console.log("🔍 Mounting central API router...");
-app.use = ((orig) =>
-  function (...args) {
-    const p = typeof args[0] === "string" ? args[0] : "<no-path>";
-    if (p.includes("?") || p.includes("/:")) {
-      console.log("🛑 Suspicious path passed to app.use:", p);
-    } else console.log("✅ app.use called with:", p);
-    return orig.apply(this, args);
-  })(app.use.bind(app));
-
 app.use("/api", require("./routes"));
 
-// Serve React build and enable SPA client-side routing
+// Serve React build and fallback for SPA routes in production
 if (!isDev) {
   const clientBuild = path.join(__dirname, "client", "build");
   app.use(express.static(clientBuild));
-
   app.get("*", (req, res, next) => {
     if (req.path.startsWith("/api") || req.path.startsWith("/uploads"))
       return next();
