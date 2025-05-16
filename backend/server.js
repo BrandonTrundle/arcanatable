@@ -52,54 +52,75 @@ const io = new Server(server, {
       }
     : undefined,
 });
-const userSockets = new Map();
+const userSocketMap = new Map();
+
 io.on("connection", (socket) => {
-  socket.on("joinRoom", (id) => {
-    socket.join(id);
-    io.to(id).emit("userJoined", { socketId: socket.id });
+  socket.on("joinRoom", (campaignId) => {
+    socket.join(campaignId);
+    io.to(campaignId).emit("userJoined", { socketId: socket.id });
   });
-  socket.on("registerUser", (uid) => userSockets.set(uid, socket.id));
-  socket.on("secretRoll", ({ targetUserId, ...rest }) => {
-    const sock = userSockets.get(targetUserId);
-    if (sock) io.to(sock).emit("secretRoll", rest);
-  });
-  socket.on("chatMessage", (m) => io.to(m.campaignId).emit("chatMessage", m));
-  socket.on("loadMap", (map) => {
-    const cid = map.content?.campaign;
-    if (cid) io.to(cid).emit("loadMap", map);
-  });
-  socket.on("updateTokens", ({ mapId, tokens }) =>
-    socket.broadcast.emit("tokensUpdated", { mapId, tokens })
-  );
-  socket.on("tokenSelected", ({ campaignId, ...rest }) => {
-    if (campaignId) io.to(campaignId).emit("tokenSelected", rest);
-  });
-  socket.on("tokenDeselected", ({ campaignId, ...rest }) => {
-    if (campaignId) io.to(campaignId).emit("tokenDeselected", rest);
-  });
-  socket.on("tokenDrop", ({ campaignId, mapId, token }) => {
-    if (campaignId && mapId && token)
-      socket.to(campaignId).emit("tokenDropped", { mapId, token });
-  });
-  socket.on("aoePlaced", ({ campaignId, mapId, aoe }) => {
-    if (campaignId && mapId && aoe)
-      socket.to(campaignId).emit("aoePlaced", { mapId, aoe });
-  });
-  socket.on("aoeRemoved", ({ campaignId, mapId, aoeId }) => {
-    if (campaignId && mapId && aoeId)
-      socket.to(campaignId).emit("aoeRemoved", { mapId, aoeId });
-  });
-  socket.on("playerMovedToken", ({ campaignId, mapId, tokenId, x, y }) => {
-    if (campaignId && mapId && tokenId)
-      io.to(campaignId).emit("playerMovedToken", { mapId, tokenId, x, y });
-  });
+
   socket.on("disconnect", () => {
-    for (const [uid, sid] of userSockets.entries()) {
-      if (sid === socket.id) {
-        userSockets.delete(uid);
+    for (const [userId, id] of userSocketMap.entries()) {
+      if (id === socket.id) {
+        userSocketMap.delete(userId);
         break;
       }
     }
+  });
+
+  socket.on("secretRoll", ({ targetUserId, ...rest }) => {
+    const targetSocketId = userSocketMap.get(targetUserId);
+    if (targetSocketId) io.to(targetSocketId).emit("secretRoll", rest);
+  });
+
+  socket.on("chatMessage", (message) => {
+    io.to(message.campaignId).emit("chatMessage", message);
+  });
+
+  socket.on("registerUser", (userId) => {
+    userSocketMap.set(userId, socket.id);
+  });
+
+  socket.on("loadMap", (map) => {
+    const campaignId = map.content?.campaign;
+    if (!campaignId) return;
+    io.to(campaignId).emit("loadMap", map);
+  });
+
+  socket.on("updateTokens", ({ mapId, tokens }) => {
+    socket.broadcast.emit("tokensUpdated", { mapId, tokens });
+  });
+
+  socket.on("tokensUpdated", () => {});
+
+  socket.on("tokenSelected", ({ campaignId, ...rest }) => {
+    if (!campaignId) return;
+    io.to(campaignId).emit("tokenSelected", rest);
+  });
+
+  socket.on("tokenDeselected", ({ campaignId, ...rest }) => {
+    io.to(campaignId).emit("tokenDeselected", rest);
+  });
+
+  socket.on("tokenDrop", ({ campaignId, mapId, token }) => {
+    if (!campaignId || !mapId || !token) return;
+    socket.to(campaignId).emit("tokenDropped", { mapId, token });
+  });
+
+  socket.on("aoePlaced", ({ campaignId, mapId, aoe }) => {
+    if (!campaignId || !mapId || !aoe) return;
+    socket.to(campaignId).emit("aoePlaced", { mapId, aoe });
+  });
+
+  socket.on("aoeRemoved", ({ campaignId, mapId, aoeId }) => {
+    if (!campaignId || !mapId || !aoeId) return;
+    socket.to(campaignId).emit("aoeRemoved", { mapId, aoeId });
+  });
+
+  socket.on("playerMovedToken", ({ campaignId, mapId, tokenId, x, y }) => {
+    if (!campaignId || !mapId || !tokenId) return;
+    io.to(campaignId).emit("playerMovedToken", { mapId, tokenId, x, y });
   });
 });
 
