@@ -22,47 +22,52 @@ const UserInfoCard = ({
   };
 
   const handleFileChange = async (e) => {
-    //console.log("[Avatar Upload] File input change triggered");
-
     const file = e.target.files?.[0];
-    if (!file) {
-      console.warn("[Avatar Upload] No file selected");
-      return;
-    }
-
-    // console.log("[Avatar Upload] File selected:", file.name);
+    if (!file) return;
 
     const formData = new FormData();
-    formData.append("avatar", file);
+    formData.append("image", file); // ✅ MUST be "image"
 
     try {
       const token = localStorage.getItem("token");
-      //  console.log(
-      //    "[Avatar Upload] Sending request with token:",
-      //    token ? "Present" : "Missing"
-      //  );
 
-      const response = await fetch(`${getApiUrl()}/api/users/avatar`, {
-        method: "PATCH",
+      // 1. Upload to Supabase via shared route
+      const uploadRes = await fetch(`${getApiUrl()}/api/uploads/avatars`, {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
 
-      //  console.log("[Avatar Upload] Response status:", response.status);
-
-      if (!response.ok) {
-        const errText = await response.text();
-        console.error("[Avatar Upload] Server error:", errText);
+      if (!uploadRes.ok) {
+        const errText = await uploadRes.text();
+        console.error("[Avatar Upload] Upload failed:", errText);
         throw new Error("Failed to upload avatar");
       }
 
-      const data = await response.json();
-      console.log("[Avatar Upload] URL returned from backend:", data.avatarUrl);
-      setAvatarUrl(data.avatarUrl);
+      const { url } = await uploadRes.json();
+
+      // 2. Save avatarUrl to user model
+      const saveRes = await fetch(`${getApiUrl()}/api/users/avatarUrl`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ avatarUrl: url }),
+      });
+
+      if (!saveRes.ok) {
+        const errText = await saveRes.text();
+        console.error("[Avatar Save] Failed:", errText);
+        throw new Error("Failed to save avatar");
+      }
+
+      // 3. Update locally
+      setAvatarUrl(url);
     } catch (err) {
-      console.error("[Avatar Upload] Upload failed:", err);
+      console.error("[Avatar Upload] Failed:", err);
       alert("Avatar upload failed.");
     }
   };
