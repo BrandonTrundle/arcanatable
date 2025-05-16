@@ -32,11 +32,11 @@ const uploadDirs = [
   "npcs",
   "tokenImages",
 ];
-n;
+
 if (!fs.existsSync(uploadsBase)) fs.mkdirSync(uploadsBase);
 uploadDirs.forEach((dir) => {
-  const p = path.join(uploadsBase, dir);
-  if (!fs.existsSync(p)) fs.mkdirSync(p);
+  const folderPath = path.join(uploadsBase, dir);
+  if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath);
 });
 
 // Socket.IO setup
