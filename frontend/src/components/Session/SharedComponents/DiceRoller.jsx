@@ -121,6 +121,9 @@ const DiceRoller = ({ userId, campaignId, username, isDM, socket }) => {
       const secretMsg = { ...chatMessage, campaignId };
       console.log("📤 Emitting secretRoll:", secretMsg);
       socket.emit("secretRoll", secretMsg);
+    } else {
+      console.log("📤 Emitting chatMessage:", chatMessage);
+      socket.emit("chatMessage", chatMessage);
     }
   };
 
