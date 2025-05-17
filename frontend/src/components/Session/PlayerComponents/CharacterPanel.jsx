@@ -52,9 +52,9 @@ const CharacterPanel = ({ campaignId, onSelect }) => {
             src={
               char.portraitImage?.startsWith("http")
                 ? char.portraitImage
-                : `${import.meta.env.VITE_API_URL}${
-                    char.portraitImage || "/default-portrait.png"
-                  }`
+                : char.portraitImage
+                ? `${import.meta.env.VITE_API_URL}${char.portraitImage}`
+                : "/default-portrait.png"
             }
             alt={`${char.charname} portrait`}
             className="character-portrait"
