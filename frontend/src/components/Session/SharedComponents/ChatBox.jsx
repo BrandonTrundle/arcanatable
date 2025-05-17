@@ -38,16 +38,15 @@ const ChatBox = ({ socket, campaignId, username, userId }) => {
 
   useEffect(() => {
     const handleSecretRoll = (message) => {
-      if (message.targetUserId === userId) {
-        setMessages((prev) => [...prev, message]);
-      }
+      console.log("📥 Received secretRoll in ChatBox:", message);
+      setMessages((prev) => [...prev, message]);
     };
 
     socket.on("secretRoll", handleSecretRoll);
     return () => {
       socket.off("secretRoll", handleSecretRoll);
     };
-  }, [socket, userId]);
+  }, [socket]);
 
   const sendMessage = (e) => {
     e.preventDefault();
