@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
-
+const { addPlaytime } = require("../controllers/userController");
 const { protect } = require("../middleware/authMiddleware");
+const { updateProfile } = require("../controllers/userController");
+
 const {
   getMe,
   updateOnboarding,
@@ -12,6 +14,8 @@ const {
 router.get("/me", protect, getMe);
 router.get("/lookup", protect, lookupUserByUsername);
 router.patch("/onboarding", protect, updateOnboarding);
+router.patch("/update-profile", protect, updateProfile);
+router.patch("/add-playtime", protect, addPlaytime);
 
 // Avatar upload route
 router.patch("/avatarUrl", protect, async (req, res) => {

@@ -14,6 +14,13 @@ import Dashboard from "./pages/Dashboard";
 import UserOnboarding from "./pages/UserOnboarding";
 import MessagePage from "./pages/Messages/MessagePage";
 import DMToolkit from "./pages/DMToolkit";
+import Marketplace from "./pages/Marketplace";
+import Tools from "./pages/Tools";
+import Community from "./pages/Community";
+import LearnArcanaTable from "./pages/LearnArcanaTable";
+import ManageAccount from "./pages/ManageAccount";
+import Updates from "./pages/Updates";
+import AdminPanel from "./pages/AdminPanel";
 
 import CharacterDashboard from "./pages/CharacterDashboard";
 import CharacterCreate from "./pages/CharacterCreate";
@@ -50,6 +57,10 @@ const App = () => (
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/marketplace" element={<Marketplace />} />
+      <Route path="/tools" element={<Tools />} />
+      <Route path="/community" element={<Community />} />
+      <Route path="/updates" element={<Updates />} />
 
       <Route
         path="/user-onboarding"
@@ -116,6 +127,17 @@ const App = () => (
       />
 
       <Route
+        path="/learn"
+        element={
+          <PrivateRoute>
+            <RequireOnboarding>
+              <LearnArcanaTable />
+            </RequireOnboarding>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
         path="/characters/:id/edit"
         element={
           <PrivateRoute>
@@ -153,6 +175,28 @@ const App = () => (
           <PrivateRoute>
             <RequireOnboarding>
               <SessionRoom />
+            </RequireOnboarding>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/account"
+        element={
+          <PrivateRoute>
+            <RequireOnboarding>
+              <ManageAccount />
+            </RequireOnboarding>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/admin"
+        element={
+          <PrivateRoute>
+            <RequireOnboarding>
+              <AdminPanel />
             </RequireOnboarding>
           </PrivateRoute>
         }

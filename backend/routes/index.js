@@ -12,6 +12,8 @@ const routeDefs = [
   { path: "/sessionstate", module: "./sessionState" },
   { path: "/player-toolkit-tokens", module: "./playerToolkitRoutes" },
   { path: "/dicerolls", module: "./diceRollRoutes" },
+  { path: "/admin", module: "./adminRoutes" },
+  { path: "/patches", module: "./patchRoutes" },
 ];
 
 // Safe dynamic mounting with logging

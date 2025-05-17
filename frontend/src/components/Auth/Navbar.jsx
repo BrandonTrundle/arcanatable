@@ -58,14 +58,38 @@ const Navbar = () => {
 
       <div className="navbar-links">
         {user ? (
-          <a onClick={() => navigate("/dashboard")}>Dashboard</a>
+          <button
+            className="navbar-button"
+            onClick={() => navigate("/dashboard")}
+          >
+            Dashboard
+          </button>
         ) : (
           <a href="#">Play Now</a>
         )}
-        {/* Join a Game is removed */}
-        <button className="navbar-button">Marketplace ▾</button>
-        <button className="navbar-button">Tools ▾</button>
-        <button className="navbar-button">Community ▾</button>
+        <button
+          className="navbar-button"
+          onClick={() => navigate("/marketplace")}
+        >
+          Marketplace
+        </button>
+        <button className="navbar-button" onClick={() => navigate("/tools")}>
+          Tools
+        </button>
+        <button
+          className="navbar-button"
+          onClick={() => navigate("/community")}
+        >
+          Community
+        </button>
+        <button className="navbar-button" onClick={() => navigate("/updates")}>
+          Updates
+        </button>
+        {user?.roles?.some((role) => ["admin", "owner"].includes(role)) && (
+          <button className="navbar-button" onClick={() => navigate("/admin")}>
+            Admin Panel
+          </button>
+        )}
       </div>
 
       <div className="navbar-user">

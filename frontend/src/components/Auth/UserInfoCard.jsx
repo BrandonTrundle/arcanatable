@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import "../../styles/UserInfoCard.css"; // Adjust if this is now under /styles/
 import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../../assets/defaultav.png";
@@ -16,6 +16,7 @@ const UserInfoCard = ({
   const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl || defaultAvatar);
   const [showMessages, setShowMessages] = useState(false);
   const navigate = useNavigate();
+  const [simulatedHours, setSimulatedHours] = useState(user?.hoursPlayed || 0);
 
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
@@ -72,6 +73,14 @@ const UserInfoCard = ({
     }
   };
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSimulatedHours((prev) => prev + 0.001); // roughly every 3.6 seconds = 1 second of play
+    }, 1000); // 1 second interval
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <>
       <div className="user-info-card">
@@ -104,9 +113,24 @@ const UserInfoCard = ({
             Member since:{" "}
             {memberSince ? new Date(memberSince).toLocaleDateString() : "N/A"}
           </p>
-          <p className="user-hours">Hours Played: {hoursPlayed ?? 0}</p>
+          <p className="user-hours">
+            Hours Played:{" "}
+            {(() => {
+              const totalHours = user?.hoursPlayed ?? 0;
+              const hours = Math.floor(totalHours);
+              const minutes = Math.round((totalHours % 1) * 60);
+              return `${hours} hr${hours !== 1 ? "s" : ""} ${minutes} min${
+                minutes !== 1 ? "s" : ""
+              }`;
+            })()}
+          </p>
 
-          <button className="manage-account-btn">Manage Account</button>
+          <button
+            className="manage-account-btn"
+            onClick={() => navigate("/account")}
+          >
+            Manage Account
+          </button>
 
           <div className="user-actions">
             {/* Notifications icon (no routing assigned yet) */}

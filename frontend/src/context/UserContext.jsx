@@ -14,7 +14,6 @@ export const UserProvider = ({ children }) => {
         .get(`${import.meta.env.VITE_API_URL}/api/users/me`, {
           headers: { Authorization: `Bearer ${token}` },
         })
-
         .then((res) => {
           const userData = {
             ...res.data,
@@ -30,6 +29,41 @@ export const UserProvider = ({ children }) => {
         });
     }
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+
+    let start = Date.now();
+
+    const savePlayedTime = () => {
+      const end = Date.now();
+      const msPlayed = end - start;
+      const hours = msPlayed / (1000 * 60 * 60); // ms to hours
+
+      const token = localStorage.getItem("token");
+      if (!token || hours <= 0) return;
+
+      fetch(`${import.meta.env.VITE_API_URL}/api/users/add-playtime`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ hours }),
+      }).catch((err) => console.error("[HoursPlayed] Failed to send:", err));
+
+      start = Date.now(); // reset timer
+    };
+
+    const interval = setInterval(savePlayedTime, 5 * 60 * 1000); // every 5 mins
+    window.addEventListener("beforeunload", savePlayedTime);
+
+    return () => {
+      clearInterval(interval);
+      savePlayedTime();
+      window.removeEventListener("beforeunload", savePlayedTime);
+    };
+  }, [user]);
 
   const logout = () => {
     localStorage.removeItem("token");

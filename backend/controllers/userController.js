@@ -47,7 +47,9 @@ exports.getMe = async (req, res) => {
       onboardingComplete: user.onboardingComplete,
       roles: user.roles,
       onboarding: user.onboarding || {},
-      avatarUrl: user.avatarUrl || "/defaultav.png", // Include avatar in response
+      avatarUrl: user.avatarUrl || "/defaultav.png",
+      createdAt: user.createdAt, // ✅ add this
+      hoursPlayed: user.hoursPlayed ?? 0, // ✅ add this
     });
   } catch (err) {
     console.error("Error in getMe:", err);
@@ -116,5 +118,50 @@ exports.uploadAvatar = async (req, res) => {
   } catch (error) {
     console.error("❌ [uploadAvatar] Server error:", error.message);
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.addPlaytime = async (req, res) => {
+  try {
+    const { hours } = req.body;
+    if (typeof hours !== "number" || hours <= 0) {
+      return res.status(400).json({ message: "Invalid hours value" });
+    }
+
+    const user = await User.findById(req.user._id);
+    user.hoursPlayed = (user.hoursPlayed || 0) + hours;
+    await user.save();
+
+    res
+      .status(200)
+      .json({ message: "Playtime updated", hoursPlayed: user.hoursPlayed });
+  } catch (err) {
+    console.error("Failed to update playtime:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (username) user.username = username;
+    if (email) user.email = email;
+    if (password) user.password = password; // assumes middleware handles hashing
+
+    await user.save();
+
+    res.status(200).json({
+      username: user.username,
+      email: user.email,
+    });
+  } catch (err) {
+    console.error("[UpdateProfile] Error:", err);
+    res.status(500).json({ message: "Server error" });
   }
 };
