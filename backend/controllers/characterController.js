@@ -97,8 +97,8 @@ const updateCharacter = asyncHandler(async (req, res) => {
   }
 
   for (const [key, value] of Object.entries(body)) {
-    if (!allowedFields.includes(key)) {
-      console.log(`⏭ Skipping unknown field: ${key}`);
+    if (["_id", "__v", "createdAt", "updatedAt"].includes(key)) {
+      console.log(`⏭ Skipping restricted field: ${key}`);
       continue;
     }
 
