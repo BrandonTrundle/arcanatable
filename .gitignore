@@ -57,3 +57,6 @@ backend/uploads/*/*
 !backend/uploads/tokenImages/
 
 info.txt
+
+# Prevent committing dev secrets
+backend/.env.development
