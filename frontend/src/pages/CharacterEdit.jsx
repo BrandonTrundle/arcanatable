@@ -166,6 +166,8 @@ const CharacterEdit = () => {
       );
 
       if (res.ok) {
+        const updated = await res.json();
+        setFormData(updated); // Keep UI in sync
         navigate("/characters");
       } else {
         const err = await res.json();
