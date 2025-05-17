@@ -25,11 +25,11 @@ export const useAoEShapes = (mapId, socket, campaignId) => {
         };
 
         if (!silent && socket) {
-          console.log("📤 Emitting aoeRemoved:", {
-            mapId,
-            aoeId: id,
-            campaignId,
-          });
+          //   console.log("📤 Emitting aoeRemoved:", {
+          //    mapId,
+          //     aoeId: id,
+          //     campaignId,
+          //    });
           socket.emit("aoeRemoved", {
             mapId,
             aoeId: id,

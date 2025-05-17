@@ -111,7 +111,7 @@ exports.uploadAvatar = async (req, res) => {
     user.avatarUrl = publicUrl;
     await user.save();
 
-    console.log("[uploadAvatar] ✅ Avatar uploaded and saved:", publicUrl);
+    //console.log("[uploadAvatar] ✅ Avatar uploaded and saved:", publicUrl);
     res.status(200).json({ avatarUrl: publicUrl });
   } catch (error) {
     console.error("❌ [uploadAvatar] Server error:", error.message);

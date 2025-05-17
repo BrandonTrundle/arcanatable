@@ -3,7 +3,7 @@ import "../../../styles/SessionStyles/DMStyles/DMView.css"; // reuse existing DM
 
 const Toolbar = ({ sidebarOpen, setSidebarOpen, setActiveTool }) => {
   const handleToolClick = (tool) => {
-    console.log(`🛠️ Toolbar: Setting active tool -> ${tool}`);
+    //   console.log(`🛠️ Toolbar: Setting active tool -> ${tool}`);
     setActiveTool(tool);
   };
 
@@ -12,9 +12,9 @@ const Toolbar = ({ sidebarOpen, setSidebarOpen, setActiveTool }) => {
       <button
         className="sidebar-toggle"
         onClick={() => {
-          console.log(
-            `📂 Sidebar toggled: ${!sidebarOpen ? "open" : "closed"}`
-          );
+          //    console.log(
+          //</div>     `📂 Sidebar toggled: ${!sidebarOpen ? "open" : "closed"}`
+          //    );
           setSidebarOpen(!sidebarOpen);
         }}
       >

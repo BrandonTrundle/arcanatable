@@ -38,7 +38,7 @@ const ChatBox = ({ socket, campaignId, username, userId }) => {
 
   useEffect(() => {
     const handleSecretRoll = (message) => {
-      console.log("📥 Received secretRoll in ChatBox:", message);
+      //   console.log("📥 Received secretRoll in ChatBox:", message);
       setMessages((prev) => [...prev, message]);
     };
 

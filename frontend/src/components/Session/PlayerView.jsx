@@ -125,7 +125,7 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
         return false;
       }
 
-      console.log("✅ Character auto-saved");
+      // console.log("✅ Character auto-saved");
       return true;
     } catch (error) {
       console.error("❌ Auto-save error:", error);

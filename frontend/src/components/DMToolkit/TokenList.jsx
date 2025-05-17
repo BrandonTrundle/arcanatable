@@ -23,7 +23,7 @@ const TokenList = ({ user }) => {
         );
 
         setTokens(tokenItems);
-        console.log("Loaded Tokens:", tokenItems); // ✅ Dev debug
+        //console.log("Loaded Tokens:", tokenItems); // ✅ Dev debug
       } catch (err) {
         console.error("Failed to fetch tokens:", err);
       }

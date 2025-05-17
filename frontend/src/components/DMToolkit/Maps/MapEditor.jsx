@@ -63,7 +63,7 @@ const MapEditor = ({ map, onClose, onMapUpdate }) => {
     };
 
     setPlacedTokens((prev) => [...prev, newToken]);
-    console.log("New token:", newToken);
+    //console.log("New token:", newToken);
   };
 
   const handleDragOver = (e) => e.preventDefault();
@@ -145,7 +145,7 @@ const MapEditor = ({ map, onClose, onMapUpdate }) => {
     }
 
     if (action === "resize") {
-      console.log("Switching to resize mode for:", tokenId);
+      //console.log("Switching to resize mode for:", tokenId);
       setContextMenu((prev) => ({
         ...prev,
         tokenId, // 🛠 re-insert tokenId explicitly
@@ -159,7 +159,7 @@ const MapEditor = ({ map, onClose, onMapUpdate }) => {
       setPlacedTokens((prev) =>
         prev.map((t) => (t.id === tokenId ? { ...t, tokenSize: newSize } : t))
       );
-      console.log("Updated token size:", tokenId, newSize);
+      //console.log("Updated token size:", tokenId, newSize);
       setContextMenu(null);
       return;
     }

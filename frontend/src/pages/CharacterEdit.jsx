@@ -126,7 +126,7 @@ const CharacterEdit = () => {
       }
 
       const formDataToSend = new FormData();
-      console.log("🧪 Coins being saved:", formData.coins);
+      //   console.log("🧪 Coins being saved:", formData.coins);
 
       Object.entries(formData).forEach(([key, value]) => {
         if (

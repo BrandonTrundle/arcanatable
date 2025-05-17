@@ -18,8 +18,8 @@ function scanFileForBadPaths(filePath) {
       trimmed.startsWith("router.delete(")
     ) {
       if (/\/:($|[^a-zA-Z])/.test(trimmed) || /\/[^/]*\?[^:]/.test(trimmed)) {
-        console.log(`🚨 Possibly invalid path in ${filePath}:${index + 1}`);
-        console.log(`   → ${trimmed}`);
+        //console.log(`🚨 Possibly invalid path in ${filePath}:${index + 1}`);
+        //console.log(`   → ${trimmed}`);
       }
     }
   });
@@ -37,5 +37,5 @@ function walk(dir) {
   });
 }
 
-console.log("🔍 Scanning routes for malformed paths...");
+//console.log("🔍 Scanning routes for malformed paths...");
 walk(ROUTES_DIR);

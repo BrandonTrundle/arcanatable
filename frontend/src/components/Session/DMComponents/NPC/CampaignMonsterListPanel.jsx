@@ -14,7 +14,7 @@ const CampaignMonsterListPanel = ({
     const fetchCampaignMonsters = async () => {
       try {
         const data = await fetchMonsters();
-        console.log("📋 All fetched monsters:", data);
+        //  console.log("📋 All fetched monsters:", data);
 
         const campaignMonsters = data
           .filter((mon) => mon.content?.campaigns?.includes(campaignId))
@@ -23,7 +23,7 @@ const CampaignMonsterListPanel = ({
             ...mon.content,
           }));
 
-        console.log("📋 Matched to campaign:", campaignMonsters);
+        // console.log("📋 Matched to campaign:", campaignMonsters);
         setMonsters(campaignMonsters);
       } catch (err) {
         console.error("❌ Failed to fetch monsters:", err);

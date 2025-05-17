@@ -98,18 +98,18 @@ const updateCharacter = asyncHandler(async (req, res) => {
 
   for (const [key, value] of Object.entries(body)) {
     if (["_id", "__v", "createdAt", "updatedAt"].includes(key)) {
-      console.log(`⏭ Skipping restricted field: ${key}`);
+      //console.log(`⏭ Skipping restricted field: ${key}`);
       continue;
     }
 
     try {
       const parsed = JSON.parse(value);
-      console.log(`🧩 Parsed field '${key}':`, parsed);
+      //console.log(`🧩 Parsed field '${key}':`, parsed);
 
       if (key === "coins") {
         character.coins = parsed;
         character.markModified("coins");
-        console.log("✅ Coins updated and marked as modified.");
+        //console.log("✅ Coins updated and marked as modified.");
       } else {
         character[key] = parsed;
       }

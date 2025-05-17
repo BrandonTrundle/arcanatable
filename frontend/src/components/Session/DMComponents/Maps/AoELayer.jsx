@@ -93,17 +93,17 @@ const AoELayer = ({ aoeShapes, aoeDraft, mapId, mousePosition, removeAoE }) => {
                 aoe.id,
                 {
                   onRightClick: () => {
-                    console.log(
-                      "🗑️ Cone AoE right-clicked for removal:",
-                      aoe.id
-                    );
+                    //console.log(
+                    //  "🗑️ Cone AoE right-clicked for removal:",
+                    //   aoe.id
+                    //   );
                     removeAoE(aoe.id);
                   },
                 }
               )
             : renderCircle(aoe.x, aoe.y, aoe.radius, aoe.color, aoe.id, {
                 onRightClick: () => {
-                  console.log("🗑️ AoE right-clicked for removal:", aoe.id);
+                  //console.log("🗑️ AoE right-clicked for removal:", aoe.id);
                   removeAoE(aoe.id);
                 },
               })

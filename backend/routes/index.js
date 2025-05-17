@@ -17,7 +17,7 @@ const routeDefs = [
 // Safe dynamic mounting with logging
 routeDefs.forEach(({ path, module }) => {
   try {
-    console.log(`🔗 Mounting route: /api${path}`);
+    //console.log(`🔗 Mounting route: /api${path}`);
     const routeModule = require(module);
 
     if (typeof routeModule !== "function" || !routeModule.stack) {

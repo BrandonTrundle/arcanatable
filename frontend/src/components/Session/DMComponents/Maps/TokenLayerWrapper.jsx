@@ -27,11 +27,11 @@ const TokenLayerWrapper = ({
         tokens={filteredTokens}
         onDragEnd={handleTokenMove}
         onRightClick={(e, id) => {
-          console.log("🖱️ Token right-clicked:", id);
+          //console.log("🖱️ Token right-clicked:", id);
           handleTokenRightClick(e, id, stageRef);
         }}
         onClick={(e, id) => {
-          console.log("🖱️ Token clicked in mode:", activeInteractionMode);
+          // console.log("🖱️ Token clicked in mode:", activeInteractionMode);
           if (activeInteractionMode !== "aoe") {
             selectToken(id);
             return;
@@ -47,7 +47,7 @@ const TokenLayerWrapper = ({
           const trueX = (pointerPos.x - stagePos.x) / scale;
           const trueY = (pointerPos.y - stagePos.y) / scale;
 
-          console.log("📌 Redirecting token click to AoE placement");
+          // console.log("📌 Redirecting token click to AoE placement");
           handleMapClick({
             stage,
             pointerPos,

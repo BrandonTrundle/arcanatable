@@ -7,7 +7,7 @@ const {
   deleteToolkitToken,
 } = require("../controllers/playerToolkitController");
 
-console.log("🧪 Protect middleware is:", typeof protect);
+//console.log("🧪 Protect middleware is:", typeof protect);
 router.use(protect);
 
 router.post("/", createToolkitToken);

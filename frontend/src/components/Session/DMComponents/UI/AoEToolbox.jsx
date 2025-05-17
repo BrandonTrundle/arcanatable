@@ -7,15 +7,15 @@ const AoEToolbox = ({ onConfirm }) => {
   const [rawHex, setRawHex] = useState("#ff0000"); // original color input
 
   useEffect(() => {
-    console.log("🎯 AoEToolbox initialized");
+    //console.log("🎯 AoEToolbox initialized");
   }, []);
 
   const handleConfirm = () => {
-    console.log("📤 AoE Config Confirmed:", {
-      type,
-      radiusFt: size,
-      color,
-    });
+    // console.log("📤 AoE Config Confirmed:", {
+    //   type,
+    //   radiusFt: size,
+    //     color,
+    //   });
     onConfirm({ type, radius: size, color });
   };
 
@@ -45,7 +45,7 @@ const AoEToolbox = ({ onConfirm }) => {
             value={type}
             onChange={(e) => {
               setType(e.target.value);
-              console.log("🔄 AoE Type changed to:", e.target.value);
+              //  console.log("🔄 AoE Type changed to:", e.target.value);
             }}
             style={{ marginLeft: "0.5rem" }}
           >
@@ -65,7 +65,7 @@ const AoEToolbox = ({ onConfirm }) => {
             onChange={(e) => {
               const val = Number(e.target.value);
               setSize(val);
-              console.log("📏 AoE Size changed to:", val, "ft");
+              //  console.log("📏 AoE Size changed to:", val, "ft");
             }}
             min={5}
             step={5}
@@ -85,7 +85,7 @@ const AoEToolbox = ({ onConfirm }) => {
               const rgba = hex + "66"; // transparency
               setRawHex(hex);
               setColor(rgba);
-              console.log("🎨 AoE Color selected:", rgba);
+              //   console.log("🎨 AoE Color selected:", rgba);
             }}
             style={{ marginLeft: "0.5rem" }}
           />

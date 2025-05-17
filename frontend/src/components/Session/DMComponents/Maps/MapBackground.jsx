@@ -30,7 +30,7 @@ const MapBackground = ({
           fill="rgba(0,0,0,0.01)"
           listening={true}
           onClick={(e) => {
-            console.log("📍 Rect clicked (background layer)");
+            //console.log("📍 Rect clicked (background layer)");
             onMapClick(e);
           }}
         />

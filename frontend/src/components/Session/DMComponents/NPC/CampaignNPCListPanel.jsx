@@ -11,8 +11,8 @@ const CampaignNPCListPanel = ({ campaignName, onSelect }) => {
     const fetchCampaignNPCs = async () => {
       try {
         const data = await fetchNPCs();
-        console.log("📋 All fetched NPCs:", data);
-        console.log("📋 Filtering for campaign:", campaignName);
+        // console.log("📋 All fetched NPCs:", data);
+        // console.log("📋 Filtering for campaign:", campaignName);
 
         const campaignNPCs = data
           .filter((npc) => npc.content?.campaigns?.includes(campaignName))
@@ -21,7 +21,7 @@ const CampaignNPCListPanel = ({ campaignName, onSelect }) => {
             ...npc.content,
           }));
 
-        console.log("📋 NPCs matched to campaign:", campaignNPCs);
+        //   console.log("📋 NPCs matched to campaign:", campaignNPCs);
 
         setNpcs(campaignNPCs);
       } catch (err) {

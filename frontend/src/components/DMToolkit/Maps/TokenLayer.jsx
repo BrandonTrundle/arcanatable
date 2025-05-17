@@ -59,15 +59,15 @@ const Token = ({
       onDragEnd={(e) => {
         if (!draggable) return;
         const { x, y } = e.target.position();
-        console.log("📦 Token dragged:", id, "to", x, y);
+        //console.log("📦 Token dragged:", id, "to", x, y);
         onDragEnd(id, x, y);
       }}
       onContextMenu={(e) => {
-        console.log("🖱️ Token context menu:", id);
+        // console.log("🖱️ Token context menu:", id);
         onRightClick?.(e);
       }}
       onClick={(e) => {
-        console.log("🖱️ Token clicked:", id);
+        //  console.log("🖱️ Token clicked:", id);
         onClick?.(e);
       }}
       onMouseEnter={(e) => {
@@ -174,11 +174,11 @@ const TokenLayer = ({
             activeLayer={activeLayer}
             onDragEnd={onDragEnd}
             onRightClick={(e) => {
-              console.log("🖱️ Right-click on token layer:", token.id);
+              //console.log("🖱️ Right-click on token layer:", token.id);
               isInteractive && onRightClick(e, token.id);
             }}
             onClick={(e) => {
-              console.log("🖱️ Click on token layer:", token.id);
+              //console.log("🖱️ Click on token layer:", token.id);
               isInteractive && onClick(e, token.id);
             }}
             draggable={isInteractive && draggable}

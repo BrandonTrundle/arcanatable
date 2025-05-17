@@ -49,7 +49,7 @@ const useDMMapManager = (sessionMap, socket, user) => {
       if (!res.ok) {
         console.error("❌ Failed to save map state.");
       } else {
-        console.log("✅ Map state saved.");
+        //    console.log("✅ Map state saved.");
       }
     } catch (err) {
       console.error("🚫 Error while saving map:", err);

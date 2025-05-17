@@ -12,7 +12,7 @@ if (process.env.DEV_MODE === "true") {
     router.use = function (...useArgs) {
       const pathArg = useArgs[0];
       if (typeof pathArg !== "string" && typeof pathArg !== "function") {
-        console.log("🛑 BAD router.use() — invalid first arg:", pathArg);
+        //console.log("🛑 BAD router.use() — invalid first arg:", pathArg);
       }
       return origUse.apply(router, useArgs);
     };

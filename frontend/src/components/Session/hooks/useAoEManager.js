@@ -29,24 +29,24 @@ export const useAoEManager = (
   );
 
   const handleMapClick = () => {
-    console.log("🖱️ handleMapClick triggered");
+    //  console.log("🖱️ handleMapClick triggered");
 
     if (activeInteractionMode !== "aoe" || !aoeDraft) {
-      console.log("⚠️ Ignored click: wrong mode or no draft");
+      //    console.log("⚠️ Ignored click: wrong mode or no draft");
       return;
     }
 
     const shape = confirmPlacement();
-    console.log("📐 confirmPlacement returned:", shape);
+    //   console.log("📐 confirmPlacement returned:", shape);
 
     if (!shape) return;
     if (shape.rotating) {
-      console.log("↪️ Still rotating, waiting for second click");
+      //      console.log("↪️ Still rotating, waiting for second click");
       return;
     }
 
     const finalShape = { ...shape, id: crypto.randomUUID() };
-    console.log("🛰️ Emitting AoE:", finalShape);
+    //   console.log("🛰️ Emitting AoE:", finalShape);
 
     addAoEShape(finalShape);
 
@@ -87,7 +87,7 @@ export const useAoEManager = (
 
     const handleRemoteAoERemoval = ({ mapId: incomingMapId, aoeId }) => {
       if (incomingMapId !== mapId) return;
-      console.log("🧹 Remote AoE removal received:", aoeId);
+      //   console.log("🧹 Remote AoE removal received:", aoeId);
       removeAoEShape(aoeId, { silent: true });
     };
 

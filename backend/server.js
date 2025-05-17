@@ -10,7 +10,7 @@ const Campaign = require("../backend/models/campaignModel");
 
 // Load environment variables
 require("dotenv").config();
-console.log("✅ Loaded MONGO_URI:", process.env.MONGO_URI);
+//console.log("✅ Loaded MONGO_URI:", process.env.MONGO_URI);
 
 const isDev = process.env.DEV_MODE === "true";
 
@@ -71,7 +71,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("secretRoll", async ({ campaignId, ...rest }) => {
-    console.log("📥 Received secretRoll for campaign:", campaignId);
+    //console.log("📥 Received secretRoll for campaign:", campaignId);
 
     try {
       const campaign = await Campaign.findById(campaignId).select("creator");
@@ -82,10 +82,10 @@ io.on("connection", (socket) => {
 
       const dmSocketInfo = userSocketMap.get(String(campaign.creator));
       if (dmSocketInfo?.socketId) {
-        console.log(
-          "📤 Sending secretRoll to DM socket:",
-          dmSocketInfo.socketId
-        );
+        //console.log(
+        //  "📤 Sending secretRoll to DM socket:",
+        //  dmSocketInfo.socketId
+        // );
         io.to(dmSocketInfo.socketId).emit("secretRoll", rest);
       } else {
         console.warn("❗️ DM socket not found in userSocketMap");

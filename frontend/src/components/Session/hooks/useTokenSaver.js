@@ -22,7 +22,7 @@ export const saveTokenStateToBackend = async (map, tokens) => {
     if (!res.ok) {
       console.error("❌ Failed to save tokens to backend.");
     } else {
-      console.log("✅ Token state successfully saved.");
+      //   console.log("✅ Token state successfully saved.");
     }
   } catch (err) {
     console.error("🚫 Error saving token state:", err);
