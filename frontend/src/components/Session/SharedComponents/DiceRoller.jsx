@@ -119,6 +119,12 @@ const DiceRoller = ({ userId, campaignId, username, isDM, socket }) => {
 
     if (isSecret && isDM) {
       socket.emit("secretRoll", { ...chatMessage, targetUserId: userId });
+
+      // Also show it immediately in your own chat box
+      socket.emit("chatMessage", {
+        ...chatMessage,
+        isLocalOnly: true,
+      });
     } else {
       socket.emit("chatMessage", chatMessage);
     }
