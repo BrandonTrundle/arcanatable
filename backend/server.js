@@ -8,9 +8,18 @@ const passport = require("passport");
 const { Server } = require("socket.io");
 const Campaign = require("../backend/models/campaignModel");
 
-// Load environment variables
-require("dotenv").config();
-//console.log("✅ Loaded MONGO_URI:", process.env.MONGO_URI);
+const dotenv = require("dotenv");
+
+const envPath =
+  process.env.NODE_ENV === "development"
+    ? path.resolve(__dirname, ".env.development")
+    : path.resolve(__dirname, ".env");
+
+require("dotenv").config({ path: envPath });
+
+console.log("NODE_ENV is:", process.env.NODE_ENV);
+console.log("✅ Loaded MONGO_URI:", process.env.MONGO_URI);
+console.log("✅ DEV_MODE:", process.env.DEV_MODE);
 
 const isDev = process.env.DEV_MODE === "true";
 
@@ -150,9 +159,17 @@ io.on("connection", (socket) => {
 
 // Middleware
 const allowed = isDev
-  ? ["http://localhost:3000"]
+  ? ["http://localhost:5173"]
   : ["https://arcanatable.onrender.com"];
-app.use(cors({ origin: allowed, credentials: true }));
+
+app.use(
+  cors({
+    origin: allowed,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(express.json({ limit: "20mb" }));
 
 // Session & Passport
