@@ -83,12 +83,24 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
   }, [campaign._id]);
 
   const handleFormChange = (e) => {
-    setSelectedCharacter((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
+    const { name, type, value, checked } = e.target;
+    const val = type === "checkbox" ? checked : value;
 
+    setSelectedCharacter((prev) => {
+      if (name.includes(".")) {
+        const [parent, child] = name.split(".");
+        return {
+          ...prev,
+          [parent]: {
+            ...prev[parent],
+            [child]: val,
+          },
+        };
+      }
+
+      return { ...prev, [name]: val };
+    });
+  };
   const saveCharacter = async () => {
     if (!selectedCharacter) return;
 
