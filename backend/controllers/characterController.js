@@ -76,6 +76,8 @@ const getCharacterById = asyncHandler(async (req, res) => {
 const updateCharacter = asyncHandler(async (req, res) => {
   const { body, params, user } = req;
 
+  parseStructuredFields(body);
+
   // Optional cleanup (if using old utility)
   if (body.campaign === "") {
     body.campaign = null;
