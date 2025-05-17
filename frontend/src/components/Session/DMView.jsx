@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import "../../styles/SessionStyles/DMStyles/DMView.css";
 
 import { UserContext } from "../../context/UserContext";
@@ -33,6 +33,12 @@ const DMView = ({ campaign, socket, sessionMap }) => {
 
   const { activeMap, setActiveMap, tokens, setTokens, saveCurrentMap } =
     useDMMapManager(sessionMap, socket, user);
+
+  useEffect(() => {
+    if (user && socket) {
+      socket.emit("registerUser", user._id);
+    }
+  }, [socket, user]);
 
   return (
     <div className="dm-session-container">
