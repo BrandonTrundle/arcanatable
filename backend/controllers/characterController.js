@@ -100,7 +100,17 @@ const updateCharacter = asyncHandler(async (req, res) => {
     if (!allowedFields.includes(key)) continue;
 
     try {
-      character[key] = JSON.parse(value);
+      const parsed = JSON.parse(value);
+      if (
+        typeof parsed === "object" &&
+        parsed !== null &&
+        character[key] &&
+        typeof character[key] === "object"
+      ) {
+        Object.assign(character[key], parsed);
+      } else {
+        character[key] = parsed;
+      }
     } catch {
       character[key] = value;
     }
