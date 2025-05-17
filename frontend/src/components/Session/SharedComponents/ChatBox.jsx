@@ -26,6 +26,17 @@ const ChatBox = ({ socket, campaignId, username, userId }) => {
   }, [messages]);
 
   useEffect(() => {
+    const handleLocalSecretMessage = (message) => {
+      setMessages((prev) => [...prev, message]);
+    };
+
+    socket.on("localSecretChatMessage", handleLocalSecretMessage);
+    return () => {
+      socket.off("localSecretChatMessage", handleLocalSecretMessage);
+    };
+  }, [socket]);
+
+  useEffect(() => {
     const handleSecretRoll = (message) => {
       if (message.targetUserId === userId) {
         setMessages((prev) => [...prev, message]);
