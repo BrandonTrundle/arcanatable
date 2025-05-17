@@ -4,7 +4,7 @@ const Character = require("../models/characterModel");
 const asyncHandler = require("express-async-handler");
 
 const parseStructuredFields = (body) => {
-  ["attacks", "skills", "equipment", "spells"].forEach((field) => {
+  ["attacks", "skills", "equipment", "spells", "coins"].forEach((field) => {
     if (body[field] && typeof body[field] === "string") {
       try {
         body[field] = JSON.parse(body[field]);
