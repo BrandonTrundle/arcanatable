@@ -97,22 +97,28 @@ const updateCharacter = asyncHandler(async (req, res) => {
   }
 
   for (const [key, value] of Object.entries(body)) {
-    if (!allowedFields.includes(key)) continue;
+    if (!allowedFields.includes(key)) {
+      console.log(`⏭ Skipping unknown field: ${key}`);
+      continue;
+    }
 
     try {
       const parsed = JSON.parse(value);
-      if (
-        typeof parsed === "object" &&
-        parsed !== null &&
-        character[key] &&
-        typeof character[key] === "object"
-      ) {
-        Object.assign(character[key], parsed);
+      console.log(`🧩 Parsed field '${key}':`, parsed);
+
+      if (key === "coins") {
+        character.coins = parsed;
+        character.markModified("coins");
+        console.log("✅ Coins updated and marked as modified.");
       } else {
         character[key] = parsed;
       }
-    } catch {
+    } catch (err) {
       character[key] = value;
+      console.warn(
+        `⚠️ Failed to parse field '${key}', using raw value:`,
+        value
+      );
     }
   }
 
