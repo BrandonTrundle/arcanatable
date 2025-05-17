@@ -6,6 +6,7 @@ const cors = require("cors");
 const session = require("express-session");
 const passport = require("passport");
 const { Server } = require("socket.io");
+const Campaign = require("../backend/models/campaignModel");
 
 // Load environment variables
 require("dotenv").config();
@@ -69,17 +70,29 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("secretRoll", ({ targetUserId, ...rest }) => {
-    const targetSocketId = userSocketMap.get(targetUserId);
-    if (targetSocketId) io.to(targetSocketId).emit("secretRoll", rest);
+  socket.on("secretRoll", async ({ campaignId, ...rest }) => {
+    try {
+      const campaign = await Campaign.findById(campaignId).select("creator");
+      if (!campaign) return;
+
+      const dmSocketInfo = userSocketMap.get(String(campaign.creator));
+      if (dmSocketInfo?.socketId) {
+        io.to(dmSocketInfo.socketId).emit("secretRoll", rest);
+      }
+    } catch (err) {
+      console.error("❌ Failed to process secret roll:", err);
+    }
   });
 
   socket.on("chatMessage", (message) => {
     io.to(message.campaignId).emit("chatMessage", message);
   });
 
-  socket.on("registerUser", (userId) => {
-    userSocketMap.set(userId, socket.id);
+  socket.on("registerUser", ({ userId, campaignId }) => {
+    userSocketMap.set(userId, {
+      socketId: socket.id,
+      campaignId,
+    });
   });
 
   socket.on("loadMap", (map) => {
