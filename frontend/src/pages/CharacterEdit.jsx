@@ -145,6 +145,10 @@ const CharacterEdit = () => {
         }
       });
 
+      if (formData.coins) {
+        formDataToSend.set("coins", JSON.stringify(formData.coins));
+      }
+
       // Explicitly cast to string to avoid accidental arrays
       formDataToSend.append("portraitImage", String(updatedPortraitImage));
       formDataToSend.append("orgSymbolImage", String(updatedOrgSymbolImage));
