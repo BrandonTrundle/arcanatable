@@ -1,5 +1,6 @@
 import React from "react";
 import "../../styles/CharacterSheetStyles/CharacterImageUpload.css";
+import { getImgSrc } from "../../utils/getImgSrc";
 
 const CharacterImageUpload = ({ formData, setFormData }) => {
   const handleImageUpload = (e) => {
@@ -21,8 +22,7 @@ const CharacterImageUpload = ({ formData, setFormData }) => {
         {formData.portraitImagePreview || formData.portraitImage ? (
           <img
             src={
-              formData.portraitImagePreview ||
-              `${import.meta.env.VITE_API_URL}${formData.portraitImage}`
+              formData.portraitImagePreview || getImgSrc(formData.portraitImage)
             }
             alt="Portrait Preview"
           />
