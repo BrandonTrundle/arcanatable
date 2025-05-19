@@ -1,0 +1,138 @@
+@import "../variables.css";
+
+.container {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 5rem auto 2rem auto;
+  background-color: var(--parchment);
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.tabButtons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.tabButtons button {
+  padding: 0.5rem 1rem;
+  background-color: var(--dark-brown);
+  color: var(--parchment);
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.tabButtons button:hover {
+  background-color: var(--burnt-orange);
+}
+
+.activeTab {
+  background-color: var(--burnt-orange);
+}
+
+.timeline {
+  position: relative;
+  margin-left: 1.5rem;
+  border-left: 3px solid var(--dark-brown);
+  padding-left: 1.5rem;
+}
+
+.timelineItem {
+  position: relative;
+  margin-bottom: 2rem;
+  cursor: pointer;
+}
+
+.dot {
+  position: absolute;
+  left: -1.65rem;
+  top: 0.3rem;
+  width: 1rem;
+  height: 1rem;
+  background-color: var(--burnt-orange);
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px var(--dark-brown);
+}
+
+.patchContentWrapper {
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  transition: background-color 0.2s ease;
+}
+
+.patchHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.patchTitle {
+  font-size: 1.25rem;
+  margin: 0;
+  color: var(--dark-brown);
+}
+
+.patchDate {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 0.5rem;
+  display: block;
+}
+
+.patchContent {
+  white-space: pre-wrap;
+  margin-top: 1rem;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #222;
+}
+
+/* 🏷️ Tag Badges */
+
+.badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: white;
+  white-space: nowrap;
+}
+
+.feature {
+  background-color: var(--emerald-green);
+}
+
+.fix {
+  background-color: #c0392b;
+}
+
+.tweak {
+  background-color: var(--steel-blue);
+}
+
+.beta {
+  background-color: var(--burnt-orange);
+}
+
+.update {
+  background-color: var(--dark-brown);
+}
+
+/* 🔮 Optional: Upcoming section */
+
+.upcomingSection {
+  background-color: #fffaf0;
+  border: 1px solid #ddd;
+  padding: 1.5rem;
+  border-radius: 10px;
+}

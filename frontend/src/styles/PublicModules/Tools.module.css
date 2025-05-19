@@ -1,0 +1,70 @@
+@import "../variables.css";
+
+.container {
+  max-width: 900px;
+  margin: 5rem auto 2rem auto;
+  padding: 2rem;
+  background-color: var(--parchment);
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.pageTitle {
+  font-size: 2rem;
+  color: var(--dark-brown);
+  margin-bottom: 0.5rem;
+}
+
+.pageIntro {
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.toolList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.toolItem {
+  border-bottom: 1px solid var(--parchment4);
+  padding: 1rem 0;
+}
+
+.toolHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toolName {
+  font-weight: bold;
+  color: var(--emerald-green);
+  text-decoration: none;
+  font-size: 1.1rem;
+}
+
+.toolName:hover {
+  text-decoration: underline;
+}
+
+.featuredBadge {
+  background-color: var(--burnt-orange);
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.toolDescription {
+  margin: 0.5rem 0;
+  color: #444;
+}
+
+.toolCategory {
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
+}

@@ -1,0 +1,56 @@
+/* AdminPanel.module.css */
+@import "../variables.css";
+.container {
+  display: flex;
+  padding: 2rem;
+  gap: 2rem;
+  margin-top: 5rem; /* Adjust based on your Navbar height */
+}
+
+.menuList {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+  border-top: 1px solid var(--dark-brown);
+  border-bottom: 1px solid var(--dark-brown);
+}
+.sidebar {
+  min-width: 200px;
+  border: 2px solid var(--dark-brown);
+  border-radius: 25px;
+  padding-right: 1rem;
+  padding-left: 0.5rem;
+  background-color: var(--beige-tan);
+  text-align: center;
+}
+
+.buttonList {
+  margin-bottom: 0.5rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px dashed var(--burnt-orange);
+}
+
+.buttonList button {
+  display: block;
+  margin-bottom: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  background-color: var(--dark-brown);
+  color: var(--parchment);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.buttonList button:hover {
+  background-color: var(--burnt-orange);
+}
+
+.viewPanel {
+  flex-grow: 1;
+  border: 2px solid var(--parchment4);
+  border-radius: 8px;
+  padding: 1rem;
+  background-color: var(--sidebar-bg);
+}

@@ -14,6 +14,7 @@ const routeDefs = [
   { path: "/dicerolls", module: "./diceRollRoutes" },
   { path: "/admin", module: "./adminRoutes" },
   { path: "/patches", module: "./patchRoutes" },
+  { path: "/tools", module: "./toolRoutes" },
 ];
 
 // Safe dynamic mounting with logging

@@ -4,6 +4,10 @@ import Navbar from "../components/Auth/Navbar";
 import { useUserContext } from "../context/UserContext";
 import { getApiUrl } from "../utils/env";
 import PatchManager from "./Admin/PatchManager";
+import ToolManager from "./Admin/ToolManager";
+import PlatformStatus from "./Admin/PlatformStatus";
+
+import styles from "../styles/AdminModules/AdminPanel.module.css";
 
 const AdminPanel = () => {
   const { user } = useUserContext();
@@ -33,8 +37,12 @@ const AdminPanel = () => {
 
   const renderView = () => {
     switch (view) {
+      case "tools":
+        return <ToolManager />;
       case "patches":
         return <PatchManager />;
+      case "status":
+        return <PlatformStatus />;
       case "dashboard":
       default:
         return (
@@ -49,20 +57,26 @@ const AdminPanel = () => {
   return (
     <>
       <Navbar />
-      <div style={{ display: "flex", padding: "2rem", gap: "2rem" }}>
-        <div style={{ minWidth: "200px" }}>
+      <div className={styles.container}>
+        <div className={styles.sidebar}>
           <h3>Admin Menu</h3>
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            <li>
+          <ul className={styles.menuList}>
+            <li className={styles.buttonList}>
               <button onClick={() => setView("dashboard")}>Dashboard</button>
             </li>
-            <li>
+            <li className={styles.buttonList}>
+              <button onClick={() => setView("status")}>System Status</button>
+            </li>
+            <li className={styles.buttonList}>
               <button onClick={() => setView("patches")}>Patches</button>
             </li>
             {/* Add more tools here later */}
+            <li className={styles.buttonList}>
+              <button onClick={() => setView("tools")}>Tools</button>
+            </li>
           </ul>
         </div>
-        <div style={{ flexGrow: 1 }}>{renderView()}</div>
+        <div className={styles.viewPanel}>{renderView()}</div>
       </div>
     </>
   );

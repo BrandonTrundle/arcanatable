@@ -1,0 +1,86 @@
+@import "../variables.css";
+
+.container {
+  padding: 2rem;
+}
+
+.toolForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.toolForm input,
+.toolForm textarea {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--dark-brown);
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: #fff;
+  color: #000;
+}
+
+.toolForm label {
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.toolForm button {
+  align-self: flex-start;
+  padding: 0.5rem 1.25rem;
+  background-color: var(--dark-brown);
+  color: var(--parchment);
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.toolForm button:hover {
+  background-color: var(--burnt-orange);
+}
+
+.sectionHeader {
+  margin-top: 2rem;
+}
+
+.toolItem {
+  margin-bottom: 1.5rem;
+  background-color: var(--sidebar-bg);
+  border: 1px solid var(--parchment4);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.toolItem strong {
+  font-size: 1.1rem;
+}
+
+.toolItem a {
+  color: var(--emerald-green);
+  text-decoration: underline;
+}
+
+.toolItem p {
+  margin: 0.5rem 0;
+}
+
+.toolItem small {
+  font-style: italic;
+  color: #555;
+}
+
+.deleteButton {
+  margin-left: 1rem;
+  color: #fff;
+  background-color: #a00;
+  border: none;
+  padding: 0.3rem 0.75rem;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}

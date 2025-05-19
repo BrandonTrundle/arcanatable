@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Auth/Navbar";
 import "../styles/CreateCampaign.css";
+import backgroundImage from "../assets/Campaigns.png";
 
 const CreateCampaign = () => {
   const [name, setName] = useState("");
@@ -25,7 +26,6 @@ const CreateCampaign = () => {
     let finalImageUrl = "";
 
     try {
-      // Upload image only if one was selected
       if (image) {
         const formData = new FormData();
         formData.append("image", image);
@@ -77,9 +77,19 @@ const CreateCampaign = () => {
   return (
     <>
       <Navbar />
-      <div className="create-campaign-container">
-        <h1>Create a New Campaign</h1>
-        <form onSubmit={handleSubmit} className="create-campaign-form">
+      <div
+        className="create-campaign-container"
+        style={{
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundSize: "cover",
+          backgroundPosition: "0% 25%",
+          backgroundRepeat: "no-repeat",
+          minHeight: "100vh",
+          paddingTop: "10rem",
+        }}
+      >
+        <form onSubmit={handleSubmit} className="create-campaign-form enhanced">
+          <h1 className="form-title">Create a New Campaign</h1>
           <label>
             Campaign Name:
             <input

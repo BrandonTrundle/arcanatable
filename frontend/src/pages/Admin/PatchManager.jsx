@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { getApiUrl } from "../../utils/env";
+import styles from "../../styles/AdminModules/PatchManager.module.css";
 
 const PatchManager = () => {
   const [patches, setPatches] = useState([]);
-  const [form, setForm] = useState({ version: "", title: "", content: "" });
+  const [form, setForm] = useState({
+    version: "",
+    title: "",
+    content: "",
+    tag: "update",
+  });
   const [editingId, setEditingId] = useState(null);
 
   const token = localStorage.getItem("token");
@@ -59,14 +65,15 @@ const PatchManager = () => {
       version: patch.version,
       title: patch.title,
       content: patch.content,
+      tag: patch.tag || "update",
     });
     setEditingId(patch._id);
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
+    <div className={styles.container}>
       <h2>{editingId ? "Edit Patch" : "New Patch"}</h2>
-      <form onSubmit={handleSubmit} style={{ marginBottom: "2rem" }}>
+      <form onSubmit={handleSubmit} className={styles.patchForm}>
         <input
           type="text"
           name="version"
@@ -83,6 +90,18 @@ const PatchManager = () => {
           onChange={handleChange}
           required
         />
+        <select
+          name="tag"
+          value={form.tag || "update"}
+          onChange={handleChange}
+          required
+        >
+          <option value="feature">✨ Feature</option>
+          <option value="fix">🐛 Fix</option>
+          <option value="tweak">🔧 Tweak</option>
+          <option value="beta">🧪 Beta</option>
+          <option value="update">📦 General</option>
+        </select>
         <textarea
           name="content"
           placeholder="Patch details..."
@@ -95,17 +114,17 @@ const PatchManager = () => {
       </form>
 
       <h3>All Patches</h3>
-      <ul>
+      <ul className={styles.patchList}>
         {patches.map((patch) => (
-          <li key={patch._id} style={{ marginBottom: "1rem" }}>
+          <li key={patch._id} className={styles.patchItem}>
             <strong>
               {patch.version} - {patch.title}
             </strong>
-            <div style={{ marginTop: ".5rem" }}>
+            <div className={styles.patchControls}>
               <button onClick={() => startEdit(patch)}>Edit</button>
               <button
                 onClick={() => handleDelete(patch._id)}
-                style={{ marginLeft: "1rem", color: "red" }}
+                className={styles.deleteButton}
               >
                 Delete
               </button>

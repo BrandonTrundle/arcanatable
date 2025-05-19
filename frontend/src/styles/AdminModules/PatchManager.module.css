@@ -1,0 +1,75 @@
+@import "../variables.css";
+
+.container {
+  padding: 2rem;
+}
+
+.patchForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.patchForm input,
+.patchForm textarea {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--dark-brown);
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: #fff;
+  color: #000;
+}
+
+.patchForm button {
+  align-self: flex-start;
+  padding: 0.5rem 1.25rem;
+  background-color: var(--dark-brown);
+  color: var(--parchment);
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.patchForm button:hover {
+  background-color: var(--burnt-orange);
+}
+
+.patchList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.patchItem {
+  border: 1px solid var(--parchment4);
+  background-color: var(--sidebar-bg);
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.patchControls {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.patchControls button {
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.patchControls button:hover {
+  opacity: 0.9;
+}
+
+.deleteButton {
+  background-color: #a30c0c;
+  color: #fff;
+}

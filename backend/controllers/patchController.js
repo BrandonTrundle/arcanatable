@@ -2,8 +2,8 @@ const Patch = require("../models/patchModel");
 
 exports.createPatch = async (req, res) => {
   try {
-    const { version, title, content } = req.body;
-    const patch = await Patch.create({ version, title, content });
+    const { version, title, content, tag } = req.body; // ← added `tag`
+    const patch = await Patch.create({ version, title, content, tag }); // ← included `tag`
     res.status(201).json(patch);
   } catch (err) {
     res.status(500).json({ message: err.message });

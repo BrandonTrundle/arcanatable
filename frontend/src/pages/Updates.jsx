@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/Auth/Navbar";
 import { getApiUrl } from "../utils/env";
+import styles from "../styles/PublicModules/Updates.module.css";
 
 const Updates = () => {
   const [patches, setPatches] = useState([]);
@@ -18,54 +19,72 @@ const Updates = () => {
     setExpandedPatchId((prev) => (prev === id ? null : id));
   };
 
+  const renderBadge = (tag) => {
+    const labelMap = {
+      feature: "✨ Feature",
+      fix: "🐛 Fix",
+      tweak: "🔧 Tweak",
+      beta: "🧪 Beta",
+      update: "📦 Update",
+    };
+
+    return (
+      <span className={`${styles.badge} ${styles[tag]}`}>
+        {labelMap[tag] || "📦 Update"}
+      </span>
+    );
+  };
+
   return (
     <>
       <Navbar />
-      <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
+      <div className={styles.container}>
         <h1>ArcanaTable Updates</h1>
-        <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-          <button onClick={() => setTab("patches")}>Patches</button>
-          <button onClick={() => setTab("upcoming")}>Upcoming</button>
+        <div className={styles.tabButtons}>
+          <button
+            onClick={() => setTab("patches")}
+            className={tab === "patches" ? styles.activeTab : ""}
+          >
+            Patches
+          </button>
+          <button
+            onClick={() => setTab("upcoming")}
+            className={tab === "upcoming" ? styles.activeTab : ""}
+          >
+            Upcoming
+          </button>
         </div>
 
-        {tab === "patches" &&
-          patches.map((patch) => (
-            <div
-              key={patch._id}
-              style={{
-                border: "1px solid #ccc",
-                borderRadius: "10px",
-                padding: "1rem",
-                marginBottom: "1.5rem",
-                background: "#f9f9f9",
-                cursor: "pointer",
-              }}
-              onClick={() => togglePatch(patch._id)}
-            >
-              <h2 style={{ margin: 0 }}>
-                {patch.version} – {patch.title}
-              </h2>
-              {expandedPatchId === patch._id && (
-                <>
-                  <small>
-                    Posted {new Date(patch.createdAt).toLocaleDateString()}
+        {tab === "patches" && (
+          <div className={styles.timeline}>
+            {patches.map((patch) => (
+              <div
+                key={patch._id}
+                className={styles.timelineItem}
+                onClick={() => togglePatch(patch._id)}
+              >
+                <div className={styles.dot}></div>
+                <div className={styles.patchContentWrapper}>
+                  <div className={styles.patchHeader}>
+                    <h2 className={styles.patchTitle}>
+                      {patch.version} – {patch.title}
+                    </h2>
+                    {renderBadge(patch.tag)}
+                  </div>
+                  <small className={styles.patchDate}>
+                    {new Date(patch.createdAt).toLocaleDateString()}
                   </small>
-                  <pre
-                    style={{
-                      whiteSpace: "pre-wrap",
-                      marginTop: "1rem",
-                      fontFamily: "inherit",
-                    }}
-                  >
-                    {patch.content}
-                  </pre>
-                </>
-              )}
-            </div>
-          ))}
+                  {expandedPatchId === patch._id && (
+                    <pre className={styles.patchContent}>{patch.content}</pre>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {tab === "upcoming" && (
-          <div>
+          <div className={styles.upcomingSection}>
             <h2>Planned Features</h2>
             <ul>
               <li>Forum system on Community page</li>
