@@ -121,6 +121,26 @@ export const useTokenManager = ({
   }, [socket, mapId]);
 
   useEffect(() => {
+    if (!socket || !map?._id || isDM) return;
+
+    const handleTokensUpdated = (payload) => {
+      const { mapId, tokens: receivedTokens } = payload;
+
+      if (mapId === map._id) {
+        console.log("📥 Player received tokensUpdated:", receivedTokens);
+        setTokens(receivedTokens);
+        console.log("✅ Player setTokens updated:", receivedTokens);
+      }
+    };
+
+    socket.on("tokensUpdated", handleTokensUpdated);
+
+    return () => {
+      socket.off("tokensUpdated", handleTokensUpdated);
+    };
+  }, [socket, map?._id, isDM]);
+
+  useEffect(() => {
     if (!socket || !mapId) return;
 
     const handleTokenDropped = ({ mapId: incomingId, token }) => {
@@ -202,26 +222,29 @@ export const useTokenManager = ({
     return () => socket.off("playerMovedToken", handlePlayerMovedToken);
   }, [socket, mapId]);
 
-  const handleTokenRightClick = (e, id, stageRef) => {
-    const token = tokens.find((t) => t.id === id);
-    if (!token || !hasControl(token)) return;
+  const handleTokenRightClick = useCallback(
+    (e, id, stageRef) => {
+      const token = tokens.find((t) => t.id === id);
+      if (!token || !hasControl(token)) return;
 
-    e.evt.preventDefault();
+      e.evt.preventDefault();
 
-    const stage = stageRef.current.getStage();
-    const scale = stage.scaleX();
-    const pos = stage.position();
-    const screenX = token.x * scale + pos.x;
-    const screenY = token.y * scale + pos.y;
+      const stage = stageRef.current.getStage();
+      const scale = stage.scaleX();
+      const pos = stage.position();
+      const screenX = token.x * scale + pos.x;
+      const screenY = token.y * scale + pos.y;
 
-    setContextMenu({
-      tokenId: id,
-      x: screenX,
-      y: screenY,
-      currentSize: token.tokenSize || "Medium",
-      mode: null,
-    });
-  };
+      setContextMenu({
+        tokenId: id,
+        x: screenX,
+        y: screenY,
+        currentSize: token.tokenSize || "Medium",
+        mode: null,
+      });
+    },
+    [tokens, hasControl, setContextMenu]
+  );
 
   const handleTokenAction = (action, tokenId, arg) => {
     const token = tokens.find((t) => t.id === tokenId);
@@ -266,6 +289,23 @@ export const useTokenManager = ({
     emitTokenUpdate(updated);
   };
 
+  function generateUniqueTokenName(baseName, existingTokens) {
+    const nameRegex = new RegExp(`^${baseName}(?: (\\d+))?$`, "i");
+    let maxNumber = 0;
+
+    existingTokens.forEach((token) => {
+      const match = token.name.match(nameRegex);
+      if (match) {
+        const number = match[1] ? parseInt(match[1], 10) : 0;
+        if (number >= maxNumber) {
+          maxNumber = number + 1;
+        }
+      }
+    });
+
+    return maxNumber > 0 ? `${baseName} ${maxNumber}` : baseName;
+  }
+
   const handleDrop = async ({ trueX, trueY, originalEvent }) => {
     try {
       const rawData =
@@ -279,45 +319,55 @@ export const useTokenManager = ({
       const templateId = dragged.id;
       if (!templateId) return;
 
-      const template = tokenTemplates.find((t) => t.id === templateId);
-      if (!template) {
+      const template = tokenTemplates?.find?.((t) => t.id === templateId);
+      const isCharacterDrop = !template && dragged.layer === "player";
+
+      let base = {};
+      let baseName = "Unknown";
+      let imageUrl = dragged.imageUrl;
+      let size = dragged.tokenSize || "Medium";
+      let sourceType = "custom";
+      let maxHP = 10;
+
+      if (template) {
+        base = template.content || {};
+        baseName = template.title || base.name || "Unknown";
+        imageUrl =
+          base.image || base.avatar || base.imageUrl || dragged.imageUrl;
+        size = base.tokenSize || "Medium";
+        sourceType = template.type || "custom";
+
+        if (useRolledHP && base.hitDice && isValidDiceString(base.hitDice)) {
+          maxHP = rollDiceFormula(base.hitDice);
+        } else if (!isNaN(Number(base.hitPoints))) {
+          maxHP = Number(base.hitPoints);
+        }
+      } else if (isCharacterDrop) {
+        base = dragged;
+        baseName = dragged.name || "Unnamed Hero";
+        imageUrl = dragged.imageUrl;
+        size = dragged.tokenSize || "Medium";
+        sourceType = "character";
+        maxHP = dragged.maxhp || 10;
+      } else {
         console.warn("⚠️ Token template not found for:", templateId);
         return;
       }
 
-      const base = template.content || {};
-      const sourceName = template.title || base.name || "Unknown";
-      const size = base.tokenSize || "Medium";
-
+      const uniqueName = generateUniqueTokenName(baseName, tokens);
       const uniqueId = `${templateId}_${Date.now()}`;
-
-      //console.log("🎲 Checking dice roll:", {
-      //  useRolledHP,
-      //  hitDice: base.hitDice,
-      //  hitPoints: base.hitPoints,
-      //  isValid: isValidDiceString(base.hitDice),
-      //});
-      let maxHP = 10;
-
-      if (useRolledHP && base.hitDice && isValidDiceString(base.hitDice)) {
-        maxHP = rollDiceFormula(base.hitDice);
-      } else if (!isNaN(Number(base.hitPoints))) {
-        maxHP = Number(base.hitPoints);
-      }
 
       const newToken = {
         id: uniqueId,
-        name: sourceName,
-        originalName: sourceName,
+        name: uniqueName,
+        originalName: baseName,
         baseTemplateId: templateId,
-        imageUrl:
-          base.image || base.avatar || base.imageUrl || dragged.imageUrl,
+        imageUrl,
         tokenSize: size,
         x: trueX,
         y: trueY,
-        layer: dragged.layer || "dm",
-        sourceType: template.type || "custom",
-
+        layer: dragged.layer || "player", // ✅ Default to player layer
+        sourceType,
         maxHP,
         currentHP: maxHP,
         initiative: null,
@@ -325,8 +375,11 @@ export const useTokenManager = ({
         notes: "",
       };
 
-      setTokens((prev) => [...prev, newToken]);
-      emitTokenUpdate(newToken);
+      setTokens((prev) => {
+        const updatedTokens = [...prev, newToken];
+        emitTokenUpdate(updatedTokens);
+        return updatedTokens;
+      });
     } catch (err) {
       console.error("❌ Error handling token drop:", err);
     }

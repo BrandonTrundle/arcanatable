@@ -21,6 +21,7 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
   const [selectedTokenId, setSelectedTokenId] = useState(null);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [currentTab, setCurrentTab] = useState("basics");
+  const [tokens, setTokens] = useState([]);
 
   useEffect(() => {
     if (sessionMap) setActiveMap(sessionMap);
@@ -147,17 +148,6 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
         />
       </aside>
 
-      <RefactoredMap
-        map={activeMap}
-        socket={socket}
-        user={user}
-        activeLayer="player"
-        activeInteractionMode={activeInteractionMode}
-        setActiveInteractionMode={setActiveInteractionMode}
-        selectedTokenId={selectedTokenId}
-        setSelectedTokenId={setSelectedTokenId}
-      />
-
       {activeTool === "tokens" && (
         <TokenPanel
           campaignId={campaign._id}
@@ -194,6 +184,15 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
           setActiveTool={setActiveTool}
         />
       )}
+      <MapArea
+        activeMap={activeMap}
+        socket={socket}
+        user={user}
+        activeInteractionMode={activeInteractionMode}
+        setActiveInteractionMode={setActiveInteractionMode}
+        selectedTokenId={selectedTokenId}
+        setSelectedTokenId={setSelectedTokenId}
+      />
 
       <ChatPanel
         socket={socket}

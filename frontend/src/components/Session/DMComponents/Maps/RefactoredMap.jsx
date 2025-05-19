@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useCallback } from "react";
 import useImage from "use-image";
 import ZoomableStage from "../../../DMToolkit/Maps/ZoomableStage";
 
@@ -91,7 +91,7 @@ const RefactoredMap = ({
     stageRef
   );
 
-  const { handleTokenMove } = useTokenMovement({
+  const { handleTokenMove: rawHandleTokenMove } = useTokenMovement({
     map,
     tokens,
     setTokens,
@@ -101,6 +101,11 @@ const RefactoredMap = ({
     emitTokenUpdate,
     onTokenMove,
   });
+
+  const handleTokenMove = useCallback(
+    (...args) => rawHandleTokenMove(...args),
+    [rawHandleTokenMove]
+  );
 
   const { onDrop, onDragOver } = useDropHandler(handleDrop, stageRef);
   useOutsideClickHandler("token-context-menu", () => setContextMenu(null));

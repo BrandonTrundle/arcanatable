@@ -1,7 +1,32 @@
 // Reverted TokenLayer.jsx and Token component to restore token interactivity
-import React, { memo } from "react";
+import React, { memo, useEffect, useRef } from "react";
 import { Group, Rect, Image as KonvaImage, Text } from "react-konva";
 import useImage from "use-image";
+
+function useWhyDidYouUpdate(name, props) {
+  const previousProps = useRef();
+
+  useEffect(() => {
+    if (previousProps.current) {
+      const allKeys = Object.keys({ ...previousProps.current, ...props });
+      const changesObj = {};
+      allKeys.forEach((key) => {
+        if (previousProps.current[key] !== props[key]) {
+          changesObj[key] = {
+            from: previousProps.current[key],
+            to: props[key],
+          };
+        }
+      });
+
+      if (Object.keys(changesObj).length) {
+        //console.log(`[🔁 ${name}] Prop changes:`, changesObj);
+      }
+    }
+
+    previousProps.current = props;
+  });
+}
 
 // Individual token component
 const Token = ({
@@ -20,7 +45,7 @@ const Token = ({
   isSelected,
   isExternallySelected,
   selectedBy,
-  isCombatMode = { isCombatMode },
+  isCombatMode,
 }) => {
   const [img] = useImage(
     imageUrl?.startsWith("/uploads")
@@ -171,11 +196,28 @@ const TokenLayer = ({
   externalSelections = {},
   isInteractive = true,
 }) => {
+  useWhyDidYouUpdate("TokenLayer", {
+    tokens,
+    onDragEnd,
+    onRightClick,
+    isCombatMode,
+    onClick,
+    selectedTokenId,
+    activeLayer,
+    canMove,
+    externalSelections,
+    isInteractive,
+  });
   return (
     <>
       {tokens.map((token) => {
         const draggable =
           typeof canMove === "function" ? canMove(token) : !!canMove;
+        //console.log(`[🐞 DEBUG] Rendering Token:`, {
+        //  id: token.id,
+        //  title: token.name,
+        //  isCombatMode,
+        //});
 
         return (
           <Token
@@ -185,7 +227,7 @@ const TokenLayer = ({
             y={token.y}
             size={token.tokenSize}
             imageUrl={token.imageUrl}
-            title={token.title}
+            title={token.name}
             layer={token.layer}
             activeLayer={activeLayer}
             onDragEnd={onDragEnd}
@@ -209,4 +251,4 @@ const TokenLayer = ({
   );
 };
 
-export default TokenLayer;
+export default memo(TokenLayer);

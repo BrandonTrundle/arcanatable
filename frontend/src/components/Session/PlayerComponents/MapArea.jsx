@@ -2,6 +2,8 @@ import React from "react";
 import RefactoredMap from "../DMComponents/Maps/RefactoredMap";
 import InteractionToolbar from "../DMComponents/UI/InteractionToolbar";
 import loadMapFallback from "../../../assets/LoadMapToProceed.png";
+import { useTokenManager } from "../hooks/useTokenManager";
+import { useDropHandler } from "../hooks/useDropHandler";
 
 const MapArea = ({
   activeMap,
@@ -12,8 +14,28 @@ const MapArea = ({
   selectedTokenId,
   setSelectedTokenId,
 }) => {
+  const {
+    tokens,
+    setTokens,
+    handleDrop,
+    handleTokenRightClick,
+    handleTokenAction,
+    emitTokenUpdate,
+    hasControl,
+    contextMenu,
+    setContextMenu,
+    externalSelections,
+  } = useTokenManager({
+    map: activeMap,
+    socket,
+    isDM: false,
+    user,
+  });
+
+  const { onDrop, onDragOver } = useDropHandler(handleDrop);
+
   return (
-    <main className="dm-map-area">
+    <main className="dm-map-area" onDrop={onDrop} onDragOver={onDragOver}>
       {activeMap && activeMap.content ? (
         <RefactoredMap
           map={activeMap}
@@ -25,6 +47,10 @@ const MapArea = ({
           setActiveInteractionMode={setActiveInteractionMode}
           selectedTokenId={selectedTokenId}
           setSelectedTokenId={setSelectedTokenId}
+          setExternalTokens={setTokens}
+          isCombatMode={false}
+          setFocusedToken={() => {}}
+          useRolledHP={false}
         />
       ) : (
         <div className="map-placeholder">
