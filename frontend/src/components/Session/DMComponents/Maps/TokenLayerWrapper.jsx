@@ -21,8 +21,8 @@ const TokenLayerWrapper = ({
       ? tokens
       : tokens.filter((t) => t.layer === activeLayer)
     : [];
-  console.log("🎯 TokenLayerWrapper tokens before filtering:", tokens);
-  console.log("🔍 Filtered tokens for layer:", activeLayer, filteredTokens);
+  //console.log("🎯 TokenLayerWrapper tokens before filtering:", tokens);
+  //console.log("🔍 Filtered tokens for layer:", activeLayer, filteredTokens);
 
   const stableOnRightClick = useCallback(
     (e, id) => {

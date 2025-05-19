@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useCharacters } from "./hooks/useCharacter";
 import { useToolkitTokens } from "./hooks/useToolkitTokens";
 import QuickCreateForm from "./QuickCreateForm";
 import "../../../../styles/SessionStyles/PlayerStyles/PlayerTokenManager.css";
+import { UserContext } from "../../../../context/UserContext";
 
 const PlayerTokenManager = ({ campaignId, userToken, onClose }) => {
+  const { user } = useContext(UserContext);
   const [activeTab, setActiveTab] = useState("characters");
   const { characters, loading: loadingCharacters } = useCharacters(
     campaignId,
@@ -74,6 +76,9 @@ const PlayerTokenManager = ({ campaignId, userToken, onClose }) => {
                             imageUrl: char.portraitImage,
                             tokenSize: "Medium",
                             layer: "player",
+                            controller: user._id,
+                            maxhp: char.maxhp,
+                            currenthp: char.currenthp,
                           };
                           e.dataTransfer.setData(
                             "application/json",

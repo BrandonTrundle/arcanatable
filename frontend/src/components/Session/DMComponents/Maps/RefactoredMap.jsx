@@ -103,8 +103,20 @@ const RefactoredMap = ({
   });
 
   const handleTokenMove = useCallback(
-    (...args) => rawHandleTokenMove(...args),
-    [rawHandleTokenMove]
+    (id, x, y) => {
+      rawHandleTokenMove(id, x, y);
+
+      if (!isDM && socket && map?._id) {
+        console.log("📤 Emitting playerMovedToken", { id, x, y }); // ← Add this
+        socket.emit("playerMovedToken", {
+          mapId: map._id,
+          tokenId: id,
+          x,
+          y,
+        });
+      }
+    },
+    [rawHandleTokenMove, isDM, socket, map?._id]
   );
 
   const { onDrop, onDragOver } = useDropHandler(handleDrop, stageRef);

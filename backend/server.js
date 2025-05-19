@@ -141,6 +141,14 @@ io.on("connection", (socket) => {
     socket.to(campaignId).emit("tokenDropped", { mapId, token });
   });
 
+  socket.on("playerDroppedToken", ({ mapId, campaignId, token }) => {
+    console.log(
+      "📡 Server relaying playerDroppedToken to campaign:",
+      campaignId
+    );
+    io.to(campaignId).emit("playerDroppedToken", { mapId, token });
+  });
+
   socket.on("aoePlaced", ({ campaignId, mapId, aoe }) => {
     if (!campaignId || !mapId || !aoe) return;
     socket.to(campaignId).emit("aoePlaced", { mapId, aoe });
