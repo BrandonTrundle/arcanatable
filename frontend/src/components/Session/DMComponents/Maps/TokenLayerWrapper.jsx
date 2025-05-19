@@ -14,6 +14,7 @@ const TokenLayerWrapper = ({
   hasControl,
   selectedTokenId,
   externalSelections,
+  isCombatMode,
 }) => {
   const filteredTokens =
     activeLayer === "dm"
@@ -24,6 +25,7 @@ const TokenLayerWrapper = ({
     <Layer>
       <TokenLayer
         isInteractive={activeInteractionMode !== "aoe"}
+        isCombatMode={isCombatMode}
         tokens={filteredTokens}
         onDragEnd={handleTokenMove}
         onRightClick={(e, id) => {

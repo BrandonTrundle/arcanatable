@@ -3,7 +3,13 @@ import DraggableResizablePanel from "../../../Common/DraggableResizablePanel";
 import TokenGrid from "./TokenGrid";
 import QuickCreate from "./QuickCreate";
 
-const TokenManager = ({ token, setActiveTool, campaign }) => {
+const TokenManager = ({
+  token,
+  setActiveTool,
+  campaign,
+  useRolledHP,
+  setUseRolledHP,
+}) => {
   const [activeTokenTab, setActiveTokenTab] = useState(null); // 'toolkit' or 'quick'
   const [toolkitTokens, setToolkitTokens] = useState([]);
   const [campaignTokens, setCampaignTokens] = useState([]);
@@ -67,6 +73,17 @@ const TokenManager = ({ token, setActiveTool, campaign }) => {
       <button className="close-button" onClick={() => setActiveTool(null)}>
         ✕
       </button>
+      <div style={{ marginBottom: "1rem" }}>
+        <label style={{ fontSize: "0.85rem" }}>
+          <input
+            type="checkbox"
+            checked={useRolledHP}
+            onChange={(e) => setUseRolledHP(e.target.checked)}
+            style={{ marginRight: "0.5rem" }}
+          />
+          Roll HP on Token Drop
+        </label>
+      </div>
 
       <div className="token-tabs">
         <button onClick={handleLoadToolkitTokens}>ToolKit Tokens</button>

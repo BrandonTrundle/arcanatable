@@ -20,6 +20,7 @@ const Token = ({
   isSelected,
   isExternallySelected,
   selectedBy,
+  isCombatMode = { isCombatMode },
 }) => {
   const [img] = useImage(
     imageUrl?.startsWith("/uploads")
@@ -64,11 +65,11 @@ const Token = ({
       }}
       onContextMenu={(e) => {
         // console.log("🖱️ Token context menu:", id);
-        onRightClick?.(e);
+        onRightClick?.(e, id);
       }}
       onClick={(e) => {
         //  console.log("🖱️ Token clicked:", id);
-        onClick?.(e);
+        onClick?.(e, id);
       }}
       onMouseEnter={(e) => {
         const stage = e.target.getStage();
@@ -105,6 +106,20 @@ const Token = ({
             />
           )}
         </>
+      )}
+
+      {isCombatMode && title && (
+        <Text
+          text={title}
+          fontSize={14}
+          fill="white"
+          stroke="black"
+          strokeWidth={1}
+          y={-offset - 10}
+          x={-offset}
+          width={visualSize}
+          align="center"
+        />
       )}
 
       {/* Local selection highlight */}
@@ -148,6 +163,7 @@ const TokenLayer = ({
   tokens,
   onDragEnd,
   onRightClick,
+  isCombatMode,
   onClick,
   selectedTokenId,
   activeLayer,
@@ -173,6 +189,7 @@ const TokenLayer = ({
             layer={token.layer}
             activeLayer={activeLayer}
             onDragEnd={onDragEnd}
+            isCombatMode={isCombatMode}
             onRightClick={(e) => {
               //console.log("🖱️ Right-click on token layer:", token.id);
               isInteractive && onRightClick(e, token.id);

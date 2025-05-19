@@ -12,6 +12,8 @@ const useDMViewState = () => {
   const [activeInteractionMode, setActiveInteractionMode] = useState("select");
   const [selectedNPC, setSelectedNPC] = useState(null);
   const [selectedMonster, setSelectedMonster] = useState(null);
+  const [isCombatMode, setIsCombatMode] = useState(false);
+  const [focusedToken, setFocusedToken] = useState(null);
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -70,6 +72,10 @@ const useDMViewState = () => {
     setSelectedNPC,
     selectedMonster,
     setSelectedMonster,
+    isCombatMode,
+    setIsCombatMode,
+    focusedToken,
+    setFocusedToken,
   };
 };
 

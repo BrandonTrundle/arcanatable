@@ -6,6 +6,8 @@ import CampaignNPCListPanel from "../NPC/CampaignNPCListPanel";
 import CampaignMonsterListPanel from "../NPC/CampaignMonsterListPanel";
 import NPCPreview from "../../../DMToolkit/NPCPreview";
 import MonsterPreview from "../../../DMToolkit/Monster/MonsterPreview";
+import CombatTrackerPanel from "../CombatTracker/CombatTrackerPanel"; // Adjust path if needed
+import TokenInfoPanel from "../UI/TokenInfoPanel";
 
 const DMPanelManager = ({
   activeTool,
@@ -18,7 +20,15 @@ const DMPanelManager = ({
   setSelectedNPC,
   selectedMonster,
   setSelectedMonster,
+  isCombatMode = { isCombatMode },
+  setIsCombatMode = { setIsCombatMode },
+  focusedToken,
+  setFocusedToken,
+  useRolledHP,
+  setUseRolledHP,
 }) => {
+  //console.log("📦 DMPanelManager focusedToken:", focusedToken);
+
   return (
     <>
       {activeTool === "tokens" && (
@@ -26,6 +36,8 @@ const DMPanelManager = ({
           token={user.token}
           campaign={campaign}
           setActiveTool={setActiveTool}
+          useRolledHP={useRolledHP}
+          setUseRolledHP={setUseRolledHP}
         />
       )}
 
@@ -70,6 +82,14 @@ const DMPanelManager = ({
         </div>
       )}
 
+      {activeTool === "combat" && (
+        <CombatTrackerPanel
+          onClose={() => setActiveTool(null)}
+          isCombatMode={isCombatMode}
+          setIsCombatMode={setIsCombatMode}
+        />
+      )}
+
       {selectedNPC && (
         <div className="floating-preview-panel">
           <button
@@ -80,6 +100,15 @@ const DMPanelManager = ({
           </button>
           <NPCPreview data={selectedNPC} />
         </div>
+      )}
+
+      {focusedToken && (
+        <>
+          <TokenInfoPanel
+            token={focusedToken}
+            onClose={() => setFocusedToken(null)}
+          />
+        </>
       )}
 
       {selectedMonster && (

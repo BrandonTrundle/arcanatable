@@ -12,6 +12,9 @@ const DMMapDisplay = ({
   activeInteractionMode,
   setActiveInteractionMode,
   setExternalTokens,
+  isCombatMode,
+  setFocusedToken,
+  useRolledHP,
 }) => {
   if (activeMap && activeMap.content) {
     return (
@@ -26,6 +29,9 @@ const DMMapDisplay = ({
         activeInteractionMode={activeInteractionMode}
         setActiveInteractionMode={setActiveInteractionMode}
         setExternalTokens={setExternalTokens}
+        isCombatMode={isCombatMode}
+        setFocusedToken={setFocusedToken}
+        useRolledHP={useRolledHP}
       />
     );
   }

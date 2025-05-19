@@ -29,6 +29,9 @@ const RefactoredMap = ({
   activeInteractionMode,
   setActiveInteractionMode,
   setExternalTokens,
+  isCombatMode,
+  setFocusedToken,
+  useRolledHP = false, // default false
 }) => {
   const { stageRef, cellSize, gridWidth, gridHeight } = useStageContext(
     map || {}
@@ -46,7 +49,7 @@ const RefactoredMap = ({
     emitTokenUpdate,
     hasControl,
     externalSelections,
-  } = useTokenManager({ map, socket, isDM, user });
+  } = useTokenManager({ map, socket, isDM, user, useRolledHP });
 
   const {
     selectedTokenId: internalSelectedTokenId,
@@ -56,7 +59,8 @@ const RefactoredMap = ({
     tokens,
     hasControl,
     (id) => emitSelection(socket, map, user, id),
-    () => emitDeselection(socket, map, user)
+    () => emitDeselection(socket, map, user),
+    setFocusedToken // ✅ This is new
   );
 
   const { clearSelection } = useSelectionSync({
@@ -150,6 +154,7 @@ const RefactoredMap = ({
           hasControl={hasControl}
           selectedTokenId={internalSelectedTokenId}
           externalSelections={externalSelections}
+          isCombatMode={isCombatMode}
         />
       </ZoomableStage>
 

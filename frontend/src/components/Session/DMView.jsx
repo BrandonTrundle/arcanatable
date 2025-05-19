@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "../../styles/SessionStyles/DMStyles/DMView.css";
 
 import { UserContext } from "../../context/UserContext";
@@ -13,6 +13,7 @@ import DMMapDisplay from "../Session/DMComponents/UI/DMMapDisplay";
 
 const DMView = ({ campaign, socket, sessionMap }) => {
   const { user } = useContext(UserContext);
+  const [useRolledHP, setUseRolledHP] = useState(false);
 
   const {
     sidebarOpen,
@@ -29,6 +30,10 @@ const DMView = ({ campaign, socket, sessionMap }) => {
     setSelectedNPC,
     selectedMonster,
     setSelectedMonster,
+    isCombatMode,
+    setIsCombatMode,
+    focusedToken,
+    setFocusedToken,
   } = useDMViewState();
 
   const { activeMap, setActiveMap, tokens, setTokens, saveCurrentMap } =
@@ -63,7 +68,10 @@ const DMView = ({ campaign, socket, sessionMap }) => {
         setSelectedTokenId={setSelectedTokenId}
         activeInteractionMode={activeInteractionMode}
         setActiveInteractionMode={setActiveInteractionMode}
+        setFocusedToken={setFocusedToken}
         setExternalTokens={setTokens}
+        isCombatMode={isCombatMode}
+        useRolledHP={useRolledHP}
       />
 
       <DMPanelManager
@@ -77,6 +85,12 @@ const DMView = ({ campaign, socket, sessionMap }) => {
         setSelectedNPC={setSelectedNPC}
         selectedMonster={selectedMonster}
         setSelectedMonster={setSelectedMonster}
+        isCombatMode={isCombatMode}
+        setIsCombatMode={setIsCombatMode}
+        focusedToken={focusedToken}
+        setFocusedToken={setFocusedToken}
+        useRolledHP={useRolledHP}
+        setUseRolledHP={setUseRolledHP}
       />
 
       {showToolbar && (

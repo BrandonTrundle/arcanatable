@@ -1,6 +1,6 @@
 exports.requireRole = (...allowedRoles) => {
   return (req, res, next) => {
-    console.log("🔐 Checking roles:", req.user?.roles);
+    //console.log("🔐 Checking roles:", req.user?.roles);
     if (!req.user || !req.user.roles) {
       return res.status(403).json({ message: "Forbidden" });
     }

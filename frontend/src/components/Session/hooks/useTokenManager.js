@@ -30,10 +30,17 @@ const sizeMultiplier = {
   Gargantuan: 4,
 };
 
-export const useTokenManager = ({ map, socket, isDM, user }) => {
+export const useTokenManager = ({
+  map,
+  socket,
+  isDM,
+  user,
+  useRolledHP = false, // ✅ include this
+}) => {
   const [tokens, setTokens] = useState(() => map?.content?.placedTokens || []);
   const [contextMenu, setContextMenu] = useState(null);
   const [externalSelections, setExternalSelections] = useState({});
+  const [tokenTemplates, setTokenTemplates] = useState([]);
 
   const mapId = map?._id ?? null;
   const campaignId = map?.content?.campaign ?? null;
@@ -44,6 +51,47 @@ export const useTokenManager = ({ map, socket, isDM, user }) => {
       isDM || (user && token.controller && token.controller === user._id),
     [isDM, user]
   );
+
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        const [allTokensRes, npcsRes, monstersRes] = await Promise.all([
+          fetch(
+            `${import.meta.env.VITE_API_URL}/api/dmtoolkit/type/AllTokens`,
+            {
+              headers: { Authorization: `Bearer ${user.token}` },
+            }
+          ),
+          fetch(`${import.meta.env.VITE_API_URL}/api/dmtoolkit/type/NPC`, {
+            headers: { Authorization: `Bearer ${user.token}` },
+          }),
+          fetch(`${import.meta.env.VITE_API_URL}/api/dmtoolkit/type/Monster`, {
+            headers: { Authorization: `Bearer ${user.token}` },
+          }),
+        ]);
+
+        const [allTokens, npcs, monsters] = await Promise.all([
+          allTokensRes.json(),
+          npcsRes.json(),
+          monstersRes.json(),
+        ]);
+
+        // Flatten and store them by ID for fast lookup
+        const combined = [...npcs, ...monsters, ...allTokens].map((entry) => ({
+          id: entry._id,
+          type: entry.type || "custom",
+          content: entry.content || {},
+          title: entry.title || entry.content?.name || "Unnamed",
+        }));
+
+        setTokenTemplates(combined);
+      } catch (err) {
+        console.error("❌ Failed to load token templates:", err);
+      }
+    };
+
+    fetchTemplates();
+  }, []);
 
   useEffect(() => {
     setTokens(map?.content?.placedTokens || []);
@@ -218,54 +266,88 @@ export const useTokenManager = ({ map, socket, isDM, user }) => {
     emitTokenUpdate(updated);
   };
 
-  const handleDrop = (e, stageRef) => {
-    e.preventDefault();
-    const stage = stageRef.current?.getStage();
-    if (!stage) return;
-
-    const scale = stage.scaleX();
-    const stageBox = stage.container().getBoundingClientRect();
-    const pointerX = e.clientX - stageBox.left;
-    const pointerY = e.clientY - stageBox.top;
-
+  const handleDrop = async ({ trueX, trueY, originalEvent }) => {
     try {
-      const raw = e.dataTransfer.getData("application/json");
-      const data = JSON.parse(raw);
+      const rawData =
+        originalEvent?.nativeEvent?.dataTransfer?.getData("application/json");
+      if (!rawData) {
+        console.warn("⚠️ No token payload found in dataTransfer.");
+        return;
+      }
 
-      const tokenSize = data.tokenSize || "Medium";
-      const sizeMult = sizeMultiplier[tokenSize] || 1;
-      const offset = (cellSize * sizeMult) / 2;
+      const dragged = JSON.parse(rawData);
+      const templateId = dragged.id;
+      if (!templateId) return;
 
-      const x = (pointerX - stage.x()) / scale - offset;
-      const y = (pointerY - stage.y()) / scale - offset;
+      const template = tokenTemplates.find((t) => t.id === templateId);
+      if (!template) {
+        console.warn("⚠️ Token template not found for:", templateId);
+        return;
+      }
+
+      const base = template.content || {};
+      const sourceName = template.title || base.name || "Unknown";
+      const size = base.tokenSize || "Medium";
+
+      const uniqueId = `${templateId}_${Date.now()}`;
+
+      //console.log("🎲 Checking dice roll:", {
+      //  useRolledHP,
+      //  hitDice: base.hitDice,
+      //  hitPoints: base.hitPoints,
+      //  isValid: isValidDiceString(base.hitDice),
+      //});
+      let maxHP = 10;
+
+      if (useRolledHP && base.hitDice && isValidDiceString(base.hitDice)) {
+        maxHP = rollDiceFormula(base.hitDice);
+      } else if (!isNaN(Number(base.hitPoints))) {
+        maxHP = Number(base.hitPoints);
+      }
 
       const newToken = {
-        id: `${data.id}-${Date.now()}`,
-        x,
-        y,
-        imageUrl: data.imageUrl || "",
-        title: data.name || "Unnamed",
-        tokenSize,
-        layer: data.layer || "dm",
-        controller: !isDM && user ? user._id : null,
+        id: uniqueId,
+        name: sourceName,
+        originalName: sourceName,
+        baseTemplateId: templateId,
+        imageUrl:
+          base.image || base.avatar || base.imageUrl || dragged.imageUrl,
+        tokenSize: size,
+        x: trueX,
+        y: trueY,
+        layer: dragged.layer || "dm",
+        sourceType: template.type || "custom",
+
+        maxHP,
+        currentHP: maxHP,
+        initiative: null,
+        conditions: [],
+        notes: "",
       };
 
-      const updated = [...tokens, newToken];
-      setTokens(updated);
-
-      if (isDM) {
-        emitTokenUpdate(updated);
-      } else if (socket) {
-        socket.emit("tokenDrop", {
-          campaignId,
-          mapId,
-          token: newToken,
-        });
-      }
+      setTokens((prev) => [...prev, newToken]);
+      emitTokenUpdate(newToken);
     } catch (err) {
-      console.error("❌ Failed to parse dropped token:", err);
+      console.error("❌ Error handling token drop:", err);
     }
   };
+
+  // 🎲 Dice utilities
+  function rollDiceFormula(formula) {
+    const match = formula.match(/(\d+)d(\d+)(\s*\+\s*(\d+))?/);
+    if (!match) return 0;
+
+    const [, num, sides, , bonus] = match.map(Number);
+    let total = 0;
+    for (let i = 0; i < num; i++) {
+      total += Math.floor(Math.random() * sides) + 1;
+    }
+    return total + (bonus || 0);
+  }
+
+  function isValidDiceString(str) {
+    return /^\d+d\d+(\s*\+\s*\d+)?$/.test(str);
+  }
 
   return {
     tokens,
