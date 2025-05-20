@@ -66,14 +66,29 @@ const useCombatTracker = () => {
     });
   }, []);
 
-  const updateHP = useCallback((tokenId, newHP) => {
-    setCombatState((prev) => ({
-      ...prev,
-      combatants: prev.combatants.map((c) =>
-        c.tokenId === tokenId ? { ...c, currentHP: newHP } : c
-      ),
-    }));
-  }, []);
+  const updateHP = (tokenId, newCurrentHP, newMaxHP) => {
+    console.log("🛠 updateHP called:", { tokenId, newCurrentHP, newMaxHP });
+
+    setCombatState((prev) => {
+      const updatedCombatants = prev.combatants.map((c) => {
+        if (c.tokenId !== tokenId) return c;
+
+        const updated = {
+          ...c,
+          currentHP: newCurrentHP,
+          maxHP: newMaxHP,
+        };
+
+        console.log("🔄 Updated combatant HP:", updated);
+        return updated;
+      });
+
+      return {
+        ...prev,
+        combatants: updatedCombatants,
+      };
+    });
+  };
 
   const addCondition = useCallback((tokenId, condition) => {
     setCombatState((prev) => ({

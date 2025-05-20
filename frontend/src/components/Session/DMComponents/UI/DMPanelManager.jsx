@@ -36,6 +36,9 @@ const DMPanelManager = ({
   removeCondition,
 }) => {
   //console.log("📦 DMPanelManager focusedToken:", focusedToken);
+  const liveToken =
+    combatState.combatants.find((c) => c.tokenId === focusedToken?.id) ??
+    focusedToken;
 
   return (
     <>
@@ -117,12 +120,10 @@ const DMPanelManager = ({
       )}
 
       {focusedToken && (
-        <>
-          <TokenInfoPanel
-            token={focusedToken}
-            onClose={() => setFocusedToken(null)}
-          />
-        </>
+        <TokenInfoPanel
+          token={liveToken}
+          onClose={() => setFocusedToken(null)}
+        />
       )}
 
       {selectedMonster && (

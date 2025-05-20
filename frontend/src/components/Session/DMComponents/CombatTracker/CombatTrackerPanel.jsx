@@ -122,7 +122,47 @@ const CombatTrackerPanel = ({
                       border: "1px solid #ccc",
                     }}
                   />{" "}
-                  | ❤️ {c.currentHP}/{c.maxHP}
+                  | ❤️
+                  <input
+                    type="number"
+                    value={c.currentHP ?? ""}
+                    onChange={(e) =>
+                      updateHP(
+                        c.tokenId,
+                        parseInt(e.target.value) || 0,
+                        c.maxHP
+                      )
+                    }
+                    style={{
+                      width: "3rem",
+                      marginLeft: "0.3rem",
+                      marginRight: "0.2rem",
+                      fontSize: "0.9rem",
+                      padding: "2px",
+                      borderRadius: "4px",
+                      border: "1px solid #ccc",
+                    }}
+                  />
+                  /
+                  <input
+                    type="number"
+                    value={c.maxHP ?? ""}
+                    onChange={(e) =>
+                      updateHP(
+                        c.tokenId,
+                        c.currentHP,
+                        parseInt(e.target.value) || 0
+                      )
+                    }
+                    style={{
+                      width: "3rem",
+                      marginLeft: "0.2rem",
+                      fontSize: "0.9rem",
+                      padding: "2px",
+                      borderRadius: "4px",
+                      border: "1px solid #ccc",
+                    }}
+                  />
                   <br />
                   🧷 Conditions:{" "}
                   {c.conditions.length ? c.conditions.join(", ") : "None"}

@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import Draggable from "react-draggable";
 import "../../../../styles/TokenInfoPanel.css"; // optional, style manually if not ready
 
-const TokenInfoPanel = ({ token, onClose }) => {
+const TokenInfoPanel = ({ token, onClose, onHPChange }) => {
   const [collapsed, setCollapsed] = useState(false);
   const nodeRef = useRef(null);
 
@@ -45,8 +45,10 @@ const TokenInfoPanel = ({ token, onClose }) => {
         {!collapsed && (
           <div className="panel-body">
             <p>
-              <strong>HP:</strong> {token.currentHP} / {token.maxHP}
+              <strong>HP:</strong> {token.currentHP ?? "—"} /{" "}
+              {token.maxHP ?? "—"}
             </p>
+
             <p>
               <strong>Conditions:</strong>{" "}
               {token.conditions?.join(", ") || "None"}
