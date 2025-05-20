@@ -15,7 +15,7 @@ export const useTokenDropHandler = ({
 
   const handleDrop = async ({ trueX, trueY, originalEvent }) => {
     try {
-      console.log("[useTokenDropHandler] handleDrop triggered");
+      // console.log("[useTokenDropHandler] handleDrop triggered");
 
       const rawData =
         originalEvent?.nativeEvent?.dataTransfer?.getData("application/json");
@@ -86,12 +86,13 @@ export const useTokenDropHandler = ({
         maxHP,
         currentHP,
         initiative: null,
+        initiativeMod: parseInt(base.initiative) || 0, // 👈 Add this
         conditions: [],
         notes: "",
-        controller: user._id, // ✅ required for hasControl() to succeed
+        controller: user._id,
       };
-
-      console.log("[useTokenDropHandler] Constructed new token:", newToken);
+      //   console.log("🧮 Token initiative mod:", newToken.initiativeMod);
+      //   console.log("[useTokenDropHandler] Constructed new token:", newToken);
 
       setTokens((prev) => {
         const updatedTokens = [...prev, newToken];
@@ -105,10 +106,10 @@ export const useTokenDropHandler = ({
             token: newToken,
           });
         }
-        console.log(
-          "📤 [useTokenDropHandler] Emitted playerDroppedToken:",
-          newToken
-        );
+        //  console.log(
+        //    "📤 [useTokenDropHandler] Emitted playerDroppedToken:",
+        //    newToken
+        //  );
 
         return updatedTokens;
       });

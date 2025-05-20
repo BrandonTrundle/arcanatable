@@ -18,7 +18,7 @@ export const useDropHandler = (handleDrop, stageRef) => {
       const trueX = (pointerPos.x - position.x) / scale.x;
       const trueY = (pointerPos.y - position.y) / scale.y;
 
-      console.log("📐 True drop position:", { trueX, trueY });
+      // console.log("📐 True drop position:", { trueX, trueY });
 
       handleDrop({
         trueX,

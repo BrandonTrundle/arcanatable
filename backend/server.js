@@ -121,8 +121,14 @@ io.on("connection", (socket) => {
     io.to(campaignId).emit("loadMap", map);
   });
 
-  socket.on("updateTokens", ({ mapId, tokens }) => {
-    socket.broadcast.emit("tokensUpdated", { mapId, tokens });
+  socket.on("updateTokens", ({ campaignId, mapId, tokens }) => {
+    console.log("📡 [server] updateTokens received:", {
+      campaignId,
+      mapId,
+      tokenCount: tokens.length,
+    });
+
+    io.to(campaignId).emit("tokensUpdated", { mapId, tokens });
   });
 
   socket.on("tokensUpdated", () => {});
@@ -139,6 +145,10 @@ io.on("connection", (socket) => {
   socket.on("tokenDrop", ({ campaignId, mapId, token }) => {
     if (!campaignId || !mapId || !token) return;
     socket.to(campaignId).emit("tokenDropped", { mapId, token });
+  });
+
+  socket.on("combatModeUpdate", ({ campaignId, isCombatMode }) => {
+    io.to(campaignId).emit("combatModeUpdate", { isCombatMode });
   });
 
   socket.on("playerDroppedToken", ({ mapId, campaignId, token }) => {

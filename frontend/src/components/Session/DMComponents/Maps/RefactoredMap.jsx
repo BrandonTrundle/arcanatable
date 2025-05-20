@@ -32,6 +32,7 @@ const RefactoredMap = ({
   isCombatMode,
   setFocusedToken,
   useRolledHP = false, // default false
+  showTokenInfo,
 }) => {
   const { stageRef, cellSize, gridWidth, gridHeight } = useStageContext(
     map || {}
@@ -172,6 +173,7 @@ const RefactoredMap = ({
           selectedTokenId={internalSelectedTokenId}
           externalSelections={externalSelections}
           isCombatMode={isCombatMode}
+          showTokenInfo={showTokenInfo}
         />
       </ZoomableStage>
 

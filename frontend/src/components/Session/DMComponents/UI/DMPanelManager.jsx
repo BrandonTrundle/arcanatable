@@ -20,12 +20,20 @@ const DMPanelManager = ({
   setSelectedNPC,
   selectedMonster,
   setSelectedMonster,
-  isCombatMode = { isCombatMode },
-  setIsCombatMode = { setIsCombatMode },
+  isCombatMode,
+  setIsCombatMode,
   focusedToken,
   setFocusedToken,
   useRolledHP,
   setUseRolledHP,
+
+  // 👇 New props passed from DMView
+  combatState,
+  setInitiative,
+  autoRollInitiative,
+  updateHP,
+  addCondition,
+  removeCondition,
 }) => {
   //console.log("📦 DMPanelManager focusedToken:", focusedToken);
 
@@ -82,11 +90,17 @@ const DMPanelManager = ({
         </div>
       )}
 
-      {activeTool === "combat" && (
+      {activeTool === "combat" && combatState?.combatants && (
         <CombatTrackerPanel
           onClose={() => setActiveTool(null)}
           isCombatMode={isCombatMode}
           setIsCombatMode={setIsCombatMode}
+          combatState={combatState}
+          setInitiative={setInitiative}
+          autoRollInitiative={autoRollInitiative}
+          updateHP={updateHP}
+          addCondition={addCondition}
+          removeCondition={removeCondition}
         />
       )}
 

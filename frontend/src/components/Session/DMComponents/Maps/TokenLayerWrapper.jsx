@@ -15,6 +15,7 @@ const TokenLayerWrapper = ({
   selectedTokenId,
   externalSelections,
   isCombatMode,
+  showTokenInfo,
 }) => {
   const filteredTokens = Array.isArray(tokens)
     ? activeLayer === "dm"
@@ -84,6 +85,7 @@ const TokenLayerWrapper = ({
       activeLayer,
       canMove: stableCanMove,
       externalSelections,
+      showTokenInfo, // ✅ Add this here
     }),
     [
       activeInteractionMode,
@@ -96,6 +98,7 @@ const TokenLayerWrapper = ({
       activeLayer,
       stableCanMove,
       externalSelections,
+      showTokenInfo, // ✅ Add this here
     ]
   );
 

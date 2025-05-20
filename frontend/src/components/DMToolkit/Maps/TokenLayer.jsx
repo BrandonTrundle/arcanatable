@@ -2,6 +2,7 @@
 import React, { memo, useEffect, useRef } from "react";
 import { Group, Rect, Image as KonvaImage, Text } from "react-konva";
 import useImage from "use-image";
+import { Circle } from "react-konva";
 
 function useWhyDidYouUpdate(name, props) {
   const previousProps = useRef();
@@ -46,6 +47,9 @@ const Token = ({
   isExternallySelected,
   selectedBy,
   isCombatMode,
+  showTokenInfo, // ✅ Add this here
+  currentHP, // ✅ ADD THIS
+  maxHP, // ✅ AND THIS
 }) => {
   const [img] = useImage(
     imageUrl?.startsWith("/uploads")
@@ -72,6 +76,7 @@ const Token = ({
   const baseSize = 64;
   const visualSize = baseSize * scaleFactor;
   const offset = visualSize / 2;
+  //console.log("🧪 Rendering token:", title, "showTokenInfo:", showTokenInfo);
 
   return (
     <Group
@@ -85,15 +90,14 @@ const Token = ({
       onDragEnd={(e) => {
         if (!draggable) return;
         const { x, y } = e.target.position();
-        //console.log("📦 Token dragged:", id, "to", x, y);
         onDragEnd(id, x, y);
       }}
       onContextMenu={(e) => {
-        // console.log("🖱️ Token context menu:", id);
+        console.log("🖱️ Token context menu:", id);
         onRightClick?.(e, id);
       }}
       onClick={(e) => {
-        //  console.log("🖱️ Token clicked:", id);
+        console.log("🖱️ Token clicked:", id);
         onClick?.(e, id);
       }}
       onMouseEnter={(e) => {
@@ -122,29 +126,15 @@ const Token = ({
           {selectedBy && (
             <Text
               text={selectedBy}
-              fontSize={12}
+              fontSize={20}
               fill="deepskyblue"
-              y={-offset - 18}
-              x={-offset}
-              width={visualSize}
+              y={-offset}
+              x={-offset - 40}
+              width={200}
               align="center"
             />
           )}
         </>
-      )}
-
-      {isCombatMode && title && (
-        <Text
-          text={title}
-          fontSize={14}
-          fill="white"
-          stroke="black"
-          strokeWidth={1}
-          y={-offset - 10}
-          x={-offset}
-          width={visualSize}
-          align="center"
-        />
       )}
 
       {/* Local selection highlight */}
@@ -176,6 +166,41 @@ const Token = ({
         height={visualSize}
         cornerRadius={visualSize / 2}
       />
+
+      {/* HP ring — drawn ABOVE token image */}
+      {layer === "player" &&
+        typeof currentHP === "number" &&
+        typeof maxHP === "number" &&
+        maxHP > 0 && (
+          <Circle
+            radius={(visualSize - 2) / 2}
+            stroke={(() => {
+              const ratio = currentHP / maxHP;
+              if (ratio <= 0.33) return "red";
+              if (ratio <= 0.66) return "yellow";
+              return "green";
+            })()}
+            strokeWidth={6}
+            opacity={0.8}
+            x={32}
+            y={30}
+          />
+        )}
+
+      {/* Token name */}
+      {(isCombatMode || showTokenInfo) && title && (
+        <Text
+          text={title}
+          fontSize={14}
+          fill="white"
+          stroke="white"
+          strokeWidth={1}
+          y={-offset + 100}
+          x={-offset + 15}
+          width={100}
+          align="center"
+        />
+      )}
     </Group>
   );
 };
@@ -195,6 +220,7 @@ const TokenLayer = ({
   canMove = () => true,
   externalSelections = {},
   isInteractive = true,
+  showTokenInfo = false, // ✅ add default
 }) => {
   useWhyDidYouUpdate("TokenLayer", {
     tokens,
@@ -227,17 +253,20 @@ const TokenLayer = ({
             y={token.y}
             size={token.tokenSize}
             imageUrl={token.imageUrl}
+            currentHP={token.currentHP}
+            maxHP={token.maxHP}
             title={token.name}
             layer={token.layer}
             activeLayer={activeLayer}
             onDragEnd={onDragEnd}
             isCombatMode={isCombatMode}
+            showTokenInfo={showTokenInfo}
             onRightClick={(e) => {
               //console.log("🖱️ Right-click on token layer:", token.id);
               isInteractive && onRightClick(e, token.id);
             }}
             onClick={(e) => {
-              //console.log("🖱️ Click on token layer:", token.id);
+              //  console.log("🖱️ Click on token layer:", token.id);
               isInteractive && onClick(e, token.id);
             }}
             draggable={isInteractive && draggable}

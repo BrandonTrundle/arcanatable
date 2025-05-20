@@ -13,6 +13,7 @@ const MapArea = ({
   setActiveInteractionMode,
   selectedTokenId,
   setSelectedTokenId,
+  showTokenInfo,
 }) => {
   const {
     tokens,
@@ -51,6 +52,7 @@ const MapArea = ({
           isCombatMode={false}
           setFocusedToken={() => {}}
           useRolledHP={false}
+          showTokenInfo={showTokenInfo}
         />
       ) : (
         <div className="map-placeholder">

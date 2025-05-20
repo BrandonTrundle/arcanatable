@@ -11,13 +11,10 @@ export const useTokenSelection = (
 
   const selectToken = useCallback(
     (id) => {
-      //console.log("🧠 selectToken called with:", id);
-
       const token = tokens.find((t) => t.id === id);
-      //console.log("🎯 Matching token object:", token);
 
-      if (!token || !hasControl(token)) {
-        console.warn("⛔ No token found or control denied.");
+      if (!token) {
+        console.warn("⛔ No token found.");
         return;
       }
 
@@ -32,14 +29,7 @@ export const useTokenSelection = (
         emitSelection(id);
       }
     },
-    [
-      tokens,
-      hasControl,
-      emitSelection,
-      emitDeselection,
-      selectedTokenId,
-      setFocusedToken,
-    ]
+    [tokens, emitSelection, emitDeselection, selectedTokenId, setFocusedToken]
   );
 
   const clearSelection = useCallback(() => {

@@ -98,6 +98,11 @@ export const useTokenManager = ({
   }, [socket, mapId]);
 
   useEffect(() => {
+    // console.log("🧪 [useTokenManager] DM listener setup?", {
+    //    socketExists: !!socket,
+    //   mapId,
+    //   isDM,
+    //  });
     if (!socket || !map?._id || isDM) return;
 
     const handleTokensUpdated = (payload) => {

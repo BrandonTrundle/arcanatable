@@ -15,6 +15,11 @@ const CrAndProficiencySection = ({ monster, onChange }) => {
         value={monster.proficiencyBonus}
         onChange={(e) => onChange("proficiencyBonus", e.target.value)}
       />
+      <label>Initiative</label>
+      <input
+        value={monster.initiative}
+        onChange={(e) => onChange("initiative", e.target.value)}
+      />
     </>
   );
 };

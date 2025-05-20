@@ -15,6 +15,7 @@ const DMMapDisplay = ({
   isCombatMode,
   setFocusedToken,
   useRolledHP,
+  showTokenInfo,
 }) => {
   if (activeMap && activeMap.content) {
     return (
@@ -32,6 +33,7 @@ const DMMapDisplay = ({
         isCombatMode={isCombatMode}
         setFocusedToken={setFocusedToken}
         useRolledHP={useRolledHP}
+        showTokenInfo={showTokenInfo}
       />
     );
   }

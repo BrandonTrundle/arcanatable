@@ -13,7 +13,7 @@ import InteractionToolbar from "./DMComponents/UI/InteractionToolbar";
 
 const PlayerView = ({ campaign, socket, sessionMap }) => {
   const { user } = useContext(UserContext);
-
+  const [isCombatMode, setIsCombatMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTool, setActiveTool] = useState(null);
   const [activeMap, setActiveMap] = useState(sessionMap || null);
@@ -22,6 +22,7 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [currentTab, setCurrentTab] = useState("basics");
   const [tokens, setTokens] = useState([]);
+  const [showTokenInfo, setShowTokenInfo] = useState(false);
 
   useEffect(() => {
     if (sessionMap) setActiveMap(sessionMap);
@@ -45,6 +46,18 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
   useEffect(() => {
     socket.on("loadMap", (map) => setActiveMap(map));
     return () => socket.off("loadMap");
+  }, [socket]);
+
+  useEffect(() => {
+    const handleCombatModeUpdate = ({ isCombatMode }) => {
+      setIsCombatMode(isCombatMode);
+      console.log("⚔️ Combat mode updated:", isCombatMode);
+    };
+
+    socket.on("combatModeUpdate", handleCombatModeUpdate);
+    return () => {
+      socket.off("combatModeUpdate", handleCombatModeUpdate);
+    };
   }, [socket]);
 
   useEffect(() => {
@@ -136,6 +149,26 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
 
   return (
     <div className="dm-session-container">
+      {isCombatMode && (
+        <div
+          style={{
+            position: "absolute",
+            top: "10px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "#a00",
+            color: "white",
+            padding: "0.5rem 1rem",
+            borderRadius: "8px",
+            fontWeight: "bold",
+            zIndex: 999,
+            boxShadow: "0 0 8px #000",
+          }}
+        >
+          ⚔️ Combat Mode Active
+        </div>
+      )}
+
       <aside className={`dm-sidebar ${sidebarOpen ? "open" : "collapsed"}`}>
         <Toolbar
           sidebarOpen={sidebarOpen}
@@ -192,6 +225,7 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
         setActiveInteractionMode={setActiveInteractionMode}
         selectedTokenId={selectedTokenId}
         setSelectedTokenId={setSelectedTokenId}
+        showTokenInfo={showTokenInfo}
       />
 
       <ChatPanel
@@ -200,6 +234,22 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
         username={user.username}
         userId={user._id}
       />
+      <button
+        onClick={() => setShowTokenInfo((prev) => !prev)}
+        style={{
+          position: "absolute",
+          bottom: "10px",
+          left: "10px",
+          padding: "6px 12px",
+          background: "#333",
+          color: "white",
+          borderRadius: "6px",
+          border: "none",
+          zIndex: 1000,
+        }}
+      >
+        {showTokenInfo ? "🧷 Hide Token Info" : "🧷 Show Token Info"}
+      </button>
     </div>
   );
 };

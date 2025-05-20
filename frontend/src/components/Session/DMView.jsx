@@ -10,10 +10,14 @@ import useDMViewState from "../Session/hooks/useDMViewState";
 import useDMMapManager from "../Session/hooks/useDMMapManager";
 import DMPanelManager from "../Session/DMComponents/UI/DMPanelManager";
 import DMMapDisplay from "../Session/DMComponents/UI/DMMapDisplay";
+import useCombatTracker from "../Session/DMComponents/CombatTracker/hooks/useCombatTracker";
+import CombatTrackerPanel from "../Session/DMComponents/CombatTracker/CombatTrackerPanel";
 
 const DMView = ({ campaign, socket, sessionMap }) => {
   const { user } = useContext(UserContext);
   const [useRolledHP, setUseRolledHP] = useState(false);
+  const [showCombatTracker, setShowCombatTracker] = useState(true);
+  const [showTokenInfo, setShowTokenInfo] = useState(false);
 
   const {
     sidebarOpen,
@@ -36,6 +40,23 @@ const DMView = ({ campaign, socket, sessionMap }) => {
     setFocusedToken,
   } = useDMViewState();
 
+  const {
+    combatState,
+    setCombatState, // ✅ ADD THIS
+    initializeCombat,
+    syncCombatantsWithTokens,
+    setInitiative,
+    autoRollInitiative,
+    nextTurn,
+    updateHP,
+    addCondition,
+    removeCondition,
+  } = useCombatTracker();
+
+  useEffect(() => {
+    // console.log("🧠 Combat state updated:", combatState);
+  }, [combatState]);
+
   const { activeMap, setActiveMap, tokens, setTokens, saveCurrentMap } =
     useDMMapManager(sessionMap, socket, user);
 
@@ -47,6 +68,51 @@ const DMView = ({ campaign, socket, sessionMap }) => {
       });
     }
   }, [socket, user]);
+
+  useEffect(() => {
+    if (socket && campaign?._id) {
+      socket.emit("combatModeUpdate", {
+        campaignId: campaign._id,
+        isCombatMode,
+      });
+    }
+    // console.log("🧭 DMView: Combat mode changed:", isCombatMode);
+  }, [isCombatMode, socket, campaign?._id]);
+
+  useEffect(() => {
+    if (
+      isCombatMode &&
+      tokens?.length &&
+      combatState?.combatants?.length === 0
+    ) {
+      initializeCombat(tokens);
+    }
+  }, [isCombatMode, tokens, combatState]);
+
+  useEffect(() => {
+    if (!isCombatMode) return;
+
+    if (!Array.isArray(tokens)) return;
+
+    if (tokens.length === 0) {
+      console.log("🧼 Clearing combatState because tokens are empty");
+      setCombatState((prev) => ({ ...prev, combatants: [] }));
+      return;
+    }
+
+    if (combatState.combatants.length === 0) {
+      initializeCombat(tokens);
+    } else {
+      syncCombatantsWithTokens(tokens);
+    }
+  }, [
+    isCombatMode,
+    tokens,
+    initializeCombat,
+    syncCombatantsWithTokens,
+    combatState.combatants.length,
+    setCombatState,
+  ]);
 
   return (
     <div className="dm-session-container">
@@ -72,6 +138,7 @@ const DMView = ({ campaign, socket, sessionMap }) => {
         setExternalTokens={setTokens}
         isCombatMode={isCombatMode}
         useRolledHP={useRolledHP}
+        showTokenInfo={showTokenInfo}
       />
 
       <DMPanelManager
@@ -91,7 +158,28 @@ const DMView = ({ campaign, socket, sessionMap }) => {
         setFocusedToken={setFocusedToken}
         useRolledHP={useRolledHP}
         setUseRolledHP={setUseRolledHP}
+        // 👇 New Props
+        combatState={combatState}
+        setInitiative={setInitiative}
+        autoRollInitiative={autoRollInitiative}
+        updateHP={updateHP}
+        addCondition={addCondition}
+        removeCondition={removeCondition}
       />
+
+      {showCombatTracker && (
+        <CombatTrackerPanel
+          onClose={() => setShowCombatTracker(false)}
+          isCombatMode={isCombatMode}
+          setIsCombatMode={setIsCombatMode}
+          combatState={combatState}
+          setInitiative={setInitiative}
+          autoRollInitiative={autoRollInitiative}
+          updateHP={updateHP}
+          addCondition={addCondition}
+          removeCondition={removeCondition}
+        />
+      )}
 
       {showToolbar && (
         <InteractionToolbar
@@ -109,6 +197,22 @@ const DMView = ({ campaign, socket, sessionMap }) => {
           userId={user._id}
         />
       </aside>
+      <button
+        onClick={() => setShowTokenInfo((prev) => !prev)}
+        style={{
+          position: "absolute",
+          bottom: "10px",
+          left: "10px",
+          padding: "6px 12px",
+          background: "#333",
+          color: "white",
+          borderRadius: "6px",
+          border: "none",
+          zIndex: 1000,
+        }}
+      >
+        {showTokenInfo ? "🧷 Hide Token Info" : "🧷 Show Token Info"}
+      </button>
     </div>
   );
 };

@@ -5,7 +5,7 @@ export const useTokenTemplates = (user) => {
 
   useEffect(() => {
     const fetchTemplates = async () => {
-      console.log("[useTokenTemplates] Fetching token templates");
+      // console.log("[useTokenTemplates] Fetching token templates");
 
       try {
         const [allTokensRes, npcsRes, monstersRes] = await Promise.all([
@@ -29,14 +29,23 @@ export const useTokenTemplates = (user) => {
           monstersRes.json(),
         ]);
 
-        const combined = [...npcs, ...monsters, ...allTokens].map((entry) => ({
-          id: entry._id,
-          type: entry.type || "custom",
-          content: entry.content || {},
-          title: entry.title || entry.content?.name || "Unnamed",
-        }));
+        const merged = [...npcs, ...monsters, ...allTokens];
 
-        console.log("[useTokenTemplates] Loaded templates:", combined);
+        const seen = new Set();
+        const combined = merged
+          .filter((entry) => {
+            if (seen.has(entry._id)) return false;
+            seen.add(entry._id);
+            return true;
+          })
+          .map((entry) => ({
+            id: entry._id,
+            type: entry.type || "custom",
+            content: entry.content || {},
+            title: entry.title || entry.content?.name || "Unnamed",
+          }));
+
+        //console.log("[useTokenTemplates] Loaded templates:", combined);
 
         setTokenTemplates(combined);
       } catch (err) {
