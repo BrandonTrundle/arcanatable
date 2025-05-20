@@ -24,6 +24,7 @@ const Token = ({
   selectedBy,
   isCombatMode,
   showTokenInfo,
+  onDrag,
   currentHP,
   maxHP,
 }) => {
@@ -68,6 +69,10 @@ const Token = ({
         if (!draggable) return;
         const { x, y } = e.target.position();
         onDragEnd(id, x, y);
+      }}
+      onDragMove={(e) => {
+        const { x, y } = e.target.position();
+        if (onDrag) onDrag(id, x, y); // ✅ Realtime update call
       }}
       onContextMenu={(e) => onRightClick?.(e, id)}
       onClick={(e) => onClick?.(e, id)}

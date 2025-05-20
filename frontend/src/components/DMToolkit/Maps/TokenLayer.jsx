@@ -7,6 +7,7 @@ const TokenLayer = ({
   onRightClick,
   isCombatMode,
   onClick,
+  onDrag,
   selectedTokenId,
   activeLayer,
   canMove = () => true,
@@ -35,6 +36,7 @@ const TokenLayer = ({
             maxHP={token.maxHP}
             isCombatMode={isCombatMode}
             showTokenInfo={showTokenInfo}
+            onDrag={onDrag}
             onDragEnd={onDragEnd}
             onClick={(e) => {
               if (isInteractive) onClick(e, token.id);

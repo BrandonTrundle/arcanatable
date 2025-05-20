@@ -123,6 +123,18 @@ const RefactoredMap = ({
     [rawHandleTokenMove, isDM, socket, map?._id]
   );
 
+  const handleTokenDrag = useCallback(
+    (id, x, y) => {
+      setTokens((prev) => {
+        // console.log("🧲 Dragging token:", id, x, y);
+
+        const updated = prev.map((t) => (t.id === id ? { ...t, x, y } : t));
+        return [...updated]; // ✅ New array reference
+      });
+    },
+    [setTokens]
+  );
+
   const { onDrop, onDragOver } = useDropHandler(handleDrop, stageRef);
   useOutsideClickHandler("token-context-menu", () => setContextMenu(null));
 
@@ -136,17 +148,19 @@ const RefactoredMap = ({
     return null;
   }
   //console.log("🔁 combatState update:", combatState);
-  const tokensWithHP = tokens.map((token) => {
-    const combatant = combatState?.combatants?.find(
-      (c) => c.tokenId === token.id
-    );
+  const tokensWithHP = tokens
+    .filter((token) => token.layer === "player") // 👈 Only include player-layer tokens
+    .map((token) => {
+      const combatant = combatState?.combatants?.find(
+        (c) => c.tokenId === token.id
+      );
 
-    return {
-      ...token,
-      currentHP: combatant?.currentHP ?? token.currentHP,
-      maxHP: combatant?.maxHP ?? token.maxHP,
-    };
-  });
+      return {
+        ...token,
+        currentHP: combatant?.currentHP ?? token.currentHP,
+        maxHP: combatant?.maxHP ?? token.maxHP,
+      };
+    });
   //console.log("🧪 isCombatMode:", isCombatMode, "tokensWithHP:", tokensWithHP);
   return (
     <div
@@ -178,6 +192,7 @@ const RefactoredMap = ({
           tokens={tokens}
           stageRef={stageRef}
           handleTokenMove={handleTokenMove}
+          handleTokenDrag={handleTokenDrag}
           handleTokenRightClick={handleTokenRightClick}
           handleMapClick={handleMapClick}
           selectToken={selectToken}

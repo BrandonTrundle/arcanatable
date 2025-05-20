@@ -162,10 +162,10 @@ const useCombatTracker = () => {
           conditions: [],
           controlledBy: token.layer === "dm" ? "dm" : "player",
         }));
-      console.log(
-        "[useCombatTracker.js] syncCombatantsWithTokens — BEFORE update. prev combatState:",
-        prev
-      );
+      // console.log(
+      //   "[useCombatTracker.js] syncCombatantsWithTokens — BEFORE update. prev combatState:",
+      //   prev
+      // );
 
       return {
         ...prev,

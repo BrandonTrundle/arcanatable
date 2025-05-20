@@ -15,6 +15,7 @@ const TokenLayerWrapper = ({
   selectedTokenId,
   externalSelections,
   isCombatMode,
+  handleTokenDrag,
   showTokenInfo,
 }) => {
   const filteredTokens = Array.isArray(tokens)
@@ -79,26 +80,28 @@ const TokenLayerWrapper = ({
       isCombatMode,
       tokens: filteredTokens,
       onDragEnd: stableHandleTokenMove,
+      onDrag: handleTokenDrag, // ✅ Add this line
       onRightClick: stableOnRightClick,
       onClick: stableOnClick,
       selectedTokenId,
       activeLayer,
       canMove: stableCanMove,
       externalSelections,
-      showTokenInfo, // ✅ Add this here
+      showTokenInfo,
     }),
     [
       activeInteractionMode,
       isCombatMode,
       filteredTokens,
       stableHandleTokenMove,
+      handleTokenDrag, // ✅ Include this in dependencies
       stableOnRightClick,
       stableOnClick,
       selectedTokenId,
       activeLayer,
       stableCanMove,
       externalSelections,
-      showTokenInfo, // ✅ Add this here
+      showTokenInfo,
     ]
   );
 
