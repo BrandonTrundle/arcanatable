@@ -86,10 +86,10 @@ export const useTokenManager = ({
     const handleTokensUpdate = (payload) => {
       if (String(payload.mapId) === String(mapId)) {
         setTokens(payload.tokens || []);
-        console.log(
-          "[useTokenManager] Tokens updated from socket",
-          payload.tokens
-        );
+        // console.log(
+        //   "[useTokenManager] Tokens updated from socket",
+        //   payload.tokens
+        // );
       }
     };
 

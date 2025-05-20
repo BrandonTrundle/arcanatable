@@ -11,6 +11,8 @@ import { useUserContext } from "../../../context/UserContext";
 import useImage from "use-image";
 import { createPortal } from "react-dom";
 import "../../../styles/MapEditor.css";
+import HPDOMOverlay from "./TokenLayerRefactor/visuals/HPDOMOverlay";
+import "../../../styles/HPDOMOverlay.css";
 
 const MapEditor = ({ map, onClose, onMapUpdate }) => {
   const [image] = useImage(
@@ -24,6 +26,7 @@ const MapEditor = ({ map, onClose, onMapUpdate }) => {
   );
   const [contextMenu, setContextMenu] = useState(null);
   const stageRef = useRef();
+  const containerRef = useRef();
 
   const { user } = useUserContext();
   const cellSize = 70;
@@ -167,6 +170,7 @@ const MapEditor = ({ map, onClose, onMapUpdate }) => {
 
   return (
     <div
+      ref={containerRef}
       className="map-editor-overlay"
       onDrop={handleDrop}
       onDragOver={handleDragOver}
@@ -235,6 +239,16 @@ const MapEditor = ({ map, onClose, onMapUpdate }) => {
           />
         </Layer>
       </ZoomableStage>
+
+      <HPDOMOverlay
+        tokens={
+          activeLayer === "dm"
+            ? placedTokens
+            : placedTokens.filter((t) => t.layer === activeLayer)
+        }
+        containerRef={containerRef}
+        stageRef={stageRef}
+      />
 
       <MapEditorContextMenu
         contextMenu={contextMenu}

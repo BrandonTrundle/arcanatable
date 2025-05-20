@@ -39,9 +39,9 @@ const useCombatTracker = () => {
         const mod = parseInt(c.initiativeMod) || 0;
         const total = roll + mod;
 
-        console.log(
-          `🧮 Rolling initiative for ${c.name}: d20 = ${roll}, mod = ${mod}, total = ${total}`
-        );
+        //   console.log(
+        //     `🧮 Rolling initiative for ${c.name}: d20 = ${roll}, mod = ${mod}, total = ${total}`
+        //   );
 
         return {
           ...c,
@@ -67,7 +67,7 @@ const useCombatTracker = () => {
   }, []);
 
   const updateHP = (tokenId, newCurrentHP, newMaxHP) => {
-    console.log("🛠 updateHP called:", { tokenId, newCurrentHP, newMaxHP });
+    //console.log("🛠 updateHP called:", { tokenId, newCurrentHP, newMaxHP });
 
     setCombatState((prev) => {
       const updatedCombatants = prev.combatants.map((c) => {
@@ -79,7 +79,7 @@ const useCombatTracker = () => {
           maxHP: newMaxHP,
         };
 
-        console.log("🔄 Updated combatant HP:", updated);
+        //console.log("🔄 Updated combatant HP:", updated);
         return updated;
       });
 
@@ -120,7 +120,7 @@ const useCombatTracker = () => {
 
   const syncCombatantsWithTokens = useCallback((tokens) => {
     if (!tokens || tokens.length === 0) {
-      console.log("🧹 All tokens removed — resetting combatants.");
+      //console.log("🧹 All tokens removed — resetting combatants.");
       setCombatState((prev) => ({
         ...prev,
         combatants: [],
@@ -129,11 +129,11 @@ const useCombatTracker = () => {
     }
 
     setCombatState((prev) => {
-      console.log("[syncCombatantsWithTokens] Incoming tokens:", tokens);
-      console.log(
-        "[syncCombatantsWithTokens] Existing combatants:",
-        prev.combatants
-      );
+      //console.log("[syncCombatantsWithTokens] Incoming tokens:", tokens);
+      //console.log(
+      //  "[syncCombatantsWithTokens] Existing combatants:",
+      //  prev.combatants
+      //);
 
       const currentTokenIds = new Set(tokens.map((t) => String(t.id)));
 
@@ -141,7 +141,7 @@ const useCombatTracker = () => {
         const tokenId = c.tokenId;
         const keep = tokenId && currentTokenIds.has(String(tokenId));
         if (!keep) {
-          console.log("🧹 Removing combatant:", c.name, "— tokenId:", tokenId);
+          // console.log("🧹 Removing combatant:", c.name, "— tokenId:", tokenId);
         }
         return keep;
       });

@@ -95,7 +95,7 @@ const DMView = ({ campaign, socket, sessionMap }) => {
     if (!Array.isArray(tokens)) return;
 
     if (tokens.length === 0) {
-      console.log("🧼 Clearing combatState because tokens are empty");
+      //console.log("🧼 Clearing combatState because tokens are empty");
       setCombatState((prev) => ({ ...prev, combatants: [] }));
       return;
     }
@@ -139,6 +139,7 @@ const DMView = ({ campaign, socket, sessionMap }) => {
         isCombatMode={isCombatMode}
         useRolledHP={useRolledHP}
         showTokenInfo={showTokenInfo}
+        combatState={combatState}
       />
 
       <DMPanelManager

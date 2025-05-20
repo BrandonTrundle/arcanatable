@@ -107,19 +107,6 @@ const Token = ({
         cornerRadius={visualSize / 2}
       />
 
-      {layer === "player" &&
-        typeof currentHP === "number" &&
-        typeof maxHP === "number" &&
-        maxHP > 0 && (
-          <HPOverlay
-            currentHP={currentHP}
-            maxHP={maxHP}
-            tokenSize={size}
-            x={visualSize / 2}
-            y={visualSize / 2}
-          />
-        )}
-
       {(isCombatMode || showTokenInfo) && title && (
         <TokenLabel title={title} offset={offset} />
       )}

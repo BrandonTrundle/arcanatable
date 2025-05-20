@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useCallback } from "react";
+import React, { useEffect, useCallback, useRef } from "react";
 import useImage from "use-image";
 import ZoomableStage from "../../../DMToolkit/Maps/ZoomableStage";
 
@@ -6,6 +6,7 @@ import MapBackground from "./MapBackground";
 import AoELayer from "./AoELayer";
 import TokenLayerWrapper from "./TokenLayerWrapper";
 import MapUIOverlays from "./MapUIOverlays";
+import HPDOMOverlay from "../../../DMToolkit/Maps/TokenLayerRefactor/visuals/HPDOMOverlay";
 
 import { useStageContext } from "../../hooks/useStageContext";
 import { useOutsideClickHandler } from "../../hooks/useOutsideClickHandler";
@@ -31,12 +32,15 @@ const RefactoredMap = ({
   setExternalTokens,
   isCombatMode,
   setFocusedToken,
-  useRolledHP = false, // default false
+  useRolledHP = false,
   showTokenInfo,
+  combatState,
 }) => {
+  // console.log("🧪 RefactoredMap isCombatMode:", isCombatMode);
   const { stageRef, cellSize, gridWidth, gridHeight } = useStageContext(
     map || {}
   );
+  const containerRef = useRef();
   const [image] = useImage(map?.content?.imageUrl || "");
 
   const {
@@ -61,7 +65,7 @@ const RefactoredMap = ({
     hasControl,
     (id) => emitSelection(socket, map, user, id),
     () => emitDeselection(socket, map, user),
-    setFocusedToken // ✅ This is new
+    setFocusedToken
   );
 
   const { clearSelection } = useSelectionSync({
@@ -108,7 +112,6 @@ const RefactoredMap = ({
       rawHandleTokenMove(id, x, y);
 
       if (!isDM && socket && map?._id) {
-        console.log("📤 Emitting playerMovedToken", { id, x, y }); // ← Add this
         socket.emit("playerMovedToken", {
           mapId: map._id,
           tokenId: id,
@@ -129,19 +132,30 @@ const RefactoredMap = ({
     }
   }, [tokens, setExternalTokens]);
 
-  // ✅ Now do the rendering guard here
   if (!map || !map._id || !map.content) {
     return null;
   }
+  //console.log("🔁 combatState update:", combatState);
+  const tokensWithHP = tokens.map((token) => {
+    const combatant = combatState?.combatants?.find(
+      (c) => c.tokenId === token.id
+    );
 
+    return {
+      ...token,
+      currentHP: combatant?.currentHP ?? token.currentHP,
+      maxHP: combatant?.maxHP ?? token.maxHP,
+    };
+  });
+  //console.log("🧪 isCombatMode:", isCombatMode, "tokensWithHP:", tokensWithHP);
   return (
-    <div className="map-rendered-view" onDrop={onDrop} onDragOver={onDragOver}>
-      <ZoomableStage
-        ref={stageRef}
-        width={gridWidth}
-        height={gridHeight}
-        onMouseMove={(e) => handleMouseMove(e)}
-      >
+    <div
+      className="map-rendered-view"
+      ref={containerRef}
+      onDrop={onDrop}
+      onDragOver={onDragOver}
+    >
+      <ZoomableStage ref={stageRef} width={gridWidth} height={gridHeight}>
         <MapBackground
           imageUrl={map.content.imageUrl}
           gridWidth={gridWidth}
@@ -176,6 +190,12 @@ const RefactoredMap = ({
           showTokenInfo={showTokenInfo}
         />
       </ZoomableStage>
+
+      <HPDOMOverlay
+        tokens={tokensWithHP}
+        containerRef={containerRef}
+        stageRef={stageRef}
+      />
 
       <MapUIOverlays
         isDM={isDM}
