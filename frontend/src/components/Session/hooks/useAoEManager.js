@@ -28,25 +28,46 @@ export const useAoEManager = (
     campaignId
   );
 
-  const handleMapClick = () => {
-    //  console.log("🖱️ handleMapClick triggered");
-
+  const handleMapClick = (pos) => {
     if (activeInteractionMode !== "aoe" || !aoeDraft) {
-      //    console.log("⚠️ Ignored click: wrong mode or no draft");
+      console.warn("⚠️ handleMapClick ignored — wrong mode or no draft", {
+        activeInteractionMode,
+        hasDraft: !!aoeDraft,
+      });
       return;
     }
 
-    const shape = confirmPlacement();
-    //   console.log("📐 confirmPlacement returned:", shape);
+    let trueX, trueY;
 
-    if (!shape) return;
+    if (pos?.trueX != null && pos?.trueY != null) {
+      ({ trueX, trueY } = pos);
+    } else {
+      console.warn("⚠️ handleMapClick missing coordinates");
+      return;
+    }
+
+    console.log("📍 handleMapClick at:", { trueX, trueY });
+
+    const snappedX = Math.floor(trueX / cellSize) * cellSize + cellSize / 2;
+    const snappedY = Math.floor(trueY / cellSize) * cellSize + cellSize / 2;
+
+    console.log("📐 Snapped coordinates:", { snappedX, snappedY });
+
+    const shape = confirmPlacement({ x: snappedX, y: snappedY });
+    console.log("📤 confirmPlacement returned:", shape);
+
+    if (!shape) {
+      console.warn("❌ No shape returned from confirmPlacement");
+      return;
+    }
+
     if (shape.rotating) {
-      //      console.log("↪️ Still rotating, waiting for second click");
+      console.log("🔁 AoE is now rotating — waiting for final click to place.");
       return;
     }
 
     const finalShape = { ...shape, id: crypto.randomUUID() };
-    //   console.log("🛰️ Emitting AoE:", finalShape);
+    console.log("✅ Final AoE shape to add:", finalShape);
 
     addAoEShape(finalShape);
 
@@ -56,6 +77,7 @@ export const useAoEManager = (
         campaignId,
         aoe: finalShape,
       });
+      console.log("📡 Emitted aoePlaced to socket");
     }
 
     clearDraft();
@@ -64,8 +86,16 @@ export const useAoEManager = (
   };
 
   const confirmAoE = ({ type, radius, color }) => {
-    startAoE(type, radius, color);
+    console.log("🧰 AoE Confirm clicked. Hiding toolbox and preparing AoE...");
+
     setShowAoEToolbox(false);
+
+    // Prevent input for 1 frame — suppress immediate clicks
+    requestAnimationFrame(() => {
+      console.log("🕒 Activating AoE mode after frame delay...");
+      setActiveInteractionMode("aoe");
+      startAoE(type, radius, color);
+    });
   };
 
   useEffect(() => {

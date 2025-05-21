@@ -196,6 +196,8 @@ const RefactoredMap = ({
 
         <TokenLayerWrapper
           tokens={tokens}
+          allTokens={tokens}
+          aoeDraft={aoeDraft}
           stageRef={stageRef}
           handleTokenMove={handleTokenMove}
           handleTokenDrag={handleTokenDrag}

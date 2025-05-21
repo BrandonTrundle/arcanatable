@@ -1,9 +1,11 @@
-import React, { memo, useCallback, useMemo } from "react";
+import React, { memo, useCallback, useMemo, useRef, useEffect } from "react";
 import { Layer } from "react-konva";
 import TokenLayer from "../../../DMToolkit/Maps/TokenLayer";
 
 const TokenLayerWrapper = ({
   tokens,
+  allTokens,
+  aoeDraft,
   stageRef,
   handleTokenMove,
   handleTokenRightClick,
@@ -33,32 +35,54 @@ const TokenLayerWrapper = ({
     [handleTokenRightClick, stageRef]
   );
 
+  const lastAoEInitRef = useRef(0);
+
+  useEffect(() => {
+    // Instead of checking aoeDraft directly, just log the timer
+    if (aoeDraft && !aoeDraft.placed) {
+      lastAoEInitRef.current = Date.now();
+      console.log("⏱️ AoE draft initialized — click suppression timer started");
+    }
+  }, [aoeDraft]);
+
   const stableOnClick = useCallback(
     (e, id) => {
+      const now = Date.now();
+
+      // Suppress clicks that happen too soon after AoE draft init
+      if (now - lastAoEInitRef.current < 200) {
+        console.warn("⏳ Click suppressed — AoE still initializing");
+        return;
+      }
+
+      // No longer checking aoeDraft here!
       if (activeInteractionMode !== "aoe") {
+        console.log("🖱️ Token clicked in non-AoE mode:", {
+          id,
+          activeInteractionMode,
+        });
         selectToken(id);
         return;
       }
 
-      const stage = stageRef.current?.getStage?.();
-      if (!stage) return;
+      const token = allTokens.find((t) => t.id === id);
+      if (!token) {
+        console.warn("❌ Token not found for AoE placement:", id);
+        return;
+      }
 
-      const pointerPos = stage.getPointerPosition();
-      const scale = stage.scaleX();
-      const stagePos = stage.position();
-
-      const trueX = (pointerPos.x - stagePos.x) / scale;
-      const trueY = (pointerPos.y - stagePos.y) / scale;
+      console.log("🎯 Token clicked for AoE placement:", {
+        id,
+        x: token.x,
+        y: token.y,
+      });
 
       handleMapClick({
-        stage,
-        pointerPos,
-        trueX,
-        trueY,
-        originalEvent: e,
+        trueX: token.x,
+        trueY: token.y,
       });
     },
-    [activeInteractionMode, selectToken, stageRef, handleMapClick]
+    [activeInteractionMode, selectToken, handleMapClick, allTokens]
   );
 
   const stableCanMove = useCallback(
@@ -76,7 +100,7 @@ const TokenLayerWrapper = ({
 
   const tokenLayerProps = useMemo(
     () => ({
-      isInteractive: activeInteractionMode !== "aoe",
+      isInteractive: true,
       isCombatMode,
       tokens: filteredTokens,
       onDragEnd: stableHandleTokenMove,

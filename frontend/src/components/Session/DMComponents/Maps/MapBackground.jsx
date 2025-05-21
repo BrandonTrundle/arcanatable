@@ -30,8 +30,15 @@ const MapBackground = ({
           fill="rgba(0,0,0,0.01)"
           listening={true}
           onClick={(e) => {
-            //console.log("📍 Rect clicked (background layer)");
-            onMapClick(e);
+            const stage = e.target.getStage();
+            const pointerPos = stage.getPointerPosition();
+            const scale = stage.scaleX();
+            const stagePos = stage.position();
+
+            const trueX = (pointerPos.x - stagePos.x) / scale;
+            const trueY = (pointerPos.y - stagePos.y) / scale;
+
+            onMapClick({ trueX, trueY });
           }}
         />
       </Layer>

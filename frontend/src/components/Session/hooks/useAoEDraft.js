@@ -44,26 +44,39 @@ export const useAoEDraft = (cellSize) => {
     size = 20,
     color = "rgba(255,0,0,0.4)"
   ) => {
-    setAoEDraft({
+    const draft = {
       type,
       radius: (size / 5) * cellSize,
       color,
       placed: false,
-      rotating: false, // NEW
-      direction: 0, // NEW — initial angle in degrees
-    });
+      rotating: false,
+      direction: 0,
+    };
+
+    console.log("🚀 AoE started with draft:", draft);
+
+    setAoEDraft(draft);
   };
 
-  const confirmPlacement = () => {
-    if (!aoeDraft || !mousePosition) return null;
+  const confirmPlacement = (pos) => {
+    if (!aoeDraft) {
+      console.warn("❌ confirmPlacement called without draft");
+      return null;
+    }
 
     if (!aoeDraft.placed) {
-      const snappedX =
-        Math.floor(mousePosition.x / cellSize) * cellSize + cellSize / 2;
-      const snappedY =
-        Math.floor(mousePosition.y / cellSize) * cellSize + cellSize / 2;
+      const target = pos ?? mousePosition;
+      if (!target) {
+        console.warn("❌ confirmPlacement has no target position");
+        return null;
+      }
 
-      setMousePosition({ x: snappedX, y: snappedY }); // ⬅️ Fix live preview
+      const snappedX =
+        Math.floor(target.x / cellSize) * cellSize + cellSize / 2;
+      const snappedY =
+        Math.floor(target.y / cellSize) * cellSize + cellSize / 2;
+
+      console.log("📌 AoE placement snap at:", { snappedX, snappedY });
 
       const updatedDraft = {
         ...aoeDraft,
@@ -73,11 +86,13 @@ export const useAoEDraft = (cellSize) => {
         rotating: true,
       };
 
+      setMousePosition({ x: snappedX, y: snappedY });
       setAoEDraft(updatedDraft);
       return updatedDraft;
     }
 
     if (aoeDraft.rotating) {
+      console.log("🔁 Finalizing AoE rotation:", aoeDraft);
       const finalizedAoE = {
         ...aoeDraft,
         rotating: false,

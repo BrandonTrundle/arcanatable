@@ -22,6 +22,7 @@
 
 .dm-sidebar.open {
   width: 200px;
+  z-index: 2;
 }
 
 .dm-sidebar.collapsed {
