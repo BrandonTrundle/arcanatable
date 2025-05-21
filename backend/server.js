@@ -164,6 +164,14 @@ io.on("connection", (socket) => {
     socket.to(campaignId).emit("aoePlaced", { mapId, aoe });
   });
 
+  socket.on("tokensUpdated", ({ mapId, tokens }) => {
+    // Log for server-side visibility
+    console.log("🛰️ Broadcasting token updates for map:", mapId);
+
+    // Broadcast to everyone else in the room
+    socket.broadcast.emit("tokensUpdated", { mapId, tokens });
+  });
+
   socket.on("aoeRemoved", ({ campaignId, mapId, aoeId }) => {
     if (!campaignId || !mapId || !aoeId) return;
     socket.to(campaignId).emit("aoeRemoved", { mapId, aoeId });

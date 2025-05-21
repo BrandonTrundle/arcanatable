@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 
-const useCombatTracker = () => {
+const useCombatTracker = (socket, currentMapId, tokens = []) => {
   const [combatState, setCombatState] = useState({
     round: 1,
     turnIndex: 0,
@@ -66,27 +66,33 @@ const useCombatTracker = () => {
     });
   }, []);
 
-  const updateHP = (tokenId, newCurrentHP, newMaxHP) => {
-    //console.log("🛠 updateHP called:", { tokenId, newCurrentHP, newMaxHP });
-
+  const updateHP = (tokenId, newHP, newMaxHP) => {
     setCombatState((prev) => {
-      const updatedCombatants = prev.combatants.map((c) => {
-        if (c.tokenId !== tokenId) return c;
+      const updatedCombatants = prev.combatants.map((c) =>
+        c.tokenId === tokenId ? { ...c, currentHP: newHP, maxHP: newMaxHP } : c
+      );
 
-        const updated = {
-          ...c,
-          currentHP: newCurrentHP,
-          maxHP: newMaxHP,
-        };
+      // Emit token update to players
+      const updatedToken = updatedCombatants.find((c) => c.tokenId === tokenId);
+      if (socket && currentMapId) {
+        const mergedTokens = tokens.map((token) => {
+          const combatant = updatedCombatants.find(
+            (c) => c.tokenId === token.id
+          );
+          return {
+            ...token,
+            currentHP: combatant?.currentHP ?? token.currentHP,
+            maxHP: combatant?.maxHP ?? token.maxHP,
+          };
+        });
 
-        //console.log("🔄 Updated combatant HP:", updated);
-        return updated;
-      });
+        socket.emit("tokensUpdated", {
+          mapId: currentMapId,
+          tokens: mergedTokens,
+        });
+      }
 
-      return {
-        ...prev,
-        combatants: updatedCombatants,
-      };
+      return { ...prev, combatants: updatedCombatants };
     });
   };
 

@@ -20,6 +20,7 @@ export const useTokenManager = ({
   isDM,
   user,
   useRolledHP = false,
+  combatState = null,
 }) => {
   const mapId = map?._id ?? null;
   const campaignId = map?.content?.campaign ?? null;
@@ -35,8 +36,9 @@ export const useTokenManager = ({
   const emitTokenUpdate = useTokenSocketSync({
     socket,
     isDM,
-    mapId,
-    campaignId,
+    mapId: map?._id,
+    campaignId: map?.content?.campaign,
+    combatState, // ✅ pass it
   });
   const hasControl = useTokenPermission(user, isDM);
   const { bringTokenToFront } = useTokenZIndexManager(tokens, setTokens);
@@ -98,12 +100,7 @@ export const useTokenManager = ({
   }, [socket, mapId]);
 
   useEffect(() => {
-    // console.log("🧪 [useTokenManager] DM listener setup?", {
-    //    socketExists: !!socket,
-    //   mapId,
-    //   isDM,
-    //  });
-    if (!socket || !map?._id || isDM) return;
+    if (!socket || !map?._id) return;
 
     const handleTokensUpdated = (payload) => {
       const { mapId, tokens: receivedTokens } = payload;
@@ -117,8 +114,11 @@ export const useTokenManager = ({
     };
 
     socket.on("tokensUpdated", handleTokensUpdated);
-    return () => socket.off("tokensUpdated", handleTokensUpdated);
-  }, [socket, map?._id, isDM]);
+
+    return () => {
+      socket.off("tokensUpdated", handleTokensUpdated);
+    };
+  }, [socket, map?._id]);
 
   useEffect(() => {
     if (!socket || !mapId || !isDM) return;

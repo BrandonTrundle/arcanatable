@@ -54,7 +54,7 @@ const RefactoredMap = ({
     emitTokenUpdate,
     hasControl,
     externalSelections,
-  } = useTokenManager({ map, socket, isDM, user, useRolledHP });
+  } = useTokenManager({ map, socket, isDM, user, useRolledHP, combatState });
 
   const {
     selectedTokenId: internalSelectedTokenId,

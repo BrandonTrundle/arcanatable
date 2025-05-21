@@ -40,9 +40,14 @@ const DMView = ({ campaign, socket, sessionMap }) => {
     setFocusedToken,
   } = useDMViewState();
 
+  // 🟢 MUST COME FIRST so `activeMap` is available for the next hook
+  const { activeMap, setActiveMap, tokens, setTokens, saveCurrentMap } =
+    useDMMapManager(sessionMap, socket, user);
+
+  // 🟢 Now it's safe to use `activeMap?._id` here
   const {
     combatState,
-    setCombatState, // ✅ ADD THIS
+    setCombatState,
     initializeCombat,
     syncCombatantsWithTokens,
     setInitiative,
@@ -51,14 +56,11 @@ const DMView = ({ campaign, socket, sessionMap }) => {
     updateHP,
     addCondition,
     removeCondition,
-  } = useCombatTracker();
+  } = useCombatTracker(socket, activeMap?._id, tokens);
 
   useEffect(() => {
     // console.log("🧠 Combat state updated:", combatState);
   }, [combatState]);
-
-  const { activeMap, setActiveMap, tokens, setTokens, saveCurrentMap } =
-    useDMMapManager(sessionMap, socket, user);
 
   useEffect(() => {
     if (user && socket) {
@@ -76,7 +78,6 @@ const DMView = ({ campaign, socket, sessionMap }) => {
         isCombatMode,
       });
     }
-    // console.log("🧭 DMView: Combat mode changed:", isCombatMode);
   }, [isCombatMode, socket, campaign?._id]);
 
   useEffect(() => {
@@ -95,7 +96,6 @@ const DMView = ({ campaign, socket, sessionMap }) => {
     if (!Array.isArray(tokens)) return;
 
     if (tokens.length === 0) {
-      //console.log("🧼 Clearing combatState because tokens are empty");
       setCombatState((prev) => ({ ...prev, combatants: [] }));
       return;
     }
