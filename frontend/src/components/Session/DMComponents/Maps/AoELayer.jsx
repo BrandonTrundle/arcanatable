@@ -2,8 +2,6 @@ import React from "react";
 import { Layer, Circle, Line } from "react-konva";
 
 const AoELayer = ({ aoeShapes, aoeDraft, mapId, mousePosition, removeAoE }) => {
-  //console.log("🔍 AoE Draft:", aoeDraft);
-  //console.log("🖱️ Mouse Position:", mousePosition);
   const renderCone = (
     x,
     y,
@@ -81,8 +79,10 @@ const AoELayer = ({ aoeShapes, aoeDraft, mapId, mousePosition, removeAoE }) => {
   return (
     <>
       <Layer>
-        {currentAoEs.map((aoe) =>
-          aoe.type === "cone"
+        {currentAoEs.map((aoe, index) => {
+          // Fallback in case of duplicate `aoe.id`
+          const key = `${aoe.id}-${index}`;
+          return aoe.type === "cone"
             ? renderCone(
                 aoe.x,
                 aoe.y,
@@ -90,24 +90,15 @@ const AoELayer = ({ aoeShapes, aoeDraft, mapId, mousePosition, removeAoE }) => {
                 aoe.angle,
                 aoe.direction,
                 aoe.color,
-                aoe.id,
+                key,
                 {
-                  onRightClick: () => {
-                    //console.log(
-                    //  "🗑️ Cone AoE right-clicked for removal:",
-                    //   aoe.id
-                    //   );
-                    removeAoE(aoe.id);
-                  },
+                  onRightClick: () => removeAoE(aoe.id),
                 }
               )
-            : renderCircle(aoe.x, aoe.y, aoe.radius, aoe.color, aoe.id, {
-                onRightClick: () => {
-                  //console.log("🗑️ AoE right-clicked for removal:", aoe.id);
-                  removeAoE(aoe.id);
-                },
-              })
-        )}
+            : renderCircle(aoe.x, aoe.y, aoe.radius, aoe.color, key, {
+                onRightClick: () => removeAoE(aoe.id),
+              });
+        })}
       </Layer>
 
       <Layer id="aoe-preview-layer">

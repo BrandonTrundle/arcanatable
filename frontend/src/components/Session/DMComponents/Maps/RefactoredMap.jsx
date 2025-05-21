@@ -169,7 +169,13 @@ const RefactoredMap = ({
       onDrop={onDrop}
       onDragOver={onDragOver}
     >
-      <ZoomableStage ref={stageRef} width={gridWidth} height={gridHeight}>
+      <ZoomableStage
+        ref={stageRef}
+        width={gridWidth}
+        height={gridHeight}
+        onMouseMove={handleMouseMove}
+        onClick={handleMapClick}
+      >
         <MapBackground
           imageUrl={map.content.imageUrl}
           gridWidth={gridWidth}
