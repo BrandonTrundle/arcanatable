@@ -46,9 +46,14 @@ const MapEditor = ({ map, onClose, onMapUpdate }) => {
     const pointerX = e.clientX - stageBox.left;
     const pointerY = e.clientY - stageBox.top;
 
-    const x = (pointerX - stage.x()) / scale - 32;
-    const y = (pointerY - stage.y()) / scale - 32;
+    const rawX = (pointerX - stage.x()) / scale;
+    const rawY = (pointerY - stage.y()) / scale;
 
+    const cellX = Math.floor(rawX / cellSize);
+    const cellY = Math.floor(rawY / cellSize);
+
+    const snappedX = cellX * cellSize + cellSize / 2;
+    const snappedY = cellY * cellSize + cellSize / 2;
     const tokenData = JSON.parse(e.dataTransfer.getData("application/json"));
 
     const newToken = {
@@ -58,8 +63,8 @@ const MapEditor = ({ map, onClose, onMapUpdate }) => {
         tokenData.content.avatar ||
         tokenData.content.imageUrl ||
         "",
-      x,
-      y,
+      x: snappedX,
+      y: snappedY,
       tokenSize:
         tokenData.content.tokenSize || tokenData.content.size || "Medium",
       layer: "dm",
@@ -71,15 +76,34 @@ const MapEditor = ({ map, onClose, onMapUpdate }) => {
 
   const handleDragOver = (e) => e.preventDefault();
 
-  const updateTokenPosition = useCallback((id, newX, newY) => {
-    requestAnimationFrame(() => {
-      setPlacedTokens((prev) =>
-        prev.map((token) =>
-          token.id === id ? { ...token, x: newX, y: newY } : token
-        )
-      );
-    });
-  }, []);
+  const updateTokenPosition = useCallback(
+    (id, newX, newY) => {
+      const cellX = Math.floor(newX / cellSize);
+      const cellY = Math.floor(newY / cellSize);
+
+      const snappedX = cellX * cellSize + cellSize / 2;
+      const snappedY = cellY * cellSize + cellSize / 2;
+
+      requestAnimationFrame(() => {
+        const updatedTokens = prev.map((token) =>
+          token.id === id
+            ? { ...token, x: snappedX, y: snappedY, cellX, cellY }
+            : token
+        );
+
+        console.log("🧲 Token moved via drag:", {
+          id,
+          cellX,
+          cellY,
+          x: snappedX,
+          y: snappedY,
+        });
+
+        setPlacedTokens(updatedTokens);
+      });
+    },
+    [cellSize]
+  );
 
   const handleSave = async () => {
     try {

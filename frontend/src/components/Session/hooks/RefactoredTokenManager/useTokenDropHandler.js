@@ -14,6 +14,12 @@ export const useTokenDropHandler = ({
   const { user } = useContext(UserContext); // ✅ move here
 
   const handleDrop = async ({ trueX, trueY, originalEvent }) => {
+    const cellSize = 70;
+    const cellX = Math.floor(trueX / cellSize);
+    const cellY = Math.floor(trueY / cellSize);
+
+    const snappedX = cellX * cellSize + cellSize / 2;
+    const snappedY = cellY * cellSize + cellSize / 2;
     try {
       console.log("[useTokenDropHandler] handleDrop triggered");
 
@@ -80,8 +86,10 @@ export const useTokenDropHandler = ({
         baseTemplateId: templateId,
         imageUrl,
         tokenSize: size,
-        x: trueX,
-        y: trueY,
+        x: snappedX,
+        y: snappedY,
+        cellX,
+        cellY,
         layer: dragged.layer || "player",
         sourceType,
         maxHP,
