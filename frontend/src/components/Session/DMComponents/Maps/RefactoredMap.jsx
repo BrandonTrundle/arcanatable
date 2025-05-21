@@ -3,7 +3,6 @@ import useImage from "use-image";
 import ZoomableStage from "../../../DMToolkit/Maps/ZoomableStage";
 
 import MapBackground from "./MapBackground";
-import AoELayer from "./AoELayer";
 import TokenLayerWrapper from "./TokenLayerWrapper";
 import MapUIOverlays from "./MapUIOverlays";
 import HPDOMOverlay from "../../../DMToolkit/Maps/TokenLayerRefactor/visuals/HPDOMOverlay";
@@ -12,7 +11,6 @@ import { useStageContext } from "../../hooks/useStageContext";
 import { useOutsideClickHandler } from "../../hooks/useOutsideClickHandler";
 import { useTokenManager } from "../../hooks/useTokenManager";
 import { useTokenSelection } from "../../hooks/useTokenSelection";
-import { useAoEManager } from "../../hooks/useAoEManager";
 import { useTokenMovement } from "../../hooks/useTokenMovement";
 import { useDropHandler } from "../../hooks/useDropHandler";
 import { useSelectionSync } from "../../hooks/useSelectionSync";
@@ -36,7 +34,6 @@ const RefactoredMap = ({
   showTokenInfo,
   combatState,
 }) => {
-  // console.log("🧪 RefactoredMap isCombatMode:", isCombatMode);
   const { stageRef, cellSize, gridWidth, gridHeight } = useStageContext(
     map || {}
   );
@@ -77,24 +74,9 @@ const RefactoredMap = ({
     socket,
   });
 
-  const {
-    aoeDraft,
-    aoeShapes,
-    showAoEToolbox,
-    mousePosition,
-    handleMouseMove,
-    handleMapClick,
-    confirmAoE,
-    removeAoE,
-  } = useAoEManager(
-    activeInteractionMode,
-    cellSize,
-    setActiveInteractionMode,
-    socket,
-    map?._id,
-    map?.content?.campaign,
-    stageRef
-  );
+  // Placeholder no-ops to satisfy usage
+  const handleMouseMove = () => {};
+  const handleMapClick = () => {};
 
   const { handleTokenMove: rawHandleTokenMove } = useTokenMovement({
     map,
@@ -126,10 +108,8 @@ const RefactoredMap = ({
   const handleTokenDrag = useCallback(
     (id, x, y) => {
       setTokens((prev) => {
-        // console.log("🧲 Dragging token:", id, x, y);
-
         const updated = prev.map((t) => (t.id === id ? { ...t, x, y } : t));
-        return [...updated]; // ✅ New array reference
+        return [...updated];
       });
     },
     [setTokens]
@@ -147,9 +127,9 @@ const RefactoredMap = ({
   if (!map || !map._id || !map.content) {
     return null;
   }
-  //console.log("🔁 combatState update:", combatState);
+
   const tokensWithHP = tokens
-    .filter((token) => token.layer === "player") // 👈 Only include player-layer tokens
+    .filter((token) => token.layer === "player")
     .map((token) => {
       const combatant = combatState?.combatants?.find(
         (c) => c.tokenId === token.id
@@ -161,7 +141,7 @@ const RefactoredMap = ({
         maxHP: combatant?.maxHP ?? token.maxHP,
       };
     });
-  //console.log("🧪 isCombatMode:", isCombatMode, "tokensWithHP:", tokensWithHP);
+
   return (
     <div
       className="map-rendered-view"
@@ -186,18 +166,9 @@ const RefactoredMap = ({
           onMapClick={handleMapClick}
         />
 
-        <AoELayer
-          aoeShapes={aoeShapes}
-          aoeDraft={aoeDraft}
-          mapId={map._id}
-          mousePosition={mousePosition}
-          removeAoE={removeAoE}
-        />
-
         <TokenLayerWrapper
           tokens={tokens}
           allTokens={tokens}
-          aoeDraft={aoeDraft}
           stageRef={stageRef}
           handleTokenMove={handleTokenMove}
           handleTokenDrag={handleTokenDrag}
@@ -225,8 +196,6 @@ const RefactoredMap = ({
         contextMenu={contextMenu}
         handleTokenAction={handleTokenAction}
         closeContextMenu={() => setContextMenu(null)}
-        showAoEToolbox={showAoEToolbox}
-        confirmAoE={confirmAoE}
       />
     </div>
   );

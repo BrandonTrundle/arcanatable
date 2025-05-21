@@ -1,14 +1,11 @@
 import React from "react";
 import SessionContextMenu from "../Tokens/SessionContextMenu";
-import AoEToolbox from "../UI/AoEToolbox";
 
 const MapUIOverlays = ({
   isDM,
   contextMenu,
   handleTokenAction,
   closeContextMenu,
-  showAoEToolbox,
-  confirmAoE,
 }) => {
   return (
     <>
@@ -19,8 +16,6 @@ const MapUIOverlays = ({
           onClose={closeContextMenu}
         />
       )}
-
-      {showAoEToolbox && <AoEToolbox onConfirm={confirmAoE} />}
     </>
   );
 };
