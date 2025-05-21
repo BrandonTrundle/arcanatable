@@ -7,7 +7,20 @@
 }
 
 .hp-bar-wrapper {
-  z-index: 9999;
   position: absolute;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 4px;
+  overflow: hidden;
   pointer-events: none;
+  z-index: 9999;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  will-change: top, left;
+}
+
+.hp-bar-fill {
+  height: 100%;
+  box-sizing: border-box;
+  transition: width 0.25s ease-out;
+  background-image: linear-gradient(to right, #4caf50, #81c784);
 }

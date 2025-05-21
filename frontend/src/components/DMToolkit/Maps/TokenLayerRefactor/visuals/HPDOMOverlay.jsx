@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from "react";
 import "../../../../../styles/HPDOMOverlay.css";
 
+// Detect browser for layout tuning
+const getBrowser = () => {
+  const ua = navigator.userAgent;
+  if (ua.includes("Firefox")) return "firefox";
+  if (ua.includes("Edg")) return "edge";
+  if (ua.includes("Chrome")) return "chrome";
+  if (ua.includes("Safari") && !ua.includes("Chrome")) return "safari";
+  return "unknown";
+};
+
+const browser = getBrowser();
+
 const HPDOMOverlay = ({ tokens, containerRef, stageRef }) => {
   const [transform, setTransform] = useState({ scale: 1, x: 0, y: 0 });
 
@@ -32,7 +44,6 @@ const HPDOMOverlay = ({ tokens, containerRef, stageRef }) => {
       });
     };
 
-    // 👇 These are the events that actually fire reliably
     stage.on("wheel dragmove dragend scale", updateTransform);
 
     return () => {
@@ -41,13 +52,21 @@ const HPDOMOverlay = ({ tokens, containerRef, stageRef }) => {
     };
   }, [stageRef]);
 
-  //  console.log("🔥 HPDOMOverlay component called");
-  //  console.log("🧪 HPDOMOverlay mounted. Tokens length:", tokens?.length);
-  //  console.log("📦 tokens:", tokens);
-
   if (!tokens || tokens.length === 0) return null;
 
   const { scale, x: offsetX, y: offsetY } = transform;
+
+  // 🧭 Tune for browser-specific visual differences
+  const browserOffsets = {
+    firefox: { xOffset: 250, yOffset: 10 },
+    edge: { xOffset: 266, yOffset: 28 },
+    chrome: { xOffset: 0, yOffset: 23 },
+    safari: { xOffset: -2, yOffset: 22 },
+    unknown: { xOffset: -2, yOffset: 22 },
+  };
+
+  const { xOffset, yOffset } =
+    browserOffsets[browser] ?? browserOffsets.unknown;
 
   return (
     <div className="hp-overlay-container">
@@ -63,10 +82,6 @@ const HPDOMOverlay = ({ tokens, containerRef, stageRef }) => {
         }
 
         const ratio = Math.max(0, currentHP / maxHP);
-        let color = "green";
-        if (ratio <= 0.33) color = "red";
-        else if (ratio <= 0.66) color = "yellow";
-
         const sizeMap = {
           Tiny: 30,
           Small: 50,
@@ -77,46 +92,30 @@ const HPDOMOverlay = ({ tokens, containerRef, stageRef }) => {
         };
 
         const tokenSizePx = sizeMap[tokenSize] || 50;
-        const width = Math.min(80, Math.max(30, (tokenSizePx / scale) * 0.9));
-        const height = 6 / scale; // keep height small and consistent
-        const horizontalOffset = 250;
-        const left = x * scale + offsetX - width / 2 + horizontalOffset;
-        const top = y * scale + offsetY + tokenSizePx * -1;
+        const width = Math.round(
+          Math.min(80, Math.max(30, (tokenSizePx / scale) * 1.3))
+        );
+        const height = Math.round(6 / scale);
+        const horizontalOffset = 265;
 
-        // console.log("🟩 Rendering HP bar:", {
-        //   id,
-        //   x,
-        //    y,
-        //    left,
-        //    top,
-        //    width,
-        //    ratio,
-        //    color,
-        //  });
+        const left = Math.round(x * scale + offsetX - width / 2 + xOffset);
+        const top = Math.round(y * scale + offsetY - tokenSizePx + yOffset);
 
         return (
           <div
             key={`hp-${id}`}
             className="hp-bar-wrapper"
             style={{
-              position: "absolute",
               top: `${top}px`,
               left: `${left}px`,
               width: `${width}px`,
               height: `${height}px`,
-              background: "rgba(0,0,0,0.5)",
-              borderRadius: "3px",
-              overflow: "hidden",
-              pointerEvents: "none",
-              zIndex: 9999,
             }}
           >
             <div
               className="hp-bar-fill"
               style={{
                 width: `${Math.floor(ratio * 100)}%`,
-                height: "100%",
-                backgroundColor: color,
               }}
             />
           </div>
