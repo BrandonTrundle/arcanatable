@@ -29,7 +29,19 @@ export function handleWheelEvent(stage, e) {
 }
 
 const ZoomableStage = forwardRef(
-  ({ width, height, children, onDrop, onDragOver, onMouseMove }, ref) => {
+  (
+    {
+      width,
+      height,
+      children,
+      onDrop,
+      onDragOver,
+      onMouseMove,
+      onMouseDown,
+      activeInteractionMode,
+    },
+    ref
+  ) => {
     const handleWheel = (e) => {
       handleWheelEvent(ref?.current, e);
     };
@@ -37,7 +49,7 @@ const ZoomableStage = forwardRef(
     return (
       <Stage
         tabIndex={0}
-        draggable
+        draggable={activeInteractionMode !== "aoe"} // ✅ disable pan in AoE mode
         ref={ref}
         width={width}
         height={height}
@@ -45,6 +57,10 @@ const ZoomableStage = forwardRef(
         onDrop={onDrop}
         onDragOver={onDragOver}
         onMouseMove={onMouseMove}
+        onMouseDown={(e) => {
+          console.log("📌 STAGE mouse down");
+          if (onMouseDown) onMouseDown(e); // ✅ only call if it's defined
+        }}
       >
         {children}
       </Stage>

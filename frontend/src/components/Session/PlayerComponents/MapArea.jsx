@@ -4,6 +4,7 @@ import InteractionToolbar from "../DMComponents/UI/InteractionToolbar";
 import loadMapFallback from "../../../assets/LoadMapToProceed.png";
 import { useTokenManager } from "../hooks/useTokenManager";
 import { useDropHandler } from "../hooks/useDropHandler";
+import { useAOEManager } from "../AoE/hooks/useAoEManager";
 
 const MapArea = ({
   activeMap,
@@ -33,6 +34,8 @@ const MapArea = ({
     user,
   });
 
+  const { aoes, addAOE, updateAOE, removeAOE } = useAOEManager();
+
   const { onDrop, onDragOver } = useDropHandler(handleDrop);
 
   return (
@@ -53,6 +56,8 @@ const MapArea = ({
           setFocusedToken={() => {}}
           useRolledHP={false}
           showTokenInfo={showTokenInfo}
+          aoes={aoes}
+          addAOE={addAOE}
         />
       ) : (
         <div className="map-placeholder">

@@ -1,6 +1,7 @@
 import React from "react";
 import RefactoredMap from "../Maps/RefactoredMap";
 import loadMapFallback from "../../../../assets/LoadMapToProceed.png";
+import { useAOEManager } from "../../AoE/hooks/useAoEManager";
 
 const DMMapDisplay = ({
   activeMap,
@@ -18,10 +19,13 @@ const DMMapDisplay = ({
   showTokenInfo,
   combatState,
 }) => {
+  const { aoes, addAOE, updateAOE, removeAOE } = useAOEManager();
   if (activeMap && activeMap.content) {
     return (
       <RefactoredMap
         map={activeMap}
+        aoes={aoes}
+        addAOE={addAOE}
         activeLayer={activeLayer}
         isDM={true}
         socket={socket}
