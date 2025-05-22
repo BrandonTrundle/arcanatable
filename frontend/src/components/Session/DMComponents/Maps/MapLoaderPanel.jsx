@@ -129,20 +129,31 @@ const MapLoaderPanel = ({ campaign, socket, saveCurrentMap }) => {
         <MapCreationForm
           onSubmit={handleMapSubmit}
           onImageUpload={async (file) => {
+            const formData = new FormData();
+            formData.append("image", file); // must match multer.single("image")
+
             const res = await fetch(
-              `${import.meta.env.VITE_API_URL}/api/upload`,
+              `${import.meta.env.VITE_API_URL}/api/uploads/maps`, // correct mounted path
               {
                 method: "POST",
                 headers: {
                   Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  // no Content-Type here
                 },
-                body: file,
+                body: formData,
               }
             );
 
-            const data = await res.json();
-            return data.url;
+            if (!res.ok) {
+              const text = await res.text();
+              console.error("Upload failed:", text);
+              throw new Error("Upload failed");
+            }
+
+            const { url } = await res.json();
+            return url;
           }}
+          campaignId={campaign._id}
         />
       )}
     </div>
