@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import useImage from "use-image";
 import ZoomableStage from "../../../DMToolkit/Maps/ZoomableStage";
 
@@ -45,7 +45,16 @@ const RefactoredMap = ({
     map || {}
   );
   const containerRef = useRef();
+
   const [image] = useImage(map?.content?.imageUrl || "");
+
+  const [shapeSettings, setShapeSettings] = useState({
+    cone: { radius: 150, angle: 60, color: "#ff0000" },
+    circle: { radius: 100, color: "#ff0000" },
+    square: { width: 30, color: "#00ff00" }, // ✅ <-- MAKE SURE THIS EXISTS
+    rectangle: { width: 40, height: 20, color: "#ff0000" },
+    line: { width: 40, height: 5, color: "#ff0000" },
+  });
 
   const {
     selectedShape,
@@ -63,6 +72,8 @@ const RefactoredMap = ({
     selectedTokenId,
     stageRef,
     addAOE,
+    shapeSettings,
+    cellSize,
   });
 
   const {
@@ -183,6 +194,8 @@ const RefactoredMap = ({
           setSelectedShape={setSelectedShape}
           isAnchored={isAnchored}
           setIsAnchored={setIsAnchored}
+          shapeSettings={shapeSettings}
+          setShapeSettings={setShapeSettings}
         />
       )}
 
@@ -216,6 +229,8 @@ const RefactoredMap = ({
           aoeDragOrigin={aoeDragOrigin}
           aoeDragTarget={aoeDragTarget}
           onAoERightClick={(aoe) => removeAOE(aoe.id)}
+          shapeSettings={shapeSettings}
+          cellSize={cellSize}
         />
 
         <TokenLayerWrapper

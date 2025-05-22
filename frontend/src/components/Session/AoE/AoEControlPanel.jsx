@@ -8,6 +8,8 @@ const AoEControlPanel = ({
   setSelectedShape,
   isAnchored,
   setIsAnchored,
+  shapeSettings,
+  setShapeSettings,
 }) => {
   const panelRef = useRef(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -45,6 +47,160 @@ const AoEControlPanel = ({
     setIsDragging(true);
   };
 
+  const handleShapeSettingChange = (field, value) => {
+    setShapeSettings((prev) => ({
+      ...prev,
+      [selectedShape]: {
+        ...prev[selectedShape],
+        [field]: value,
+      },
+    }));
+  };
+
+  const renderShapeSettings = () => {
+    const settings = shapeSettings[selectedShape] || {};
+
+    switch (selectedShape) {
+      case "cone":
+        return (
+          <div className="aoe-shape-config">
+            <label>
+              Radius (ft):
+              <input
+                type="number"
+                min="5"
+                step="5"
+                value={settings.radius || 30}
+                onChange={(e) =>
+                  handleShapeSettingChange("radius", parseInt(e.target.value))
+                }
+              />
+            </label>
+            <label>
+              Angle (°):
+              <input
+                type="number"
+                min="1"
+                max="360"
+                value={settings.angle || 60}
+                onChange={(e) =>
+                  handleShapeSettingChange("angle", parseInt(e.target.value))
+                }
+              />
+            </label>
+            <label>
+              Color:
+              <input
+                type="color"
+                value={settings.color || "#ff0000"}
+                onChange={(e) =>
+                  handleShapeSettingChange("color", e.target.value)
+                }
+              />
+            </label>
+          </div>
+        );
+
+      case "circle":
+        return (
+          <div className="aoe-shape-config">
+            <label>
+              Radius (ft):
+              <input
+                type="number"
+                min="5"
+                step="5"
+                value={settings.radius || 20}
+                onChange={(e) =>
+                  handleShapeSettingChange("radius", parseInt(e.target.value))
+                }
+              />
+            </label>
+            <label>
+              Color:
+              <input
+                type="color"
+                value={settings.color || "#ff0000"}
+                onChange={(e) =>
+                  handleShapeSettingChange("color", e.target.value)
+                }
+              />
+            </label>
+          </div>
+        );
+
+      case "square":
+        return (
+          <div className="aoe-shape-config">
+            <label>
+              Width (ft):
+              <input
+                type="number"
+                min="5"
+                step="5"
+                value={settings.width || 30}
+                onChange={(e) =>
+                  handleShapeSettingChange("width", parseInt(e.target.value))
+                }
+              />
+            </label>
+            <label>
+              Color:
+              <input
+                type="color"
+                value={settings.color || "#ff0000"}
+                onChange={(e) =>
+                  handleShapeSettingChange("color", e.target.value)
+                }
+              />
+            </label>
+          </div>
+        );
+      case "rectangle":
+        return (
+          <div className="aoe-shape-config">
+            <label>
+              Width (ft):
+              <input
+                type="number"
+                min="5"
+                step="5"
+                value={settings.width || 40}
+                onChange={(e) =>
+                  handleShapeSettingChange("width", parseInt(e.target.value))
+                }
+              />
+            </label>
+            <label>
+              Height (ft):
+              <input
+                type="number"
+                min="5"
+                step="5"
+                value={settings.height || 20}
+                onChange={(e) =>
+                  handleShapeSettingChange("height", parseInt(e.target.value))
+                }
+              />
+            </label>
+            <label>
+              Color:
+              <input
+                type="color"
+                value={settings.color || "#ff0000"}
+                onChange={(e) =>
+                  handleShapeSettingChange("color", e.target.value)
+                }
+              />
+            </label>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="aoe-control-panel" ref={panelRef}>
       <div className="aoe-control-header" onMouseDown={startDrag}>
@@ -71,6 +227,8 @@ const AoEControlPanel = ({
         />
         <label>Anchor to token</label>
       </div>
+
+      {renderShapeSettings()}
     </div>
   );
 };

@@ -5,12 +5,16 @@ export const useAoEInteraction = ({
   selectedTokenId,
   stageRef,
   addAOE,
+  shapeSettings,
+  cellSize, // ✅ receive from RefactoredMap
 }) => {
   const [isDraggingAoE, setIsDraggingAoE] = useState(false);
   const [aoeDragOrigin, setAoeDragOrigin] = useState(null);
   const [aoeDragTarget, setAoeDragTarget] = useState(null);
   const [selectedShape, setSelectedShape] = useState("cone");
   const [isAnchored, setIsAnchored] = useState(true);
+
+  const feetToPixels = (feet) => (cellSize / 5) * feet;
 
   const handleMouseDown = useCallback(
     (e) => {
@@ -62,30 +66,45 @@ export const useAoEInteraction = ({
         return;
       }
 
+      const settings = shapeSettings?.[selectedShape] || {};
+
       const newAoE = {
         type: selectedShape,
         anchored: isAnchored,
-        x: selectedShape === "circle" ? aoeDragTarget.x : aoeDragOrigin.x,
-        y: selectedShape === "circle" ? aoeDragTarget.y : aoeDragOrigin.y,
-        radius: 150,
-        angle: selectedShape === "cone" ? 60 : undefined,
+        x:
+          selectedShape === "circle" ||
+          selectedShape === "square" ||
+          selectedShape === "rectangle"
+            ? aoeDragTarget.x
+            : aoeDragOrigin.x,
+        y:
+          selectedShape === "circle" ||
+          selectedShape === "square" ||
+          selectedShape === "rectangle"
+            ? aoeDragTarget.y
+            : aoeDragOrigin.y,
+        radius: settings.radius ? feetToPixels(settings.radius) : 150,
+        angle: selectedShape === "cone" ? settings.angle || 60 : undefined,
         width:
-          selectedShape === "line" ||
-          selectedShape === "rectangle" ||
-          selectedShape === "square"
-            ? selectedShape === "square"
-              ? 120
-              : 200
+          selectedShape === "rectangle" || selectedShape === "line"
+            ? feetToPixels(settings.width || 40)
+            : selectedShape === "square"
+            ? feetToPixels(settings.width || 30)
             : undefined,
         height:
-          selectedShape === "rectangle" || selectedShape === "square"
-            ? selectedShape === "square"
-              ? 120
-              : 100
+          selectedShape === "rectangle"
+            ? feetToPixels(settings.height || 20)
+            : selectedShape === "square"
+            ? feetToPixels(settings.width || 30) // same as width for square
+            : selectedShape === "line"
+            ? feetToPixels(settings.height || 5)
             : undefined,
-        direction: angle,
+        direction:
+          selectedShape === "square" || selectedShape === "rectangle"
+            ? undefined
+            : angle,
         sourceTokenId: selectedTokenId,
-        color: "rgba(255, 165, 0, 0.5)",
+        color: settings.color || "rgba(255, 165, 0, 0.5)",
       };
 
       addAOE(newAoE);
@@ -102,6 +121,8 @@ export const useAoEInteraction = ({
       selectedTokenId,
       selectedShape,
       isAnchored,
+      shapeSettings,
+      cellSize,
     ]
   );
 

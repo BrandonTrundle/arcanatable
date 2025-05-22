@@ -1,6 +1,14 @@
 import React from "react";
 import { Layer, Circle, Arc, Rect } from "react-konva";
 
+const hexWithAlpha = (hex, alpha = 0.4) => {
+  if (!hex?.startsWith("#") || hex.length !== 7) return hex;
+  const alphaHex = Math.round(alpha * 255)
+    .toString(16)
+    .padStart(2, "0");
+  return hex + alphaHex;
+};
+
 const AoELayer = ({
   aoes,
   selectedTokenId,
@@ -10,22 +18,21 @@ const AoELayer = ({
   aoeDragOrigin,
   aoeDragTarget,
   selectedShape,
-  onAoERightClick, // ⬅️ Add this
+  onAoERightClick,
+  shapeSettings,
+  cellSize,
 }) => {
   if (!aoes?.length && !isDraggingAoE) return null;
 
-  // Debug: show drag values
-  if (isDraggingAoE) {
-    //console.log("Dragging AoE from", aoeDragOrigin, "to", aoeDragTarget);
-  }
+  const feetToPixels = (feet) => (cellSize / 5) * feet;
+  const settings = shapeSettings?.[selectedShape] || {};
+  const previewColor = hexWithAlpha(settings.color || "#ffa500", 0.4);
+  const previewOpacity = 0.6;
 
   return (
     <Layer listening={true}>
       {/* Render placed AoEs */}
       {aoes.map((aoe) => {
-        const dx = aoe.dx || 0;
-        const dy = aoe.dy || 0;
-
         switch (aoe.type) {
           case "circle":
             return (
@@ -35,6 +42,7 @@ const AoELayer = ({
                 y={aoe.y}
                 radius={aoe.radius || 100}
                 fill={aoe.color || "rgba(255, 0, 0, 0.4)"}
+                opacity={aoe.opacity ?? 0.4}
                 onContextMenu={(e) => {
                   e.evt.preventDefault();
                   onAoERightClick?.(aoe);
@@ -53,6 +61,7 @@ const AoELayer = ({
                 angle={aoe.angle || 60}
                 rotation={aoe.direction || 0}
                 fill={aoe.color || "rgba(255, 0, 0, 0.4)"}
+                opacity={aoe.opacity ?? 0.4}
                 onContextMenu={(e) => {
                   e.evt.preventDefault();
                   onAoERightClick?.(aoe);
@@ -60,12 +69,31 @@ const AoELayer = ({
               />
             );
 
+          case "square": {
+            const width = aoe.width || 120;
+            return (
+              <Rect
+                key={aoe.id}
+                x={aoe.x - width / 2}
+                y={aoe.y - width / 2}
+                width={width}
+                height={width}
+                fill={aoe.color || "rgba(255, 0, 0, 0.4)"}
+                opacity={aoe.opacity ?? 0.4}
+                stroke="black"
+                strokeWidth={1}
+                onContextMenu={(e) => {
+                  e.evt.preventDefault();
+                  onAoERightClick?.(aoe);
+                }}
+              />
+            );
+          }
+
           case "rectangle":
-          case "square":
           case "line": {
             const width = aoe.width || 120;
-            const height =
-              aoe.type === "line" ? aoe.height || 20 : aoe.height || width;
+            const height = aoe.height || 40;
 
             return (
               <Rect
@@ -75,6 +103,7 @@ const AoELayer = ({
                 width={width}
                 height={height}
                 fill={aoe.color || "rgba(255, 0, 0, 0.4)"}
+                opacity={aoe.opacity ?? 0.4}
                 stroke="black"
                 strokeWidth={1}
                 offsetX={width / 2}
@@ -93,20 +122,7 @@ const AoELayer = ({
         }
       })}
 
-      {/* Optional: test arc */}
-      {/* <Arc
-        x={300}
-        y={300}
-        innerRadius={0}
-        outerRadius={150}
-        angle={60}
-        rotation={45}
-        fill="rgba(0,255,0,0.3)"
-        stroke="black"
-        strokeWidth={2}
-      /> */}
-
-      {/* Render cone preview during drag */}
+      {/* Render preview during AoE drag */}
       {activeInteractionMode === "aoe" &&
         isDraggingAoE &&
         aoeDragOrigin &&
@@ -127,13 +143,13 @@ const AoELayer = ({
                   x={aoeDragOrigin.x}
                   y={aoeDragOrigin.y}
                   innerRadius={0}
-                  outerRadius={150}
-                  angle={60}
+                  outerRadius={feetToPixels(settings.radius || 30)}
+                  angle={settings.angle || 60}
                   rotation={angle}
-                  fill="rgba(255, 165, 0, 0.3)"
-                  stroke="orange"
-                  strokeWidth={2}
-                  opacity={0.6}
+                  fill={previewColor}
+                  stroke="black"
+                  strokeWidth={1}
+                  opacity={previewOpacity}
                   dash={[10, 5]}
                 />
               );
@@ -143,41 +159,46 @@ const AoELayer = ({
                 <Circle
                   x={aoeDragTarget.x}
                   y={aoeDragTarget.y}
-                  radius={100}
-                  fill="rgba(255, 165, 0, 0.3)"
-                  stroke="orange"
-                  strokeWidth={2}
+                  radius={feetToPixels(settings.radius || 20)}
+                  fill={previewColor}
+                  stroke="black"
+                  strokeWidth={1}
+                  opacity={previewOpacity}
                 />
               );
 
-            case "rectangle":
-            case "square":
-            case "line": {
-              const width =
-                selectedShape === "square"
-                  ? 120
-                  : selectedShape === "line"
-                  ? 200
-                  : 160;
-              const height =
-                selectedShape === "square"
-                  ? 120
-                  : selectedShape === "line"
-                  ? 20
-                  : 100;
-
+            case "square": {
+              const width = feetToPixels(settings.width || 30);
               return (
                 <Rect
-                  x={aoeDragOrigin.x - width / 2}
-                  y={aoeDragOrigin.y - height / 2}
+                  x={aoeDragTarget.x - width / 2}
+                  y={aoeDragTarget.y - width / 2}
+                  width={width}
+                  height={width}
+                  fill={previewColor}
+                  stroke="black"
+                  strokeWidth={1}
+                  opacity={previewOpacity}
+                  dash={[10, 5]}
+                />
+              );
+            }
+
+            case "rectangle":
+            case "line": {
+              const width = feetToPixels(settings.width || 40);
+              const height = feetToPixels(settings.height || 20);
+              return (
+                <Rect
+                  x={aoeDragTarget.x - width / 2}
+                  y={aoeDragTarget.y - height / 2}
                   width={width}
                   height={height}
-                  fill="rgba(255, 165, 0, 0.3)"
-                  stroke="orange"
-                  strokeWidth={2}
-                  rotation={angle}
-                  offsetX={width / 2}
-                  offsetY={height / 2}
+                  fill={previewColor}
+                  stroke="black"
+                  strokeWidth={1}
+                  opacity={previewOpacity}
+                  dash={[10, 5]}
                 />
               );
             }
