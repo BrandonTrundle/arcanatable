@@ -39,6 +39,7 @@ const RefactoredMap = ({
   combatState,
   aoes = [],
   addAOE,
+  removeAOE,
 }) => {
   const { stageRef, cellSize, gridWidth, gridHeight } = useStageContext(
     map || {}
@@ -214,6 +215,7 @@ const RefactoredMap = ({
           isDraggingAoE={isDraggingAoE}
           aoeDragOrigin={aoeDragOrigin}
           aoeDragTarget={aoeDragTarget}
+          onAoERightClick={(aoe) => removeAOE(aoe.id)}
         />
 
         <TokenLayerWrapper

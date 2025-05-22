@@ -9,7 +9,8 @@ const AoELayer = ({
   isDraggingAoE,
   aoeDragOrigin,
   aoeDragTarget,
-  selectedShape, // ⬅️ Add this
+  selectedShape,
+  onAoERightClick, // ⬅️ Add this
 }) => {
   if (!aoes?.length && !isDraggingAoE) return null;
 
@@ -34,6 +35,10 @@ const AoELayer = ({
                 y={aoe.y}
                 radius={aoe.radius || 100}
                 fill={aoe.color || "rgba(255, 0, 0, 0.4)"}
+                onContextMenu={(e) => {
+                  e.evt.preventDefault();
+                  onAoERightClick?.(aoe);
+                }}
               />
             );
 
@@ -48,6 +53,10 @@ const AoELayer = ({
                 angle={aoe.angle || 60}
                 rotation={aoe.direction || 0}
                 fill={aoe.color || "rgba(255, 0, 0, 0.4)"}
+                onContextMenu={(e) => {
+                  e.evt.preventDefault();
+                  onAoERightClick?.(aoe);
+                }}
               />
             );
 
@@ -71,6 +80,10 @@ const AoELayer = ({
                 offsetX={width / 2}
                 offsetY={height / 2}
                 rotation={aoe.direction || 0}
+                onContextMenu={(e) => {
+                  e.evt.preventDefault();
+                  onAoERightClick?.(aoe);
+                }}
               />
             );
           }

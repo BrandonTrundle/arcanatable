@@ -58,6 +58,7 @@ const MapArea = ({
           showTokenInfo={showTokenInfo}
           aoes={aoes}
           addAOE={addAOE}
+          removeAOE={removeAOE}
         />
       ) : (
         <div className="map-placeholder">

@@ -26,6 +26,7 @@ const DMMapDisplay = ({
         map={activeMap}
         aoes={aoes}
         addAOE={addAOE}
+        removeAOE={removeAOE}
         activeLayer={activeLayer}
         isDM={true}
         socket={socket}
