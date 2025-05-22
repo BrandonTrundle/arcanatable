@@ -10,6 +10,7 @@ const {
   getCharacterById,
   updateCharacter,
   deleteCharacter,
+  getCharactersByCampaign, // 👈 Add this
 } = require("../controllers/characterController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -34,6 +35,9 @@ const characterStorage = multer.diskStorage({
 const upload = multer({
   storage: characterStorage,
 });
+
+// 👉 New route for DM to get all characters by campaign ID
+router.get("/campaign/:campaignId", protect, getCharactersByCampaign);
 
 // Routes for character management
 router

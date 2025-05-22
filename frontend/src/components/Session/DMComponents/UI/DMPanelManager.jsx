@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import TokenManager from "../Tokens/TokenManager";
 import MapLoaderPanel from "../Maps/MapLoaderPanel";
 import DiceRoller from "../../SharedComponents/DiceRoller";
@@ -8,6 +8,9 @@ import NPCPreview from "../../../DMToolkit/NPCPreview";
 import MonsterPreview from "../../../DMToolkit/Monster/MonsterPreview";
 import CombatTrackerPanel from "../CombatTracker/CombatTrackerPanel"; // Adjust path if needed
 import TokenInfoPanel from "../UI/TokenInfoPanel";
+import DMCharacterPanel from "../CharacterSheets/DMCharacterPanel";
+import CharacterSheetPanel from "../../PlayerComponents/CharacterSheetPanel";
+import DMCharacterSheetPanel from "./DMCharacterSheetPanel";
 
 const DMPanelManager = ({
   activeTool,
@@ -39,6 +42,85 @@ const DMPanelManager = ({
   const liveToken =
     combatState.combatants.find((c) => c.tokenId === focusedToken?.id) ??
     focusedToken;
+  const [selectedDMCharacter, setSelectedDMCharacter] = useState(null);
+  const [dmCurrentTab, setDMCurrentTab] = useState("basics");
+
+  const handleDMFormChange = (e) => {
+    const { name, type, value, checked } = e.target;
+    const val = type === "checkbox" ? checked : value;
+
+    setSelectedDMCharacter((prev) => {
+      if (name.includes(".")) {
+        const [parent, child] = name.split(".");
+        return {
+          ...prev,
+          [parent]: {
+            ...prev[parent],
+            [child]: val,
+          },
+        };
+      }
+      return { ...prev, [name]: val };
+    });
+  };
+
+  const saveDMCharacter = async () => {
+    if (!selectedDMCharacter?._id) return;
+
+    try {
+      const formDataToSend = new FormData();
+
+      // Prepare image URLs (we won't upload new files from DM view right now)
+      const updatedPortraitImage = selectedDMCharacter.portraitImage ?? "";
+      const updatedOrgSymbolImage = selectedDMCharacter.orgSymbolImage ?? "";
+
+      for (const [key, value] of Object.entries(selectedDMCharacter)) {
+        if (
+          [
+            "portraitImageFile",
+            "portraitImagePreview",
+            "orgSymbolImageFile",
+            "orgSymbolImagePreview",
+          ].includes(key)
+        ) {
+          continue; // skip client-side only fields
+        }
+
+        // Convert nested objects to JSON
+        if (typeof value === "object" && value !== null) {
+          formDataToSend.append(key, JSON.stringify(value));
+        } else {
+          formDataToSend.append(key, value ?? "");
+        }
+      }
+
+      formDataToSend.set("portraitImage", String(updatedPortraitImage));
+      formDataToSend.set("orgSymbolImage", String(updatedOrgSymbolImage));
+
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/characters/${
+          selectedDMCharacter._id
+        }`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: formDataToSend,
+        }
+      );
+
+      if (!res.ok) {
+        const err = await res.json();
+        console.error("Update failed:", err.message);
+      } else {
+        const updated = await res.json();
+        setSelectedDMCharacter(updated); // Keep state in sync
+      }
+    } catch (err) {
+      console.error("❌ Error saving character:", err);
+    }
+  };
 
   return (
     <>
@@ -107,6 +189,13 @@ const DMPanelManager = ({
         />
       )}
 
+      {activeTool === "players" && (
+        <DMCharacterSheetPanel
+          campaignId={campaign._id}
+          setActiveTool={setActiveTool}
+        />
+      )}
+
       {selectedNPC && (
         <div className="floating-preview-panel">
           <button
@@ -140,19 +229,5 @@ const DMPanelManager = ({
     </>
   );
 };
-
-const floatingStyle = (width) => ({
-  position: "fixed",
-  top: "10%",
-  left: "calc(15% + 60px)",
-  width: `${width}px`,
-  maxHeight: "80vh",
-  overflowY: "auto",
-  zIndex: 900,
-  backgroundColor: "rgba(255,250,240,0.98)",
-  borderRadius: "16px",
-  boxShadow: "0 0 20px #0003",
-  padding: "1.5rem",
-});
 
 export default DMPanelManager;

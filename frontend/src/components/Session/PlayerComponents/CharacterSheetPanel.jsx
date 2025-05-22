@@ -3,6 +3,7 @@ import CharacterPanel from "./CharacterPanel";
 import BasicsTab from "../../CharacterForm/BasicsTab";
 import PageTwo from "../../CharacterForm/PageTwo";
 import PageThree from "../../CharacterForm/PageThree";
+import "../../../styles/CharacterSheetStyles/CharacterSheet.css";
 
 const CharacterSheetPanel = ({
   campaignId,
@@ -13,9 +14,12 @@ const CharacterSheetPanel = ({
   saveCharacter,
   handleFormChange,
   setActiveTool,
+  className = "",
 }) => {
   return (
-    <div className="player-character-panel character-sheet-panel fly-in active">
+    <div
+      className={`player-character-panel character-sheet-panel fly-in active ${className}`}
+    >
       {!selectedCharacter ? (
         <>
           <CharacterPanel

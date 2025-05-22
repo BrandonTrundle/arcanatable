@@ -94,3 +94,16 @@
   flex-direction: column;
   gap: 2rem;
 }
+
+.dm-character-editor {
+  width: 95vw;
+  max-width: 1200px;
+  height: 90vh;
+  margin: auto;
+  padding: 2rem;
+  overflow-y: auto;
+  background-color: var(--parchment);
+  opacity: 0.95;
+  border-radius: 12px;
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.25);
+}

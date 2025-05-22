@@ -31,7 +31,7 @@ const DMToolbar = ({
         <button onClick={() => handleToolClick("combat")}>⚔️ Combat</button>
         <button onClick={() => handleToolClick("dice")}>🎲 Dice</button>
         <button onClick={() => handleToolClick("files")}>📁 Files</button>
-        <button onClick={() => handleToolClick("players")}>🧑‍🤝‍🧑 Players</button>
+        <button onClick={() => handleToolClick("players")}>🧑‍🤝‍🧑 PC's</button>
         <button onClick={() => handleToolClick("notes")}>📝 Notes</button>
       </div>
     </div>

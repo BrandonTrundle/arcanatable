@@ -56,10 +56,7 @@ const getCharacters = asyncHandler(async (req, res) => {
 // @route   GET /api/characters/:id
 // @access  Private
 const getCharacterById = asyncHandler(async (req, res) => {
-  const character = await Character.findOne({
-    _id: req.params.id,
-    creator: req.user._id,
-  });
+  const character = await Character.findById(req.params.id);
 
   if (!character) {
     res.status(404);
@@ -74,11 +71,10 @@ const getCharacterById = asyncHandler(async (req, res) => {
 // @access  Private
 
 const updateCharacter = asyncHandler(async (req, res) => {
-  const { body, params, user } = req;
+  const { body, params } = req;
 
   parseStructuredFields(body);
 
-  // Optional cleanup (if using old utility)
   if (body.campaign === "") {
     body.campaign = null;
   }
@@ -86,10 +82,8 @@ const updateCharacter = asyncHandler(async (req, res) => {
   // Only allow updates to fields defined in schema
   const allowedFields = Object.keys(Character.schema.paths);
 
-  const character = await Character.findOne({
-    _id: params.id,
-    creator: user._id,
-  });
+  // ✅ Allow any authenticated user to edit (DM or player)
+  const character = await Character.findById(params.id);
 
   if (!character) {
     res.status(404);
@@ -98,18 +92,15 @@ const updateCharacter = asyncHandler(async (req, res) => {
 
   for (const [key, value] of Object.entries(body)) {
     if (["_id", "__v", "createdAt", "updatedAt"].includes(key)) {
-      //console.log(`⏭ Skipping restricted field: ${key}`);
       continue;
     }
 
     try {
       const parsed = JSON.parse(value);
-      //console.log(`🧩 Parsed field '${key}':`, parsed);
 
       if (key === "coins") {
         character.coins = parsed;
         character.markModified("coins");
-        //console.log("✅ Coins updated and marked as modified.");
       } else {
         character[key] = parsed;
       }
@@ -157,10 +148,22 @@ const deleteCharacter = asyncHandler(async (req, res) => {
   res.json({ message: "Character deleted" });
 });
 
+// @desc    Get all characters assigned to a specific campaign (for DM view)
+// @route   GET /api/characters/campaign/:campaignId
+// @access  Private
+const getCharactersByCampaign = asyncHandler(async (req, res) => {
+  const { campaignId } = req.params;
+
+  const characters = await Character.find({ campaign: campaignId });
+
+  res.status(200).json(characters);
+});
+
 module.exports = {
   createCharacter,
   getCharacters,
   getCharacterById,
   updateCharacter,
   deleteCharacter,
+  getCharactersByCampaign,
 };
