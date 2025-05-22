@@ -140,6 +140,7 @@ const DMView = ({ campaign, socket, sessionMap }) => {
         useRolledHP={useRolledHP}
         showTokenInfo={showTokenInfo}
         combatState={combatState}
+        campaignId={campaign._id}
       />
 
       <DMPanelManager

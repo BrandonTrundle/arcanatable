@@ -7,6 +7,7 @@ const session = require("express-session");
 const passport = require("passport");
 const { Server } = require("socket.io");
 const Campaign = require("../backend/models/campaignModel");
+const AoEModel = require("./models/AoE");
 
 const dotenv = require("dotenv");
 
@@ -159,11 +160,6 @@ io.on("connection", (socket) => {
     io.to(campaignId).emit("playerDroppedToken", { mapId, token });
   });
 
-  socket.on("aoePlaced", ({ campaignId, mapId, aoe }) => {
-    if (!campaignId || !mapId || !aoe) return;
-    socket.to(campaignId).emit("aoePlaced", { mapId, aoe });
-  });
-
   socket.on("tokensUpdated", ({ mapId, tokens }) => {
     // Log for server-side visibility
     console.log("🛰️ Broadcasting token updates for map:", mapId);
@@ -172,14 +168,65 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("tokensUpdated", { mapId, tokens });
   });
 
-  socket.on("aoeRemoved", ({ campaignId, mapId, aoeId }) => {
-    if (!campaignId || !mapId || !aoeId) return;
-    socket.to(campaignId).emit("aoeRemoved", { mapId, aoeId });
-  });
-
   socket.on("playerMovedToken", ({ campaignId, mapId, tokenId, x, y }) => {
     if (!campaignId || !mapId || !tokenId) return;
     io.to(campaignId).emit("playerMovedToken", { mapId, tokenId, x, y });
+  });
+
+  // Handle AoE add (broadcast)
+  socket.on("aoe:add", ({ campaignId, aoe }) => {
+    console.log(`[SERVER] aoe:add from ${socket.id}`, aoe);
+    socket.to(campaignId).emit("aoe:add", aoe);
+  });
+
+  // Handle AoE update (broadcast)
+  socket.on("aoe:update", ({ campaignId, id, updates }) => {
+    console.log(`[SERVER] aoe:update from ${socket.id}`, { id, updates });
+    socket.to(campaignId).emit("aoe:update", { id, updates });
+  });
+
+  // Handle AoE remove (broadcast)
+  socket.on("aoe:remove", ({ campaignId, id }) => {
+    console.log(`[SERVER] aoe:remove from ${socket.id}`, id);
+    socket.to(campaignId).emit("aoe:remove", id);
+  });
+
+  // Handle AoE save (persist)
+  socket.on("aoe:save", async ({ campaignId, mapId, aoe }) => {
+    try {
+      await AoEModel.findOneAndUpdate(
+        { campaignId, mapId, "aoe.id": aoe.id },
+        { $set: { campaignId, mapId, aoe } },
+        { upsert: true }
+      );
+      console.log(`[SERVER] Saved AoE ${aoe.id} for map ${mapId}`);
+    } catch (err) {
+      console.error("[SERVER] Failed to save AoE:", err);
+    }
+  });
+
+  // Handle AoE delete (persist)
+  socket.on("aoe:delete", async ({ campaignId, mapId, id }) => {
+    try {
+      await AoEModel.deleteOne({ campaignId, mapId, "aoe.id": id });
+      console.log(`[SERVER] Deleted AoE ${id} from map ${mapId}`);
+    } catch (err) {
+      console.error("[SERVER] Failed to delete AoE:", err);
+    }
+  });
+
+  // Handle AoE load (initial sync)
+  socket.on("aoe:load", async ({ campaignId, mapId }) => {
+    try {
+      const aoes = await AoEModel.find({ campaignId, mapId }).lean();
+      socket.emit(
+        "aoe:load",
+        aoes.map((doc) => doc.aoe)
+      );
+      console.log(`[SERVER] Loaded ${aoes.length} AoEs for map ${mapId}`);
+    } catch (err) {
+      console.error("[SERVER] Failed to load AoEs:", err);
+    }
   });
 });
 

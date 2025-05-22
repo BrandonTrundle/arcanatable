@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import RefactoredMap from "../DMComponents/Maps/RefactoredMap";
 import InteractionToolbar from "../DMComponents/UI/InteractionToolbar";
 import loadMapFallback from "../../../assets/LoadMapToProceed.png";
@@ -15,6 +15,7 @@ const MapArea = ({
   selectedTokenId,
   setSelectedTokenId,
   showTokenInfo,
+  campaignId,
 }) => {
   const {
     tokens,
@@ -34,7 +35,35 @@ const MapArea = ({
     user,
   });
 
-  const { aoes, addAOE, updateAOE, removeAOE } = useAOEManager();
+  useEffect(() => {
+    // Clear AoEs on map change
+    if (activeMap?._id) {
+      setAoes([]);
+      console.log("[AOE] Cleared AoEs due to map change:", activeMap._id);
+    }
+  }, [activeMap?._id]);
+
+  const { aoes, addAOE, updateAOE, removeAOE, setAoes } = useAOEManager(
+    [],
+    socket,
+    campaignId,
+    activeMap?._id
+  );
+
+  useEffect(() => {
+    if (socket && campaignId && activeMap?._id) {
+      socket.emit("aoe:load", { campaignId, mapId: activeMap._id });
+
+      socket.on("aoe:load", (loadedAoEs) => {
+        setAoes(loadedAoEs);
+        console.log("[AOE] Loaded persisted AoEs:", loadedAoEs);
+      });
+
+      return () => {
+        socket.off("aoe:load");
+      };
+    }
+  }, [socket, campaignId, activeMap?._id]);
 
   const { onDrop, onDragOver } = useDropHandler(handleDrop);
 
@@ -59,6 +88,7 @@ const MapArea = ({
           aoes={aoes}
           addAOE={addAOE}
           removeAOE={removeAOE}
+          updateAOE={updateAOE}
         />
       ) : (
         <div className="map-placeholder">

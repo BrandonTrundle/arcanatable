@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 import RefactoredMap from "../Maps/RefactoredMap";
 import loadMapFallback from "../../../../assets/LoadMapToProceed.png";
 import { useAOEManager } from "../../AoE/hooks/useAoEManager";
@@ -18,8 +18,37 @@ const DMMapDisplay = ({
   useRolledHP,
   showTokenInfo,
   combatState,
+  campaignId,
 }) => {
-  const { aoes, addAOE, updateAOE, removeAOE } = useAOEManager();
+  const { aoes, addAOE, updateAOE, removeAOE, setAoes } = useAOEManager(
+    [],
+    socket,
+    campaignId,
+    activeMap?._id
+  );
+
+  useEffect(() => {
+    if (activeMap?._id) {
+      setAoes([]);
+      console.log("[AOE] Cleared AoEs on map switch:", activeMap._id);
+    }
+  }, [activeMap?._id]);
+
+  useEffect(() => {
+    if (socket && campaignId && activeMap?._id) {
+      socket.emit("aoe:load", { campaignId, mapId: activeMap._id });
+
+      socket.on("aoe:load", (loadedAoEs) => {
+        setAoes(loadedAoEs);
+        console.log("[AOE] Loaded persisted AoEs:", loadedAoEs);
+      });
+
+      return () => {
+        socket.off("aoe:load");
+      };
+    }
+  }, [socket, campaignId, activeMap?._id]);
+
   if (activeMap && activeMap.content) {
     return (
       <RefactoredMap
@@ -27,6 +56,7 @@ const DMMapDisplay = ({
         aoes={aoes}
         addAOE={addAOE}
         removeAOE={removeAOE}
+        updateAOE={updateAOE}
         activeLayer={activeLayer}
         isDM={true}
         socket={socket}

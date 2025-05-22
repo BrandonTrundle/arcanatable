@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import "../../../styles/AoEControlPanel.css";
 
-const SHAPES = ["cone", "circle", "square", "rectangle", "line"];
+const SHAPES = ["cone", "circle", "square", "rectangle"];
 
 const AoEControlPanel = ({
   selectedShape,
@@ -10,6 +10,8 @@ const AoEControlPanel = ({
   setIsAnchored,
   shapeSettings,
   setShapeSettings,
+  snapMode, // ✅ NEW
+  setSnapMode,
 }) => {
   const panelRef = useRef(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -226,6 +228,13 @@ const AoEControlPanel = ({
           onChange={(e) => setIsAnchored(e.target.checked)}
         />
         <label>Anchor to token</label>
+      </div>
+      <div className="aoe-snap-mode-toggle">
+        <label>Snap Mode:</label>
+        <select value={snapMode} onChange={(e) => setSnapMode(e.target.value)}>
+          <option value="center">Center</option>
+          <option value="corner">Corner</option>
+        </select>
       </div>
 
       {renderShapeSettings()}

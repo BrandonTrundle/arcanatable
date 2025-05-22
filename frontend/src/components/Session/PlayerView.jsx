@@ -226,6 +226,7 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
         selectedTokenId={selectedTokenId}
         setSelectedTokenId={setSelectedTokenId}
         showTokenInfo={showTokenInfo}
+        campaignId={campaign._id}
       />
 
       <ChatPanel
