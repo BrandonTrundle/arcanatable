@@ -75,7 +75,7 @@ export function useAOEManager(
     (id) => {
       setAoes((prev) => prev.filter((aoe) => aoe.id !== id));
 
-      if (socket && campaignId) {
+      if (socket && campaignId && mapId) {
         socket.emit("aoe:remove", {
           campaignId,
           id,
@@ -84,7 +84,7 @@ export function useAOEManager(
         console.log("[AOE] Emitting remove:", id);
       }
     },
-    [socket, campaignId]
+    [socket, campaignId, mapId] // <--- mapId added here
   );
 
   // ⏬ Listen for incoming changes
