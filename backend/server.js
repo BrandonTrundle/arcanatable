@@ -123,11 +123,11 @@ io.on("connection", (socket) => {
   });
 
   socket.on("updateTokens", ({ campaignId, mapId, tokens }) => {
-    console.log("📡 [server] updateTokens received:", {
-      campaignId,
-      mapId,
-      tokenCount: tokens.length,
-    });
+    //   console.log("📡 [server] updateTokens received:", {
+    //     campaignId,
+    //    mapId,
+    //     tokenCount: tokens.length,
+    //    });
 
     io.to(campaignId).emit("tokensUpdated", { mapId, tokens });
   });
@@ -153,16 +153,16 @@ io.on("connection", (socket) => {
   });
 
   socket.on("playerDroppedToken", ({ mapId, campaignId, token }) => {
-    console.log(
-      "📡 Server relaying playerDroppedToken to campaign:",
-      campaignId
-    );
+    //   console.log(
+    //     "📡 Server relaying playerDroppedToken to campaign:",
+    //     campaignId
+    //   );
     io.to(campaignId).emit("playerDroppedToken", { mapId, token });
   });
 
   socket.on("tokensUpdated", ({ mapId, tokens }) => {
     // Log for server-side visibility
-    console.log("🛰️ Broadcasting token updates for map:", mapId);
+    //  console.log("🛰️ Broadcasting token updates for map:", mapId);
 
     // Broadcast to everyone else in the room
     socket.broadcast.emit("tokensUpdated", { mapId, tokens });
@@ -175,19 +175,19 @@ io.on("connection", (socket) => {
 
   // Handle AoE add (broadcast)
   socket.on("aoe:add", ({ campaignId, aoe }) => {
-    console.log(`[SERVER] aoe:add from ${socket.id}`, aoe);
+    //   console.log(`[SERVER] aoe:add from ${socket.id}`, aoe);
     socket.to(campaignId).emit("aoe:add", aoe);
   });
 
   // Handle AoE update (broadcast)
   socket.on("aoe:update", ({ campaignId, id, updates }) => {
-    console.log(`[SERVER] aoe:update from ${socket.id}`, { id, updates });
+    //   console.log(`[SERVER] aoe:update from ${socket.id}`, { id, updates });
     socket.to(campaignId).emit("aoe:update", { id, updates });
   });
 
   // Handle AoE remove (broadcast)
   socket.on("aoe:remove", ({ campaignId, id }) => {
-    console.log(`[SERVER] aoe:remove from ${socket.id}`, id);
+    //   console.log(`[SERVER] aoe:remove from ${socket.id}`, id);
     socket.to(campaignId).emit("aoe:remove", id);
   });
 
@@ -199,7 +199,7 @@ io.on("connection", (socket) => {
         { $set: { campaignId, mapId, aoe } },
         { upsert: true }
       );
-      console.log(`[SERVER] Saved AoE ${aoe.id} for map ${mapId}`);
+      //  console.log(`[SERVER] Saved AoE ${aoe.id} for map ${mapId}`);
     } catch (err) {
       console.error("[SERVER] Failed to save AoE:", err);
     }
@@ -209,7 +209,7 @@ io.on("connection", (socket) => {
   socket.on("aoe:delete", async ({ campaignId, mapId, id }) => {
     try {
       await AoEModel.deleteOne({ campaignId, mapId, "aoe.id": id });
-      console.log(`[SERVER] Deleted AoE ${id} from map ${mapId}`);
+      //  console.log(`[SERVER] Deleted AoE ${id} from map ${mapId}`);
     } catch (err) {
       console.error("[SERVER] Failed to delete AoE:", err);
     }
@@ -223,10 +223,28 @@ io.on("connection", (socket) => {
         "aoe:load",
         aoes.map((doc) => doc.aoe)
       );
-      console.log(`[SERVER] Loaded ${aoes.length} AoEs for map ${mapId}`);
+      //  console.log(`[SERVER] Loaded ${aoes.length} AoEs for map ${mapId}`);
     } catch (err) {
       console.error("[SERVER] Failed to load AoEs:", err);
     }
+  });
+
+  socket.on("measurement:update", (data) => {
+    // console.log("[SERVER] measurement:update received:", data);
+    socket.to(data.mapId).emit("measurement:receive", data);
+  });
+
+  socket.on("measurement:clear", ({ mapId, userId }) => {
+    socket.to(mapId).emit("measurement:clear", { userId });
+  });
+
+  socket.on("measurement:lock", (data) => {
+    console.log("[SERVER] Locked measurement:", data);
+    socket.to(data.mapId).emit("measurement:lock", data);
+  });
+
+  socket.on("measurement:clearLocked", ({ mapId, userId }) => {
+    socket.to(mapId).emit("measurement:clearLocked", { userId });
   });
 });
 

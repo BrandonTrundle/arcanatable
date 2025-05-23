@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useCallback, useState } from "react";
 import useImage from "use-image";
+import { Layer, Line, Text, Arrow } from "react-konva";
+
 import ZoomableStage from "../../../DMToolkit/Maps/ZoomableStage";
 
 import MapBackground from "./MapBackground";
@@ -19,6 +21,19 @@ import { emitSelection, emitDeselection } from "../../hooks/useTokenEmitters";
 import AoELayer from "../../AoE/AoELayer";
 import AoEControlPanel from "../../AoE/AoEControlPanel";
 import { useAoEInteraction } from "../../AoE/hooks/useAoEInteraction";
+import MeasurementPanel from "../../Measurement/MeasurementPanel";
+import throttle from "lodash.throttle";
+import { calculateDistance } from "../Maps/hooks/mapUtils";
+import { useEmitMeasurement } from "../Maps/hooks/useEmitMeasurement";
+import { useMeasurementSockets } from "../Maps/hooks/useMeasurementSockets";
+import { useTokenMoverWithAOE } from "../Maps/hooks/useTokenMoverWithAOE";
+import { useAoEStateManager } from "../Maps/hooks/useAoEStateManager";
+import MeasurementRender from "./MeasurementRender";
+import TokenLayerContainer from "./TokenLayerContainer";
+import MapStageScene from "./MapStageScene";
+import { useMeasurementState } from "../Maps/hooks/useMeasurementState";
+import { useTokenHPOverlay } from "../Maps/hooks/useTokenHPOverlay";
+import { useMapInteractionHandlers } from "../Maps/hooks/useMapInteractionHandlers";
 
 const RefactoredMap = ({
   map,
@@ -47,19 +62,12 @@ const RefactoredMap = ({
     map || {}
   );
   const containerRef = useRef();
-
   const [image] = useImage(map?.content?.imageUrl || "");
-  const [snapMode, setSnapMode] = useState("center");
-
-  const [shapeSettings, setShapeSettings] = useState({
-    cone: { radius: 150, angle: 60, color: "#ff0000" },
-    circle: { radius: 100, color: "#ff0000" },
-    square: { width: 30, color: "#00ff00" }, // ✅ <-- MAKE SURE THIS EXISTS
-    rectangle: { width: 40, height: 20, color: "#ff0000" },
-    line: { width: 40, height: 5, color: "#ff0000" },
-  });
-
   const {
+    snapMode,
+    setSnapMode,
+    shapeSettings,
+    setShapeSettings,
     selectedShape,
     setSelectedShape,
     isAnchored,
@@ -70,16 +78,31 @@ const RefactoredMap = ({
     handleMouseDown,
     handleMouseMove,
     handleMouseUp,
-  } = useAoEInteraction({
+  } = useAoEStateManager({
     activeInteractionMode,
     setActiveInteractionMode,
     selectedTokenId,
     stageRef,
     addAOE,
-    shapeSettings,
     cellSize,
-    snapMode,
   });
+
+  const {
+    measureTarget,
+    setMeasureTarget,
+    broadcastEnabled,
+    setBroadcastEnabled,
+    measurementColor,
+    setMeasurementColor,
+    snapSetting,
+    setSnapSetting,
+    lockMeasurement,
+    setLockMeasurement,
+    remoteMeasurements,
+    setRemoteMeasurements,
+    lockedMeasurements,
+    setLockedMeasurements,
+  } = useMeasurementState();
 
   const {
     tokens,
@@ -126,54 +149,38 @@ const RefactoredMap = ({
     onTokenMove,
   });
 
-  const handleTokenMove = useCallback(
-    (id, x, y) => {
-      rawHandleTokenMove(id, x, y);
+  useEffect(() => {
+    if (socket && map?._id) {
+      socket.emit("joinRoom", map._id);
+      //  console.log("[SOCKET] Joined room:", map._id);
+    }
+  }, [socket, map?._id]);
 
-      // Move any AoEs anchored to this token
-      aoes.forEach((aoe) => {
-        if (aoe.anchorTokenId === id) {
-          let snappedX, snappedY;
+  const selectedToken = tokens.find((t) => t.id === selectedTokenId);
+  const tokenCenterX = selectedToken?.x ?? 0;
+  const tokenCenterY = selectedToken?.y ?? 0;
 
-          if (aoe.type === "cone") {
-            // snap to corner
-            const baseX = Math.floor(x / cellSize) * cellSize;
-            const baseY = Math.floor(y / cellSize) * cellSize;
-            const offsetX = x % cellSize;
-            const offsetY = y % cellSize;
-
-            snappedX = baseX + (offsetX >= cellSize / 2 ? cellSize : 0);
-            snappedY = baseY + (offsetY >= cellSize / 2 ? cellSize : 0);
-          } else {
-            // snap to center
-            snappedX = Math.floor(x / cellSize) * cellSize + cellSize / 2;
-            snappedY = Math.floor(y / cellSize) * cellSize + cellSize / 2;
-          }
-
-          updateAOE(aoe.id, { x: snappedX, y: snappedY });
-        }
-      });
-      if (!isDM && socket && map?._id) {
-        socket.emit("playerMovedToken", {
-          mapId: map._id,
-          tokenId: id,
-          x,
-          y,
-        });
-      }
-    },
-    [rawHandleTokenMove, isDM, socket, map?._id, aoes, updateAOE]
-  );
-
-  const handleTokenDrag = useCallback(
-    (id, x, y) => {
-      setTokens((prev) => {
-        const updated = prev.map((t) => (t.id === id ? { ...t, x, y } : t));
-        return [...updated];
-      });
-    },
-    [setTokens]
-  );
+  const { handleTokenMove, handleTokenDrag, handleMapClick } =
+    useMapInteractionHandlers({
+      rawHandleTokenMove,
+      aoes,
+      updateAOE,
+      isDM,
+      socket,
+      mapId: map?._id,
+      cellSize,
+      setTokens,
+      lockMeasurement,
+      broadcastEnabled,
+      selectedToken,
+      selectedTokenId,
+      measureTarget,
+      measurementColor,
+      user,
+      setLockedMeasurements,
+      setMeasureTarget,
+      activeInteractionMode,
+    });
 
   const { onDrop, onDragOver } = useDropHandler(handleDrop, stageRef);
   useOutsideClickHandler("token-context-menu", () => setContextMenu(null));
@@ -184,30 +191,38 @@ const RefactoredMap = ({
     }
   }, [tokens, setExternalTokens]);
 
-  const handleMapClick = useCallback(
-    (e) => {
-      if (activeInteractionMode === "aoe") return;
-    },
-    [activeInteractionMode]
-  );
+  useEffect(() => {
+    if (activeInteractionMode !== "measure" || !selectedTokenId) {
+      console.log("[DEBUG] Clearing measureTarget due to mode/token change");
+      setMeasureTarget(null);
+    }
+  }, [activeInteractionMode, selectedTokenId]);
+
+  useEffect(() => {
+    console.log("[DEBUG] selectedTokenId:", selectedTokenId);
+  }, [selectedTokenId]);
+
+  useMeasurementSockets({
+    socket,
+    userId: user._id,
+    setRemoteMeasurements,
+    setLockedMeasurements,
+  });
 
   if (!map || !map._id || !map.content) {
     return null;
   }
 
-  const tokensWithHP = tokens
-    .filter((token) => token.layer === "player")
-    .map((token) => {
-      const combatant = combatState?.combatants?.find(
-        (c) => c.tokenId === token.id
-      );
+  const emitMeasurement = useEmitMeasurement({
+    broadcastEnabled,
+    socket,
+    mapId: map?._id,
+    userId: user?._id,
+    selectedToken,
+    selectedTokenId,
+  });
 
-      return {
-        ...token,
-        currentHP: combatant?.currentHP ?? token.currentHP,
-        maxHP: combatant?.maxHP ?? token.maxHP,
-      };
-    });
+  const tokensWithHP = useTokenHPOverlay(tokens, combatState);
 
   return (
     <div
@@ -224,63 +239,69 @@ const RefactoredMap = ({
           setIsAnchored={setIsAnchored}
           shapeSettings={shapeSettings}
           setShapeSettings={setShapeSettings}
-          snapMode={snapMode} // ✅ add this
+          snapMode={snapMode}
           setSnapMode={setSnapMode}
         />
       )}
 
-      <ZoomableStage
-        ref={stageRef}
-        width={gridWidth}
-        height={gridHeight}
-        onMouseMove={handleMouseMove}
-        onClick={handleMapClick}
-        onMouseDown={handleMouseDown}
+      {activeInteractionMode === "measure" && (
+        <MeasurementPanel
+          broadcastEnabled={broadcastEnabled}
+          setBroadcastEnabled={setBroadcastEnabled}
+          measurementColor={measurementColor}
+          setMeasurementColor={setMeasurementColor}
+          snapSetting={snapSetting}
+          setSnapSetting={setSnapSetting}
+          lockMeasurement={lockMeasurement}
+          setLockMeasurement={setLockMeasurement}
+          lockedMeasurements={lockedMeasurements}
+          setLockedMeasurements={setLockedMeasurements}
+          isDM={isDM}
+          mapId={map._id}
+          userId={user._id}
+          socket={socket}
+        />
+      )}
+
+      <MapStageScene
+        map={map}
+        gridWidth={gridWidth}
+        gridHeight={gridHeight}
+        cellSize={cellSize}
+        stageRef={stageRef}
+        imageUrl={map?.content?.imageUrl}
         activeInteractionMode={activeInteractionMode}
-      >
-        <MapBackground
-          imageUrl={map.content.imageUrl}
-          gridWidth={gridWidth}
-          gridHeight={gridHeight}
-          cellSize={cellSize}
-          mapWidth={map.content.width}
-          mapHeight={map.content.height}
-          onMapClick={handleMapClick}
-          onMouseDown={handleMouseDown}
-        />
-
-        <AoELayer
-          aoes={aoes}
-          selectedTokenId={internalSelectedTokenId}
-          activeInteractionMode={activeInteractionMode}
-          getTokenById={(id) => tokens.find((t) => t.id === id)}
-          selectedShape={selectedShape}
-          isDraggingAoE={isDraggingAoE}
-          aoeDragOrigin={aoeDragOrigin}
-          aoeDragTarget={aoeDragTarget}
-          onAoERightClick={(aoe) => removeAOE(aoe.id)}
-          shapeSettings={shapeSettings}
-          cellSize={cellSize}
-        />
-
-        <TokenLayerWrapper
-          tokens={tokens}
-          allTokens={tokens}
-          stageRef={stageRef}
-          handleTokenMove={handleTokenMove}
-          handleTokenDrag={handleTokenDrag}
-          handleTokenRightClick={handleTokenRightClick}
-          handleMapClick={handleMapClick}
-          selectToken={selectToken}
-          activeInteractionMode={activeInteractionMode}
-          activeLayer={activeLayer}
-          hasControl={hasControl}
-          selectedTokenId={internalSelectedTokenId}
-          externalSelections={externalSelections}
-          isCombatMode={isCombatMode}
-          showTokenInfo={showTokenInfo}
-        />
-      </ZoomableStage>
+        handleMouseDown={handleMouseDown}
+        handleMouseMove={handleMouseMove}
+        handleMapClick={handleMapClick}
+        selectedTokenId={selectedTokenId}
+        selectedToken={selectedToken}
+        measureTarget={measureTarget}
+        measurementColor={measurementColor}
+        emitMeasurement={emitMeasurement}
+        aoes={aoes}
+        internalSelectedTokenId={internalSelectedTokenId}
+        tokens={tokens}
+        removeAOE={removeAOE}
+        selectedShape={selectedShape}
+        shapeSettings={shapeSettings}
+        isDraggingAoE={isDraggingAoE}
+        aoeDragOrigin={aoeDragOrigin}
+        aoeDragTarget={aoeDragTarget}
+        snapMode={snapMode}
+        handleTokenMove={handleTokenMove}
+        handleTokenDrag={handleTokenDrag}
+        handleTokenRightClick={handleTokenRightClick}
+        selectToken={selectToken}
+        activeLayer={activeLayer}
+        hasControl={hasControl}
+        externalSelections={externalSelections}
+        isCombatMode={isCombatMode}
+        showTokenInfo={showTokenInfo}
+        lockedMeasurements={lockedMeasurements}
+        remoteMeasurements={remoteMeasurements}
+        setMeasureTarget={setMeasureTarget}
+      />
 
       <HPDOMOverlay
         tokens={tokensWithHP}
