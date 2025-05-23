@@ -19,13 +19,23 @@ const diceOptions = [
   { label: "d100", value: 100, icon: d100 },
 ];
 
-const DiceRoller = ({ userId, campaignId, username, isDM, socket }) => {
+const DiceRoller = ({
+  userId,
+  campaignId,
+  username,
+  isDM,
+  socket,
+  onClose,
+}) => {
   const [selectedDie, setSelectedDie] = useState(20);
   const [quantity, setQuantity] = useState(1);
   const [modifier, setModifier] = useState(0);
-  const [advantage, setAdvantage] = useState("normal"); // 'normal' | 'advantage' | 'disadvantage'
+  const [advantage, setAdvantage] = useState("normal");
   const [isSecret, setIsSecret] = useState(false);
   const [savedRolls, setSavedRolls] = useState([]);
+  const [collapsed, setCollapsed] = useState(false);
+  const [position, setPosition] = useState({ x: 300, y: 100 });
+  const panelRef = useRef(null);
   const diceAudioRef = useRef(null);
 
   useEffect(() => {
@@ -34,9 +44,7 @@ const DiceRoller = ({ userId, campaignId, username, isDM, socket }) => {
     diceAudioRef.current = audio;
   }, []);
 
-  // Placeholder: fetch saved rolls on load
   useEffect(() => {
-    // TODO: Replace with actual API call
     setSavedRolls([]);
   }, [userId, campaignId]);
 
@@ -51,18 +59,36 @@ const DiceRoller = ({ userId, campaignId, username, isDM, socket }) => {
             },
           }
         );
-
         if (!res.ok) throw new Error("Failed to load saved rolls");
-
         const data = await res.json();
         setSavedRolls(data);
       } catch (err) {
         console.error("❌ Error fetching saved rolls:", err);
       }
     };
-
     fetchSavedRolls();
   }, [campaignId, userId]);
+
+  const handleMouseDown = (e) => {
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startLeft = panelRef.current.offsetLeft;
+    const startTop = panelRef.current.offsetTop;
+
+    const onMouseMove = (e) => {
+      const newX = startLeft + e.clientX - startX;
+      const newY = startTop + e.clientY - startY;
+      setPosition({ x: newX, y: newY });
+    };
+
+    const onMouseUp = () => {
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+    };
+
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+  };
 
   const handleRoll = () => {
     diceAudioRef.current.currentTime = 0;
@@ -88,10 +114,10 @@ const DiceRoller = ({ userId, campaignId, username, isDM, socket }) => {
     }
 
     const total =
-      rolls.reduce((sum, r) => {
-        if (typeof r === "number") return sum + r;
-        return sum + r.chosen;
-      }, 0) + modifier;
+      rolls.reduce(
+        (sum, r) => (typeof r === "number" ? sum + r : sum + r.chosen),
+        0
+      ) + modifier;
 
     let rollText = "";
     if (die === 20 && advantage !== "normal") {
@@ -118,22 +144,17 @@ const DiceRoller = ({ userId, campaignId, username, isDM, socket }) => {
     };
 
     if (isSecret && isDM) {
-      const secretMsg = {
+      socket.emit("secretRoll", {
         ...chatMessage,
-        campaignId,
         text: `[SECRET] ${chatMessage.text}`,
-      };
-      //    console.log("📤 Emitting secretRoll:", secretMsg);
-      socket.emit("secretRoll", secretMsg);
+      });
     } else {
-      //     console.log("📤 Emitting chatMessage:", chatMessage);
       socket.emit("chatMessage", chatMessage);
     }
   };
 
   const handleSaveRoll = async () => {
     const name = prompt("Name this roll:");
-
     if (!name || name.trim() === "") return;
 
     const payload = {
@@ -156,7 +177,6 @@ const DiceRoller = ({ userId, campaignId, username, isDM, socket }) => {
       });
 
       if (!res.ok) throw new Error("Failed to save roll");
-
       const newRoll = await res.json();
       setSavedRolls((prev) => [newRoll, ...prev]);
     } catch (err) {
@@ -165,135 +185,159 @@ const DiceRoller = ({ userId, campaignId, username, isDM, socket }) => {
   };
 
   return (
-    <div className="dice-roller-panel">
-      <h3>🎲 Dice Roller</h3>
-      <div className="dice-selector">
-        {diceOptions.map((die) => (
-          <img
-            key={die.value}
-            src={die.icon}
-            alt={die.label}
-            className={`dice-icon ${
-              selectedDie === die.value ? "selected" : ""
-            }`}
-            onClick={() => setSelectedDie(die.value)}
-          />
-        ))}
+    <div
+      className={`dice-roller-panel ${collapsed ? "collapsed" : ""}`}
+      ref={panelRef}
+      style={{
+        top: `${position.y}px`,
+        left: `${position.x}px`,
+        position: "absolute",
+      }}
+      onMouseDown={handleMouseDown}
+    >
+      <div className="dice-roller-header">
+        <h3>🎲 Dice Roller</h3>
+        <div className="dice-roller-controls">
+          <button onClick={() => setCollapsed((prev) => !prev)}>
+            {collapsed ? "🔽" : "🔼"}
+          </button>
+          <button onClick={() => typeof onClose === "function" && onClose()}>
+            ❌
+          </button>
+        </div>
       </div>
 
-      <div className="dice-settings">
-        <label>
-          Quantity:
-          <input
-            type="number"
-            min="1"
-            value={quantity}
-            onChange={(e) => setQuantity(parseInt(e.target.value, 10))}
-          />
-        </label>
-        <label>
-          Modifier:
-          <input
-            type="number"
-            value={modifier}
-            onChange={(e) => setModifier(parseInt(e.target.value, 10))}
-          />
-        </label>
-        {selectedDie === 20 && (
-          <div className="advantage-toggle">
-            <label>
-              <input
-                type="radio"
-                value="normal"
-                checked={advantage === "normal"}
-                onChange={(e) => setAdvantage(e.target.value)}
+      {!collapsed && (
+        <div className="dice-roller-body">
+          <div className="dice-selector">
+            {diceOptions.map((die) => (
+              <img
+                key={die.value}
+                src={die.icon}
+                alt={die.label}
+                className={`dice-icon ${
+                  selectedDie === die.value ? "selected" : ""
+                }`}
+                onClick={() => setSelectedDie(die.value)}
               />
-              Normal
-            </label>
-            <label>
-              <input
-                type="radio"
-                value="advantage"
-                checked={advantage === "advantage"}
-                onChange={(e) => setAdvantage(e.target.value)}
-              />
-              Advantage
-            </label>
-            <label>
-              <input
-                type="radio"
-                value="disadvantage"
-                checked={advantage === "disadvantage"}
-                onChange={(e) => setAdvantage(e.target.value)}
-              />
-              Disadvantage
-            </label>
+            ))}
           </div>
-        )}
-      </div>
 
-      {isDM && (
-        <div className="secret-roll-toggle">
-          <label>
-            <input
-              type="checkbox"
-              checked={isSecret}
-              onChange={() => setIsSecret(!isSecret)}
-            />
-            Secret Roll (DM only)
-          </label>
+          <div className="dice-settings">
+            <label>
+              Quantity:
+              <input
+                type="number"
+                min="1"
+                value={quantity}
+                onChange={(e) => setQuantity(parseInt(e.target.value, 10))}
+              />
+            </label>
+            <label>
+              Modifier:
+              <input
+                type="number"
+                value={modifier}
+                onChange={(e) => setModifier(parseInt(e.target.value, 10))}
+              />
+            </label>
+            {selectedDie === 20 && (
+              <div className="advantage-toggle">
+                <label>
+                  <input
+                    type="radio"
+                    value="normal"
+                    checked={advantage === "normal"}
+                    onChange={(e) => setAdvantage(e.target.value)}
+                  />
+                  Normal
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    value="advantage"
+                    checked={advantage === "advantage"}
+                    onChange={(e) => setAdvantage(e.target.value)}
+                  />
+                  Advantage
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    value="disadvantage"
+                    checked={advantage === "disadvantage"}
+                    onChange={(e) => setAdvantage(e.target.value)}
+                  />
+                  Disadvantage
+                </label>
+              </div>
+            )}
+          </div>
+
+          {isDM && (
+            <div className="secret-roll-toggle">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={isSecret}
+                  onChange={() => setIsSecret(!isSecret)}
+                />
+                Secret Roll (DM only)
+              </label>
+            </div>
+          )}
+
+          <button onClick={handleRoll}>🎲 Roll</button>
+          <button onClick={handleSaveRoll}>💾 Save Roll</button>
+
+          <div className="saved-rolls">
+            <h4>📁 Saved Rolls</h4>
+            {savedRolls.map((roll) => (
+              <div key={roll._id} className="saved-roll">
+                <span>{roll.name}</span>
+                <button
+                  onClick={() => {
+                    setSelectedDie(roll.die);
+                    setQuantity(roll.quantity);
+                    setModifier(roll.modifier);
+                    setAdvantage(roll.advantage);
+                    handleRoll();
+                  }}
+                >
+                  Roll
+                </button>
+                <button
+                  onClick={async () => {
+                    try {
+                      const res = await fetch(
+                        `${import.meta.env.VITE_API_URL}/api/dicerolls/${
+                          roll._id
+                        }`,
+                        {
+                          method: "DELETE",
+                          headers: {
+                            Authorization: `Bearer ${localStorage.getItem(
+                              "token"
+                            )}`,
+                          },
+                        }
+                      );
+                      if (!res.ok) throw new Error("Failed to delete");
+                      setSavedRolls((prev) =>
+                        prev.filter((r) => r._id !== roll._id)
+                      );
+                    } catch (err) {
+                      console.error("❌ Error deleting roll:", err);
+                    }
+                  }}
+                >
+                  🗑️
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
-
-      <button onClick={handleRoll}>🎲 Roll</button>
-      <button onClick={handleSaveRoll}>💾 Save Roll</button>
-
-      <div className="saved-rolls">
-        <h4>📁 Saved Rolls</h4>
-        {savedRolls.map((roll) => (
-          <div key={roll._id} className="saved-roll">
-            <span>{roll.name}</span>
-            <button
-              onClick={() => {
-                setSelectedDie(roll.die);
-                setQuantity(roll.quantity);
-                setModifier(roll.modifier);
-                setAdvantage(roll.advantage);
-                handleRoll(); // Use restored state to roll
-              }}
-            >
-              Roll
-            </button>
-            <button
-              onClick={async () => {
-                try {
-                  const res = await fetch(
-                    `${import.meta.env.VITE_API_URL}/api/dicerolls/${roll._id}`,
-                    {
-                      method: "DELETE",
-                      headers: {
-                        Authorization: `Bearer ${localStorage.getItem(
-                          "token"
-                        )}`,
-                      },
-                    }
-                  );
-
-                  if (!res.ok) throw new Error("Failed to delete");
-
-                  setSavedRolls((prev) =>
-                    prev.filter((r) => r._id !== roll._id)
-                  );
-                } catch (err) {
-                  console.error("❌ Error deleting roll:", err);
-                }
-              }}
-            >
-              🗑️
-            </button>
-          </div>
-        ))}
-      </div>
     </div>
   );
 };

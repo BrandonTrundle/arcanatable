@@ -122,6 +122,14 @@ const DMPanelManager = ({
     }
   };
 
+  const floatingStyle = (top) => ({
+    position: "fixed",
+    top: `${top}px`,
+    left: "250px",
+    zIndex: 9999,
+    width: "700px",
+  });
+
   return (
     <>
       {activeTool === "tokens" && (
@@ -144,20 +152,8 @@ const DMPanelManager = ({
         </div>
       )}
 
-      {activeTool === "dice" && (
-        <div className="dice-panel">
-          <DiceRoller
-            userId={user._id}
-            campaignId={campaign._id}
-            username={user.username}
-            isDM={true}
-            socket={socket}
-          />
-        </div>
-      )}
-
       {activeTool === "npcs" && (
-        <div className="floating-npc-panel" style={floatingStyle(660)}>
+        <div className="floating-npc-panel" style={floatingStyle(0)}>
           <CampaignNPCListPanel
             campaignName={campaign.name}
             onSelect={setSelectedNPC}
@@ -166,7 +162,7 @@ const DMPanelManager = ({
       )}
 
       {activeTool === "creatures" && (
-        <div className="floating-npc-panel" style={floatingStyle(600)}>
+        <div className="floating-npc-panel" style={floatingStyle(0)}>
           <CampaignMonsterListPanel
             campaignId={campaign._id}
             campaignName={campaign.name}

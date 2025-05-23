@@ -57,7 +57,8 @@ const RefactoredMap = ({
   removeAOE,
   updateAOE,
 }) => {
-  //console.log("updateAOE in RefactoredMap:", updateAOE);
+  const [showMeasurementPanel, setShowMeasurementPanel] = useState(true);
+  const prevInteractionMode = useRef(null);
   const { stageRef, cellSize, gridWidth, gridHeight } = useStageContext(
     map || {}
   );
@@ -155,6 +156,16 @@ const RefactoredMap = ({
       //  console.log("[SOCKET] Joined room:", map._id);
     }
   }, [socket, map?._id]);
+
+  useEffect(() => {
+    if (
+      activeInteractionMode === "measure" &&
+      prevInteractionMode.current !== "measure"
+    ) {
+      setShowMeasurementPanel(true); // Only re-open if coming from a different tool
+    }
+    prevInteractionMode.current = activeInteractionMode;
+  }, [activeInteractionMode]);
 
   const selectedToken = tokens.find((t) => t.id === selectedTokenId);
   const tokenCenterX = selectedToken?.x ?? 0;
@@ -256,7 +267,7 @@ const RefactoredMap = ({
         />
       )}
 
-      {activeInteractionMode === "measure" && (
+      {activeInteractionMode === "measure" && showMeasurementPanel && (
         <MeasurementPanel
           broadcastEnabled={broadcastEnabled}
           setBroadcastEnabled={setBroadcastEnabled}
@@ -272,6 +283,7 @@ const RefactoredMap = ({
           mapId={map._id}
           userId={user._id}
           socket={socket}
+          onClose={() => setShowMeasurementPanel(false)}
         />
       )}
 

@@ -24,6 +24,12 @@ const TokenGrid = ({
         }}
       />
 
+      <div className="token-scroll-wrapper">
+        <ul className="token-image-grid">
+          {/* token rendering logic (unchanged) */}
+        </ul>
+      </div>
+
       <ul className="token-image-grid">
         {/* Toolkit Tokens (e.g., NPCs, Creatures) */}
         {toolkitTokens

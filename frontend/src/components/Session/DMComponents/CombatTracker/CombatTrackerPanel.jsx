@@ -15,7 +15,7 @@ const CombatTrackerPanel = ({
 }) => {
   const panelRef = useRef(null);
   const [collapsed, setCollapsed] = useState(false);
-  const [position, setPosition] = useState({ x: 200, y: 100 });
+  const [position, setPosition] = useState({ x: 250, y: 0 });
   const [dragging, setDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 

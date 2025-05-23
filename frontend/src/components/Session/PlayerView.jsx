@@ -23,6 +23,7 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
   const [currentTab, setCurrentTab] = useState("basics");
   const [tokens, setTokens] = useState([]);
   const [showTokenInfo, setShowTokenInfo] = useState(false);
+  const [showDiceRoller, setShowDiceRoller] = useState(false);
 
   useEffect(() => {
     if (sessionMap) setActiveMap(sessionMap);
@@ -178,6 +179,7 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
             setSelectedCharacter(null);
             setActiveTool((prev) => (prev === tool ? null : tool));
           }}
+          setShowDiceRoller={setShowDiceRoller}
         />
       </aside>
 
@@ -196,15 +198,15 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
         />
       )}
 
-      {activeTool === "dice" && (
+      {showDiceRoller && (
         <DicePanel
           userId={user._id}
           campaignId={campaign._id}
           username={user.username}
           socket={socket}
+          onClose={() => setShowDiceRoller(false)}
         />
       )}
-
       {activeTool === "character-sheet" && (
         <CharacterSheetPanel
           campaignId={campaign._id}

@@ -6,20 +6,18 @@ const DMToolbar = ({
   setActiveTool,
   sidebarOpen,
   setSidebarOpen,
+  setShowDiceRoller,
 }) => {
   const handleToolClick = (tool) => {
-    setActiveTool((prev) => (prev === tool ? null : tool));
+    if (tool === "dice") {
+      setShowDiceRoller((prev) => !prev);
+    } else {
+      setActiveTool(tool);
+    }
   };
 
   return (
     <div className="dm-toolbar">
-      <button
-        className="sidebar-toggle"
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-      >
-        {sidebarOpen ? "⏴" : "⏵"}
-      </button>
-
       <div className="toolbar-buttons">
         <button onClick={() => handleToolClick("tokens")}>🎯 Tokens</button>
         <button onClick={() => handleToolClick("maps")}>🗺️ Maps</button>

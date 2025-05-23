@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import "../../../../styles/SessionStyles/DMStyles/MapLoaderPanel.css";
 import MapCreationForm from "./MapCreationForm";
 
-const MapLoaderPanel = ({ campaign, socket, saveCurrentMap }) => {
+const MapLoaderPanel = ({ campaign, socket, saveCurrentMap, onClose }) => {
   const [maps, setMaps] = useState([]);
   const [showCreate, setShowCreate] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const fetchMaps = async () => {
@@ -33,12 +34,10 @@ const MapLoaderPanel = ({ campaign, socket, saveCurrentMap }) => {
 
   const handleLoadMap = async (map) => {
     try {
-      // ✅ Step 1: Save current map state before switching
       if (typeof saveCurrentMap === "function") {
         await saveCurrentMap();
       }
 
-      // ✅ Step 2: Set new map in backend session
       await fetch(
         `${import.meta.env.VITE_API_URL}/api/sessionstate/${
           campaign._id
@@ -53,8 +52,6 @@ const MapLoaderPanel = ({ campaign, socket, saveCurrentMap }) => {
         }
       );
 
-      // ✅ Step 3: Emit new map to clients
-      // Fetch the latest map (with updated tokens) from the backend
       const refreshed = await fetch(
         `${import.meta.env.VITE_API_URL}/api/dmtoolkit/${map._id}`,
         {
@@ -65,8 +62,6 @@ const MapLoaderPanel = ({ campaign, socket, saveCurrentMap }) => {
       );
 
       const latestMap = await refreshed.json();
-
-      // Now emit the full latest version
       socket.emit("loadMap", latestMap);
     } catch (err) {
       console.error("❌ Failed to set current map:", err);
@@ -81,7 +76,7 @@ const MapLoaderPanel = ({ campaign, socket, saveCurrentMap }) => {
       height,
       imageUrl,
       placedTokens: [],
-      campaign: campaign._id, // ✅ store campaign._id, not name
+      campaign: campaign._id,
     };
 
     try {
@@ -91,7 +86,6 @@ const MapLoaderPanel = ({ campaign, socket, saveCurrentMap }) => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "Content-Type": "application/json",
         },
-
         body: JSON.stringify({
           toolkitType: "Map",
           content: completeContent,
@@ -107,9 +101,39 @@ const MapLoaderPanel = ({ campaign, socket, saveCurrentMap }) => {
     }
   };
 
+  const closeWithAnimation = () => {
+    setIsVisible(false);
+    setTimeout(() => {
+      if (onClose) onClose();
+    }, 300); // Match CSS transition duration
+  };
+
   return (
-    <div className="map-loader-panel">
-      <h3>📂 Load a Map</h3>
+    <div className={`map-loader-panel ${isVisible ? "fly-in" : "fly-out"}`}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <h3>📂 Load a Map</h3>
+        {onClose && (
+          <button
+            onClick={closeWithAnimation}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#f0f0f0",
+              fontSize: "1rem",
+              cursor: "pointer",
+            }}
+          >
+            ✖
+          </button>
+        )}
+      </div>
+
       <ul className="map-list">
         {maps.map((map) => (
           <li key={map._id}>
@@ -130,15 +154,14 @@ const MapLoaderPanel = ({ campaign, socket, saveCurrentMap }) => {
           onSubmit={handleMapSubmit}
           onImageUpload={async (file) => {
             const formData = new FormData();
-            formData.append("image", file); // must match multer.single("image")
+            formData.append("image", file);
 
             const res = await fetch(
-              `${import.meta.env.VITE_API_URL}/api/uploads/maps`, // correct mounted path
+              `${import.meta.env.VITE_API_URL}/api/uploads/maps`,
               {
                 method: "POST",
                 headers: {
                   Authorization: `Bearer ${localStorage.getItem("token")}`,
-                  // no Content-Type here
                 },
                 body: formData,
               }

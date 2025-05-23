@@ -1,7 +1,16 @@
-import React from "react";
-import DiceRoller from "../SharedComponents/DiceRoller"; // ✅ correct
+import React, { useState } from "react";
+import DiceRoller from "../SharedComponents/DiceRoller";
 
-const DicePanel = ({ userId, campaignId, username, socket }) => {
+const DicePanel = ({ userId, campaignId, username, socket, onClose }) => {
+  const [showDice, setShowDice] = useState(true);
+
+  if (!showDice) return null;
+
+  const handleClose = () => {
+    setShowDice(false);
+    if (typeof onClose === "function") onClose();
+  };
+
   return (
     <div className="dice-panel">
       <DiceRoller
@@ -9,6 +18,7 @@ const DicePanel = ({ userId, campaignId, username, socket }) => {
         campaignId={campaignId}
         username={username}
         socket={socket}
+        onClose={handleClose}
       />
     </div>
   );

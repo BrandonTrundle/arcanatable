@@ -1,15 +1,40 @@
 .dice-roller-panel {
-  background-color: #1e1e2f;
+  background-color: #1e1e1e;
   color: #f0f0f0;
-  padding: 1rem;
   border-radius: 12px;
   width: 300px;
   max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 0 10px #000;
+  box-shadow: 0 0 12px #00000088;
   font-family: "Segoe UI", sans-serif;
-  z-index: 9999; /* <-- Add this */
-  position: relative; /* <-- Required for z-index to apply */
+  z-index: 9999;
+  position: absolute;
+  padding: 0;
+}
+
+.dice-roller-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1e1e1e;
+  padding: 0.75rem 1rem;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  cursor: move;
+  user-select: none;
+  font-weight: bold;
+}
+
+.dice-roller-controls button {
+  background: none;
+  border: none;
+  color: #f0f0f0;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+.dice-roller-body {
+  padding: 1rem;
+  overflow-y: auto;
 }
 
 .dice-selector {
@@ -75,7 +100,7 @@ button:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #2a2a3d;
+  background-color: #1e1e1e;
   padding: 0.4rem;
   border-radius: 6px;
   margin-bottom: 0.4rem;
@@ -83,7 +108,11 @@ button:hover {
 
 .dice-panel {
   position: absolute;
-  top: 100px; /* Adjust based on your layout */
-  left: 300px; /* Or wherever it should float */
+  top: 100px;
+  left: 300px;
   z-index: 9999;
+}
+
+.collapsed .dice-roller-body {
+  display: none;
 }

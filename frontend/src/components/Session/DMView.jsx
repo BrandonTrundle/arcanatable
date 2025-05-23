@@ -12,12 +12,14 @@ import DMPanelManager from "../Session/DMComponents/UI/DMPanelManager";
 import DMMapDisplay from "../Session/DMComponents/UI/DMMapDisplay";
 import useCombatTracker from "../Session/DMComponents/CombatTracker/hooks/useCombatTracker";
 import CombatTrackerPanel from "../Session/DMComponents/CombatTracker/CombatTrackerPanel";
+import DiceRoller from "../Session/SharedComponents/DiceRoller";
 
 const DMView = ({ campaign, socket, sessionMap }) => {
   const { user } = useContext(UserContext);
   const [useRolledHP, setUseRolledHP] = useState(false);
   const [showCombatTracker, setShowCombatTracker] = useState(true);
   const [showTokenInfo, setShowTokenInfo] = useState(false);
+  const [showDiceRoller, setShowDiceRoller] = useState(false);
 
   const {
     sidebarOpen,
@@ -122,6 +124,7 @@ const DMView = ({ campaign, socket, sessionMap }) => {
           setActiveTool={setActiveTool}
           sidebarOpen={sidebarOpen}
           setSidebarOpen={setSidebarOpen}
+          setShowDiceRoller={setShowDiceRoller}
         />
       </aside>
 
@@ -189,6 +192,19 @@ const DMView = ({ campaign, socket, sessionMap }) => {
           setActiveMode={setActiveInteractionMode}
           className={toolbarExiting ? "exit" : ""}
         />
+      )}
+
+      {showDiceRoller && (
+        <div className="dice-panel">
+          <DiceRoller
+            userId={user._id}
+            campaignId={campaign._id}
+            username={user.username}
+            isDM={true}
+            socket={socket}
+            onClose={() => setShowDiceRoller(false)}
+          />
+        </div>
       )}
 
       <aside className="dm-chat-panel">

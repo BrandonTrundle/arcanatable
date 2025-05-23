@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 
 const DraggableResizablePanel = ({
   children,
-  initialPosition = { x: 220, y: 64 },
+  initialPosition = { x: 250, y: 0 },
   initialSize = { width: 300, height: 500 },
 }) => {
   const panelRef = useRef(null);

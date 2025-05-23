@@ -1,18 +1,61 @@
+/* MapLoaderPanel base panel */
 .map-loader-panel {
   position: absolute;
-  top: 80px;
-  left: 220px;
-  background: white;
-  border: 1px solid #ccc;
+  top: 0px;
+  left: 250px;
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+  border: none;
+  border-radius: 12px;
   padding: 1rem;
   max-height: 80vh;
   overflow-y: auto;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  z-index: 20;
+  box-shadow: 0 0 12px #00000088;
+  z-index: 9999;
+  font-family: sans-serif;
+  width: 280px;
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .map-list li {
   display: flex;
   justify-content: space-between;
-  padding: 0.3rem 0;
+  align-items: center;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #333;
+  font-size: 0.95rem;
+}
+
+.map-list li:last-child {
+  border-bottom: none;
+}
+
+.map-loader-panel button {
+  background-color: #333;
+  color: #f0f0f0;
+  border: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.map-loader-panel button:hover {
+  background-color: #444;
+}
+
+/* Fly-in from the left */
+.map-loader-panel.fly-in {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Fly-out to the left */
+.map-loader-panel.fly-out {
+  opacity: 0;
+  transform: translateX(-40px);
+  pointer-events: none;
 }
