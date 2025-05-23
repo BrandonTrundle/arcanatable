@@ -238,6 +238,11 @@ io.on("connection", (socket) => {
     socket.to(mapId).emit("measurement:clear", { userId });
   });
 
+  socket.on("measurement:clearMy", ({ mapId, userId }) => {
+    // Broadcast only to others in the same map room
+    socket.to(mapId).emit("measurement:clearMy", { userId });
+  });
+
   socket.on("measurement:lock", (data) => {
     console.log("[SERVER] Locked measurement:", data);
     socket.to(data.mapId).emit("measurement:lock", data);
@@ -245,6 +250,11 @@ io.on("connection", (socket) => {
 
   socket.on("measurement:clearLocked", ({ mapId, userId }) => {
     socket.to(mapId).emit("measurement:clearLocked", { userId });
+  });
+
+  socket.on("measurement:clearAll", ({ mapId }) => {
+    console.log(`[SERVER] Clearing all measurements in map ${mapId}`);
+    io.to(mapId).emit("measurement:clearAll");
   });
 });
 

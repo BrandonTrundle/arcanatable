@@ -7,6 +7,11 @@ export const useMeasurementSockets = ({
   setLockedMeasurements,
 }) => {
   useEffect(() => {
+    console.log("[SOCKET] useMeasurementSockets invoked with:", {
+      socketExists: !!socket,
+      userId,
+    });
+
     if (!socket) return;
 
     const handleIncomingMeasurement = (data) => {
@@ -16,6 +21,17 @@ export const useMeasurementSockets = ({
           return [...others, data];
         });
       }
+    };
+
+    const handleClearMyMeasurement = ({ userId }) => {
+      console.log("[SOCKET] Received measurement:clearMy for userId", userId);
+
+      setRemoteMeasurements((prev) => {
+        console.log("[SOCKET] Remote measurements before clear:", prev);
+        const updated = prev.filter((m) => m.userId !== userId);
+        console.log("[SOCKET] Remote measurements after clear:", updated);
+        return updated;
+      });
     };
 
     const handleClearMeasurement = ({ userId }) => {
@@ -40,7 +56,15 @@ export const useMeasurementSockets = ({
     socket.on("measurement:clear", handleClearMeasurement);
     socket.on("measurement:lock", handleLockMeasurement);
     socket.on("measurement:clearLocked", handleClearLocked);
-    socket.on("measurement:clearAll", handleClearAllLocked);
+    socket.on("measurement:clearAll", () => {
+      setLockedMeasurements([]);
+      setRemoteMeasurements([]); // ✅ This is the key addition
+    });
+    socket.on("measurement:clearMy", handleClearMyMeasurement);
+    socket.on("measurement:clearMy", (payload) => {
+      console.log("[SOCKET] clearMy triggered with payload:", payload);
+      handleClearMyMeasurement(payload);
+    });
 
     return () => {
       socket.off("measurement:receive", handleIncomingMeasurement);
@@ -48,6 +72,7 @@ export const useMeasurementSockets = ({
       socket.off("measurement:lock", handleLockMeasurement);
       socket.off("measurement:clearLocked", handleClearLocked);
       socket.off("measurement:clearAll", handleClearAllLocked);
+      socket.off("measurement:clearMy", handleClearMyMeasurement);
     };
   }, [socket, userId, setRemoteMeasurements, setLockedMeasurements]);
 };

@@ -62,7 +62,7 @@ const MapStageScene = ({
             const transform = stage.getAbsoluteTransform().copy().invert();
             const stagePoint = transform.point(pointer);
 
-            setMeasureTarget(stagePoint); // 👈 This is what was missing
+            setMeasureTarget(stagePoint);
             emitMeasurement(stagePoint);
             handleMouseMove(e);
           }
@@ -70,8 +70,12 @@ const MapStageScene = ({
           handleMouseMove(e);
         }
       }}
-      onClick={handleMapClick}
-      onMouseDown={handleMouseDown}
+      onClick={handleMapClick} // keep this if you want it to trigger on click
+      onMouseDown={(e) => {
+        console.log("📌 STAGE mouse down");
+        handleMapClick(e); // ✅ ensures your locking logic runs
+      }}
+      onMouseDownCapture={undefined} // optional: prevent Konva from swallowing events
       activeInteractionMode={activeInteractionMode}
     >
       <MapBackground
@@ -84,7 +88,6 @@ const MapStageScene = ({
         onMapClick={handleMapClick}
         onMouseDown={handleMouseDown}
       />
-
       <AoELayer
         aoes={aoes}
         selectedTokenId={internalSelectedTokenId}
@@ -98,7 +101,6 @@ const MapStageScene = ({
         shapeSettings={shapeSettings}
         cellSize={cellSize}
       />
-
       <MeasurementRender
         activeInteractionMode={activeInteractionMode}
         selectedToken={selectedToken}
@@ -109,7 +111,6 @@ const MapStageScene = ({
         remoteMeasurements={remoteMeasurements}
         cellSize={cellSize}
       />
-
       <TokenLayerContainer
         tokens={tokens}
         stageRef={stageRef}

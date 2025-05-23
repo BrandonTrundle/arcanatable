@@ -195,6 +195,18 @@ const RefactoredMap = ({
     if (activeInteractionMode !== "measure" || !selectedTokenId) {
       console.log("[DEBUG] Clearing measureTarget due to mode/token change");
       setMeasureTarget(null);
+
+      if (socket && map?._id && user?._id) {
+        console.log("[SOCKET] Emitting measurement:clearMy", {
+          mapId: map._id,
+          userId: user._id,
+        });
+
+        socket.emit("measurement:clearMy", {
+          mapId: map._id,
+          userId: user._id,
+        });
+      }
     }
   }, [activeInteractionMode, selectedTokenId]);
 

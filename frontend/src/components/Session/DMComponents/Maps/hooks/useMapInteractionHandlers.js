@@ -75,10 +75,27 @@ export const useMapInteractionHandlers = ({
         selectedTokenId &&
         measureTarget
       ) {
+        console.log("[LOCK ATTEMPT]", {
+          from: { x: selectedToken.x, y: selectedToken.y },
+          to: measureTarget,
+        });
+
+        // Nudge the target if it's too close to the origin
+        const dx = measureTarget.x - selectedToken.x;
+        const dy = measureTarget.y - selectedToken.y;
+
+        const distanceSq = dx * dx + dy * dy;
+        const MIN_DISTANCE_SQ = 4; // 2px threshold (very small)
+
+        const adjustedTarget =
+          distanceSq < MIN_DISTANCE_SQ
+            ? { x: selectedToken.x + 1, y: selectedToken.y + 1 }
+            : measureTarget;
+
         const locked = {
           userId: user._id,
           from: { x: selectedToken.x, y: selectedToken.y },
-          to: measureTarget,
+          to: adjustedTarget,
           color: measurementColor,
         };
 
@@ -88,9 +105,9 @@ export const useMapInteractionHandlers = ({
         });
 
         setLockedMeasurements((prev) => [...prev, locked]);
+      } else {
+        setMeasureTarget(null);
       }
-
-      setMeasureTarget(null);
     },
     [
       activeInteractionMode,

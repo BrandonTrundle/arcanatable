@@ -38,6 +38,7 @@ const ZoomableStage = forwardRef(
       onDragOver,
       onMouseMove,
       onMouseDown,
+      onClick,
       activeInteractionMode,
     },
     ref
@@ -49,7 +50,7 @@ const ZoomableStage = forwardRef(
     return (
       <Stage
         tabIndex={0}
-        draggable={activeInteractionMode !== "aoe"} // ✅ disable pan in AoE mode
+        draggable={activeInteractionMode !== "aoe"}
         ref={ref}
         width={width}
         height={height}
@@ -57,10 +58,8 @@ const ZoomableStage = forwardRef(
         onDrop={onDrop}
         onDragOver={onDragOver}
         onMouseMove={onMouseMove}
-        onMouseDown={(e) => {
-          console.log("📌 STAGE mouse down");
-          if (onMouseDown) onMouseDown(e); // ✅ only call if it's defined
-        }}
+        onMouseDown={onMouseDown} // ✅ use passed-in prop
+        onClick={onClick} // ✅ allow click fallback if needed
       >
         {children}
       </Stage>
