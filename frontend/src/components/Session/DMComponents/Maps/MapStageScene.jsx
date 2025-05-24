@@ -72,8 +72,11 @@ const MapStageScene = ({
       }}
       onClick={handleMapClick} // keep this if you want it to trigger on click
       onMouseDown={(e) => {
-        console.log("📌 STAGE mouse down");
-        handleMapClick(e); // ✅ ensures your locking logic runs
+        if (activeInteractionMode === "aoe") {
+          handleMouseDown(e);
+        } else {
+          handleMapClick(e);
+        }
       }}
       onMouseDownCapture={undefined} // optional: prevent Konva from swallowing events
       activeInteractionMode={activeInteractionMode}
