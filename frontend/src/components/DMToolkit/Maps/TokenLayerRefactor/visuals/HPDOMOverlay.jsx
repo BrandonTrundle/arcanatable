@@ -58,8 +58,8 @@ const HPDOMOverlay = ({ tokens, containerRef, stageRef }) => {
 
   // 🧭 Tune for browser-specific visual differences
   const browserOffsets = {
-    firefox: { xOffset: 250, yOffset: 10 },
-    edge: { xOffset: 266, yOffset: 28 },
+    firefox: { xOffset: 240, yOffset: 10 },
+    edge: { xOffset: 254, yOffset: 20 },
     chrome: { xOffset: 0, yOffset: 23 },
     safari: { xOffset: -2, yOffset: 22 },
     unknown: { xOffset: -2, yOffset: 22 },
