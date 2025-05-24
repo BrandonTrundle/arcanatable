@@ -27,7 +27,7 @@ const Toolbar = ({
         <button onClick={() => handleToolClick("notes")}>📝 Notes</button>
         <button
           onClick={() => {
-            console.log("🎯 Tokens toggled");
+            //        console.log("🎯 Tokens toggled");
             setActiveTool("tokens");
           }}
         >

@@ -91,13 +91,13 @@ const MapEditor = ({ map, onClose, onMapUpdate }) => {
             : token
         );
 
-        console.log("🧲 Token moved via drag:", {
-          id,
-          cellX,
-          cellY,
-          x: snappedX,
-          y: snappedY,
-        });
+        //     console.log("🧲 Token moved via drag:", {
+        //       id,
+        //       cellX,
+        //       cellY,
+        //       x: snappedX,
+        //       y: snappedY,
+        //     });
 
         setPlacedTokens(updatedTokens);
       });

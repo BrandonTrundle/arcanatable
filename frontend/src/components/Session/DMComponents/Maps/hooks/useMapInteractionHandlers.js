@@ -75,10 +75,10 @@ export const useMapInteractionHandlers = ({
         selectedTokenId &&
         measureTarget
       ) {
-        console.log("[LOCK ATTEMPT]", {
-          from: { x: selectedToken.x, y: selectedToken.y },
-          to: measureTarget,
-        });
+        //     console.log("[LOCK ATTEMPT]", {
+        //       from: { x: selectedToken.x, y: selectedToken.y },
+        //       to: measureTarget,
+        //     });
 
         // Nudge the target if it's too close to the origin
         const dx = measureTarget.x - selectedToken.x;

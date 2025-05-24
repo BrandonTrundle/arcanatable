@@ -21,7 +21,7 @@ export const useTokenDropHandler = ({
     const snappedX = cellX * cellSize + cellSize / 2;
     const snappedY = cellY * cellSize + cellSize / 2;
     try {
-      console.log("[useTokenDropHandler] handleDrop triggered");
+      //    console.log("[useTokenDropHandler] handleDrop triggered");
 
       const rawData =
         originalEvent?.nativeEvent?.dataTransfer?.getData("application/json");
@@ -31,7 +31,7 @@ export const useTokenDropHandler = ({
       }
 
       const dragged = JSON.parse(rawData);
-      console.log("[useTokenDropHandler] JSON Parsed date:", rawData);
+      //    console.log("[useTokenDropHandler] JSON Parsed date:", rawData);
       const templateId = dragged.id;
       if (!templateId) return;
 

@@ -30,7 +30,7 @@ const DMMapDisplay = ({
   useEffect(() => {
     if (activeMap?._id) {
       setAoes([]);
-      console.log("[AOE] Cleared AoEs on map switch:", activeMap._id);
+      //    console.log("[AOE] Cleared AoEs on map switch:", activeMap._id);
     }
   }, [activeMap?._id]);
 
@@ -40,7 +40,7 @@ const DMMapDisplay = ({
 
       socket.on("aoe:load", (loadedAoEs) => {
         setAoes(loadedAoEs);
-        console.log("[AOE] Loaded persisted AoEs:", loadedAoEs);
+        //     console.log("[AOE] Loaded persisted AoEs:", loadedAoEs);
       });
 
       return () => {

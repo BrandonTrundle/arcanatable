@@ -52,7 +52,7 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
   useEffect(() => {
     const handleCombatModeUpdate = ({ isCombatMode }) => {
       setIsCombatMode(isCombatMode);
-      console.log("⚔️ Combat mode updated:", isCombatMode);
+      //    console.log("⚔️ Combat mode updated:", isCombatMode);
     };
 
     socket.on("combatModeUpdate", handleCombatModeUpdate);

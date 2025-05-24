@@ -20,7 +20,7 @@ export const useTokenActions = ({
       const screenX = token.x * scale + pos.x;
       const screenY = token.y * scale + pos.y;
 
-      console.log("[useTokenActions] Right-click on token", { token });
+      //    console.log("[useTokenActions] Right-click on token", { token });
 
       setContextMenu({
         tokenId: id,
@@ -40,11 +40,11 @@ export const useTokenActions = ({
 
       setContextMenu(null);
 
-      console.log("[useTokenActions] Action triggered", {
-        action,
-        tokenId,
-        arg,
-      });
+      //    console.log("[useTokenActions] Action triggered", {
+      //      action,
+      //       tokenId,
+      //       arg,
+      //     });
 
       let updated;
 

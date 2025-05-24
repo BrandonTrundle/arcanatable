@@ -204,14 +204,14 @@ const RefactoredMap = ({
 
   useEffect(() => {
     if (activeInteractionMode !== "measure" || !selectedTokenId) {
-      console.log("[DEBUG] Clearing measureTarget due to mode/token change");
+      //   console.log("[DEBUG] Clearing measureTarget due to mode/token change");
       setMeasureTarget(null);
 
       if (socket && map?._id && user?._id) {
-        console.log("[SOCKET] Emitting measurement:clearMy", {
-          mapId: map._id,
-          userId: user._id,
-        });
+        //     console.log("[SOCKET] Emitting measurement:clearMy", {
+        //       mapId: map._id,
+        //       userId: user._id,
+        //     });
 
         socket.emit("measurement:clearMy", {
           mapId: map._id,
@@ -222,7 +222,7 @@ const RefactoredMap = ({
   }, [activeInteractionMode, selectedTokenId]);
 
   useEffect(() => {
-    console.log("[DEBUG] selectedTokenId:", selectedTokenId);
+    //    console.log("[DEBUG] selectedTokenId:", selectedTokenId);
   }, [selectedTokenId]);
 
   useMeasurementSockets({

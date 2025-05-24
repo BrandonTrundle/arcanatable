@@ -106,10 +106,10 @@ export const useTokenManager = ({
       const { mapId, tokens: receivedTokens } = payload;
       if (mapId === map._id) {
         setTokens(receivedTokens);
-        console.log(
-          "[useTokenManager] Player setTokens updated",
-          receivedTokens
-        );
+        //      console.log(
+        //        "[useTokenManager] Player setTokens updated",
+        //         receivedTokens
+        //      );
       }
     };
 
@@ -126,10 +126,10 @@ export const useTokenManager = ({
     const handlePlayerDroppedToken = ({ mapId: incomingId, token }) => {
       if (String(incomingId) !== String(mapId)) return;
 
-      console.log(
-        "📥 [useTokenManager] DM received playerDroppedToken:",
-        token
-      );
+      //    console.log(
+      //      "📥 [useTokenManager] DM received playerDroppedToken:",
+      //      token
+      //     );
 
       setTokens((prev) => {
         const updated = [...prev, token];
@@ -167,7 +167,7 @@ export const useTokenManager = ({
         });
       }
 
-      console.log("[useTokenManager] Token dropped", token);
+      //     console.log("[useTokenManager] Token dropped", token);
     };
 
     socket.on("tokenDropped", handleTokenDropped);
@@ -236,11 +236,11 @@ export const useTokenManager = ({
           : [...prev, { id: tokenId, x, y, ...tokenData }];
       });
 
-      console.log("[useTokenManager] Player moved token", {
-        tokenId,
-        x,
-        y,
-      });
+      //    console.log("[useTokenManager] Player moved token", {
+      //       tokenId,
+      //       x,
+      //        y,
+      //      });
     };
 
     socket.on("playerMovedToken", handlePlayerMovedToken);

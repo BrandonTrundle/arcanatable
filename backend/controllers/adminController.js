@@ -89,7 +89,7 @@ exports.getPlatformStatus = async (req, res) => {
   };
 
   try {
-    console.log("🔄 Fetching Render...");
+    //  console.log("🔄 Fetching Render...");
     const render = await getRenderStatus();
     result.render = render;
   } catch (err) {
@@ -98,16 +98,16 @@ exports.getPlatformStatus = async (req, res) => {
   }
 
   try {
-    console.log("🔄 Fetching Mongo...");
+    //   console.log("🔄 Fetching Mongo...");
     const mongodb = await getMongoStatus();
     result.mongodb = mongodb;
   } catch (err) {
-    console.error("❌ MongoDB fetch error:", err.message);
+    //  console.error("❌ MongoDB fetch error:", err.message);
     result.mongodb = { error: err.message };
   }
 
   try {
-    console.log("🔄 Fetching Supabase usage...");
+    //  console.log("🔄 Fetching Supabase usage...");
     const supabase = await getSupabaseStatus();
     result.supabase = supabase;
   } catch (err) {

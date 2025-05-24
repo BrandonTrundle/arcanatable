@@ -4,7 +4,7 @@ export const useDebouncedTokenSave = () => {
   const timeoutRef = useRef(null);
 
   const save = (mapId, content) => {
-    console.log("[useDebouncedTokenSave] Save triggered", { mapId, content });
+    //   console.log("[useDebouncedTokenSave] Save triggered", { mapId, content });
 
     if (!mapId || !content) {
       console.warn("[useDebouncedTokenSave] Invalid mapId or content", {
@@ -16,11 +16,11 @@ export const useDebouncedTokenSave = () => {
 
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
-      console.log("[useDebouncedTokenSave] Cleared previous timeout");
+      //     console.log("[useDebouncedTokenSave] Cleared previous timeout");
     }
 
     timeoutRef.current = setTimeout(() => {
-      console.log("[useDebouncedTokenSave] Executing debounced save");
+      //   console.log("[useDebouncedTokenSave] Executing debounced save");
 
       fetch(`${import.meta.env.VITE_API_URL}/api/dmtoolkit/${mapId}`, {
         method: "PATCH",

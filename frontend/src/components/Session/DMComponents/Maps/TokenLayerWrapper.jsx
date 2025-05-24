@@ -34,10 +34,10 @@ const TokenLayerWrapper = ({
 
   const stableOnClick = useCallback(
     (e, id) => {
-      console.log("🖱️ Token clicked:", {
-        id,
-        activeInteractionMode,
-      });
+      //     console.log("🖱️ Token clicked:", {
+      //       id,
+      //        activeInteractionMode,
+      //     });
       selectToken(id);
     },
     [activeInteractionMode, selectToken]

@@ -7,10 +7,10 @@ export const useMeasurementSockets = ({
   setLockedMeasurements,
 }) => {
   useEffect(() => {
-    console.log("[SOCKET] useMeasurementSockets invoked with:", {
-      socketExists: !!socket,
-      userId,
-    });
+    //   console.log("[SOCKET] useMeasurementSockets invoked with:", {
+    //     socketExists: !!socket,
+    //     userId,
+    //   });
 
     if (!socket) return;
 
@@ -24,12 +24,12 @@ export const useMeasurementSockets = ({
     };
 
     const handleClearMyMeasurement = ({ userId }) => {
-      console.log("[SOCKET] Received measurement:clearMy for userId", userId);
+      //    console.log("[SOCKET] Received measurement:clearMy for userId", userId);
 
       setRemoteMeasurements((prev) => {
-        console.log("[SOCKET] Remote measurements before clear:", prev);
+        //       console.log("[SOCKET] Remote measurements before clear:", prev);
         const updated = prev.filter((m) => m.userId !== userId);
-        console.log("[SOCKET] Remote measurements after clear:", updated);
+        //      console.log("[SOCKET] Remote measurements after clear:", updated);
         return updated;
       });
     };
@@ -62,7 +62,7 @@ export const useMeasurementSockets = ({
     });
     socket.on("measurement:clearMy", handleClearMyMeasurement);
     socket.on("measurement:clearMy", (payload) => {
-      console.log("[SOCKET] clearMy triggered with payload:", payload);
+      //    console.log("[SOCKET] clearMy triggered with payload:", payload);
       handleClearMyMeasurement(payload);
     });
 

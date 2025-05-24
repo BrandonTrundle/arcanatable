@@ -39,7 +39,7 @@ const MapArea = ({
     // Clear AoEs on map change
     if (activeMap?._id) {
       setAoes([]);
-      console.log("[AOE] Cleared AoEs due to map change:", activeMap._id);
+      //     console.log("[AOE] Cleared AoEs due to map change:", activeMap._id);
     }
   }, [activeMap?._id]);
 
@@ -56,7 +56,7 @@ const MapArea = ({
 
       socket.on("aoe:load", (loadedAoEs) => {
         setAoes(loadedAoEs);
-        console.log("[AOE] Loaded persisted AoEs:", loadedAoEs);
+        //      console.log("[AOE] Loaded persisted AoEs:", loadedAoEs);
       });
 
       return () => {
