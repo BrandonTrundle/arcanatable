@@ -228,7 +228,12 @@ const MapEditor = ({ map, onClose, onMapUpdate }) => {
         </Layer>
 
         <Layer>
-          <GridOverlay width={squaresX} height={squaresY} cellSize={cellSize} />
+          <GridOverlay
+            width={squaresX}
+            height={squaresY}
+            cellSize={cellSize}
+            lineOpacity={0.5}
+          />
         </Layer>
 
         <Layer>

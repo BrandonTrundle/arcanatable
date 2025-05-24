@@ -1,7 +1,7 @@
 import React from "react";
 import { Line } from "react-konva";
 
-const GridOverlay = ({ width, height, cellSize }) => {
+const GridOverlay = ({ width, height, cellSize, lineOpacity = 0.3 }) => {
   const gridWidth = width * cellSize;
   const gridHeight = height * cellSize;
 
@@ -9,8 +9,9 @@ const GridOverlay = ({ width, height, cellSize }) => {
     <Line
       key={`v-${i}`}
       points={[i * cellSize, 0, i * cellSize, gridHeight]}
-      stroke="red"
+      stroke="white"
       strokeWidth={1}
+      opacity={lineOpacity}
     />
   ));
 
@@ -18,8 +19,9 @@ const GridOverlay = ({ width, height, cellSize }) => {
     <Line
       key={`h-${i}`}
       points={[0, i * cellSize, gridWidth, i * cellSize]}
-      stroke="blue"
+      stroke="white"
       strokeWidth={1}
+      opacity={lineOpacity}
     />
   ));
 

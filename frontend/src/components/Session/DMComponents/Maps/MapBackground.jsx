@@ -44,7 +44,12 @@ const MapBackground = ({
       </Layer>
 
       <Layer>
-        <GridOverlay width={mapWidth} height={mapHeight} cellSize={cellSize} />
+        <GridOverlay
+          width={mapWidth}
+          height={mapHeight}
+          cellSize={cellSize}
+          lineOpacity={0.5}
+        />
       </Layer>
     </>
   );
