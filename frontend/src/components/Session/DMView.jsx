@@ -17,7 +17,7 @@ import DiceRoller from "../Session/SharedComponents/DiceRoller";
 const DMView = ({ campaign, socket, sessionMap }) => {
   const { user } = useContext(UserContext);
   const [useRolledHP, setUseRolledHP] = useState(false);
-  const [showCombatTracker, setShowCombatTracker] = useState(true);
+  const [showCombatTracker, setShowCombatTracker] = useState(false);
   const [showTokenInfo, setShowTokenInfo] = useState(false);
   const [showDiceRoller, setShowDiceRoller] = useState(false);
 

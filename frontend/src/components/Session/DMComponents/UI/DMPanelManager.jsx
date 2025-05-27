@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TokenManager from "../Tokens/TokenManager";
 import MapLoaderPanel from "../Maps/MapLoaderPanel";
 import DiceRoller from "../../SharedComponents/DiceRoller";
@@ -44,6 +44,12 @@ const DMPanelManager = ({
     focusedToken;
   const [selectedDMCharacter, setSelectedDMCharacter] = useState(null);
   const [dmCurrentTab, setDMCurrentTab] = useState("basics");
+
+  useEffect(() => {
+    if (activeTool === null) {
+      setFocusedToken(null); // Only close focused token
+    }
+  }, [activeTool]);
 
   const handleDMFormChange = (e) => {
     const { name, type, value, checked } = e.target;

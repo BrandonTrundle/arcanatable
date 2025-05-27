@@ -108,8 +108,8 @@ button:hover {
 
 .dice-panel {
   position: absolute;
-  top: 100px;
-  left: 300px;
+  top: -100px;
+  left: -50px;
   z-index: 9999;
 }
 

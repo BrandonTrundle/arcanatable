@@ -12,7 +12,7 @@ const DMToolbar = ({
     if (tool === "dice") {
       setShowDiceRoller((prev) => !prev);
     } else {
-      setActiveTool(tool);
+      setActiveTool((prevTool) => (prevTool === tool ? null : tool));
     }
   };
 
