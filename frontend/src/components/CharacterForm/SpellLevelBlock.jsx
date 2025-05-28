@@ -1,5 +1,5 @@
 import React from "react";
-import "../../styles/CharacterSheetStyles/Spellcasting.css";
+import "../../styles/Characters/CharacterSheetStyles/Spellcasting.css";
 
 const SpellLevelBlock = ({ levelData, onChange, levelIndex }) => {
   const handleSpellChange = (e, spellIndex) => {

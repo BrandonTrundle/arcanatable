@@ -1,5 +1,5 @@
 import React from "react";
-import "../../styles/CharacterSheetStyles/CharacterStatsBlock.css";
+import "../../styles/Characters/CharacterSheetStyles/CharacterStatsBlock.css";
 
 const fields = [
   ["age", "height", "weight"],

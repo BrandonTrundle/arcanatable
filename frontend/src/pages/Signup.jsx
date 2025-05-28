@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext"; // Adjust path as needed
 import axios from "axios";
-import "../styles/Signup.css";
+import "../styles/Auth/Signup.css";
 import fantasyMap from "../assets/FantasyMapBackground.png";
 
 const Signup = () => {

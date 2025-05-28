@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ComposeMessageModal from "../../components/Modal/ComposeMessageModal";
-import "../../styles/MessagePage.css";
+import "../../styles/MessagingSystem/MessagePage.css";
 import courierBg from "../../assets/ElvenCourier.png";
 
 const MessagePage = () => {

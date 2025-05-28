@@ -1,7 +1,7 @@
 import React from "react";
 import SpellcastingBlock from "./SpellcastingBlock";
 import SpellLevelBlock from "./SpellLevelBlock";
-import "../../styles/CharacterSheetStyles/CharacterSheet.css";
+import "../../styles/Characters/CharacterSheetStyles/CharacterSheet.css";
 
 const PageThree = ({ formData, handleChange, setFormData }) => {
   const spellLevels = formData.spells || [];

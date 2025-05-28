@@ -1,5 +1,5 @@
 import React from "react";
-import "../../styles/CharacterSheetStyles/CharacterBanner.css";
+import "../../styles/Characters/CharacterSheetStyles/CharacterBanner.css";
 
 const CharacterBanner = ({ formData, handleChange }) => (
   <div className="character-banner">

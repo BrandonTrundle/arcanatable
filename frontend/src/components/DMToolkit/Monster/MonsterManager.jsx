@@ -1,5 +1,5 @@
 import React from "react";
-import "../../../styles/MonsterManager.css";
+import "../../../styles/DMToolkit/MonsterManager.css";
 
 import MonsterList from "./MonsterList";
 import MonsterEditorPanel from "./MonsterEditorPanel";

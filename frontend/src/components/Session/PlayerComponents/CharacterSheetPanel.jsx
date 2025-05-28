@@ -3,7 +3,7 @@ import CharacterPanel from "./CharacterPanel";
 import BasicsTab from "../../CharacterForm/BasicsTab";
 import PageTwo from "../../CharacterForm/PageTwo";
 import PageThree from "../../CharacterForm/PageThree";
-import "../../../styles/CharacterSheetStyles/CharacterSheet.css";
+import "../../../styles/Characters/CharacterSheetStyles/CharacterSheet.css";
 
 const CharacterSheetPanel = ({
   campaignId,

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../../styles/NPCForm.css";
+import "../../styles/DMToolkit/NPCForm.css";
 import axios from "axios";
 
 const NPCForm = ({ npc, setNPC, closeForm, onSubmit }) => {

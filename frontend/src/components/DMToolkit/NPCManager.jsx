@@ -3,7 +3,7 @@ import NPCForm from "./NPCForm";
 import NPCPreview from "./NPCPreview";
 import axios from "axios";
 import { useUserContext } from "../../context/UserContext";
-import "../../styles/NPCManager.css";
+import "../../styles/DMToolkit/NPCManager.css";
 import {
   fetchNPCs,
   createNPC,

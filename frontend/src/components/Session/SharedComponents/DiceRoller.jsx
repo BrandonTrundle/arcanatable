@@ -7,7 +7,7 @@ import d12 from "../../../assets/d12logo.png";
 import d20 from "../../../assets/d20logo.png";
 import d100 from "../../../assets/d100logo.png";
 import diceRollSfx from "../../../assets/diceroll.mp3";
-import "../../../styles/DiceRoller.css";
+import "../../../styles/SessionStyles/DiceRoller.css";
 
 const diceOptions = [
   { label: "d4", value: 4, icon: d4 },

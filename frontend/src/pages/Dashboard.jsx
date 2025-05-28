@@ -1,7 +1,7 @@
 import React, { useState, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
-import "../styles/UserWelcome.css";
+import "../styles/Auth/UserWelcome.css";
 import welcomeBackground from "../assets/UserWelcomeBG.png";
 import UserInfoCard from "../components/Auth/UserInfoCard";
 import BlackCrystal from "../assets/BlackCrystal.png";

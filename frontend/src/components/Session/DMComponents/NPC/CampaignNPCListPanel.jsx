@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NPCPreview from "../../../DMToolkit/NPCPreview"; // Adjust path as needed
-import "../../../../styles/NPCManager.css"; // You may want to split this later
+import "../../../../styles/DMToolkit/NPCManager.css"; // You may want to split this later
 import { fetchNPCs } from "../../../../services/npcService";
 
 const CampaignNPCListPanel = ({ campaignName, onSelect }) => {

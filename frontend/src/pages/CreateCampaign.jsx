@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Auth/Navbar";
-import "../styles/CreateCampaign.css";
+import "../styles/Campaigns/CreateCampaign.css";
 import backgroundImage from "../assets/Campaigns.png";
 
 const CreateCampaign = () => {

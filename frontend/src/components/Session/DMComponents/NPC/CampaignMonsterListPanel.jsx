@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import MonsterPreview from "../../../../components/DMToolkit/Monster/MonsterPreview";
 import { fetchMonsters } from "../../../../services/monsterService";
-import "../../../../styles/MonsterManager.css"; // Reuse styling
+import "../../../../styles/DMToolkit/MonsterManager.css"; // Reuse styling
 
 const CampaignMonsterListPanel = ({
   campaignId,

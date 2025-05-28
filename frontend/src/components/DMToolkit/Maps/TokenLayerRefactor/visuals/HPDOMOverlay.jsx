@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "../../../../../styles/HPDOMOverlay.css";
+import "../../../../../styles/SessionStyles/HPDOMOverlay.css";
 
 // Detect browser for layout tuning
 const getBrowser = () => {

@@ -1,5 +1,5 @@
 import React from "react";
-import "../../styles/CharacterSheetStyles/CharacterImageUpload.css";
+import "../../styles/Characters/CharacterSheetStyles/CharacterImageUpload.css";
 import { getImgSrc } from "../../utils/getImgSrc";
 
 const CharacterImageUpload = ({ formData, setFormData }) => {

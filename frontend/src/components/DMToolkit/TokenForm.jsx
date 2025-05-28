@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "../../styles/TokenForm.css";
+import "../../styles/DMToolkit/TokenForm.css";
 
 const TokenForm = ({ onCreated }) => {
   const [title, setTitle] = useState("");

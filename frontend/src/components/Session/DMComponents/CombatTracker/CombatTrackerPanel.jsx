@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import styles from "../../../../styles/CombatTrackerPanel.module.css";
+import styles from "../../../../styles/SessionStyles/CombatTrackerPanel.module.css";
 import useCombatTracker from "../CombatTracker/hooks/useCombatTracker";
 
 const CombatTrackerPanel = ({

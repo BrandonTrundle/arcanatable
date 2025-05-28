@@ -1,5 +1,5 @@
 import React from "react";
-import "../../styles/NPCPreview.css";
+import "../../styles/DMToolkit/NPCPreview.css";
 import ParchmentPaper from "../../assets/ParchmentPaper.png";
 
 const NPCPreview = ({ data }) => {

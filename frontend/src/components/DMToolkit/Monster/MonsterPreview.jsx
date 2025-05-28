@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import "../../../styles/MonsterPreview.css";
+import "../../../styles/DMToolkit/MonsterPreview.css";
 import ParchmentPaper from "../../../assets/ParchmentPaper.png";
 import html2pdf from "html2pdf.js";
 

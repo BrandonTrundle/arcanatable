@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "../../styles/ComposeMessageModal.css";
+import "../../styles/MessagingSystem/ComposeMessageModal.css";
 
 const ComposeMessageModal = ({ onClose, onSent, replyTo = null }) => {
   const [recipientUsername, setRecipientUsername] = useState(

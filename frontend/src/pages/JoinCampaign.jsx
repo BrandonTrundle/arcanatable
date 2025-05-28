@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Auth/Navbar";
-import "../styles/JoinCampaign.css";
+import "../styles/Campaigns/JoinCampaign.css";
 
 const JoinCampaign = () => {
   const [inviteCode, setInviteCode] = useState("");

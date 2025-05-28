@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { UserContext } from "../../../context/UserContext";
-import "../../../styles/CharacterPanel.css";
+import "../../../styles/Characters/CharacterPanel.css";
 
 const CharacterPanel = ({ campaignId, onSelect }) => {
   const { user } = useContext(UserContext);

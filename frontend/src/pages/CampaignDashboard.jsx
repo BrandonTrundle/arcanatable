@@ -5,7 +5,7 @@ import Navbar from "../components/Auth/Navbar";
 import backgroundImage from "../assets/Campaigns.png";
 import defaultAvatar from "../assets/defaultav.png";
 import placeholderImg from "../assets/FantasyMapBackground.png";
-import "../styles/CampaignDashboard.css";
+import "../styles/Campaigns/CampaignDashboard.css";
 import { buildImageUrl } from "../utils/imageUtils";
 
 const CampaignDashboard = () => {

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import Draggable from "react-draggable";
-import styles from "../../../styles/MeasurementPanel.module.css";
+import styles from "../../../styles/SessionStyles/MeasurementPanel.module.css";
 
 const MeasurementPanel = ({
   broadcastEnabled,

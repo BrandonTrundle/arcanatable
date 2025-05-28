@@ -3,7 +3,7 @@ import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Auth/Navbar";
 import backgroundImage from "../assets/CharacterDashboard.png";
-import "../styles/CharacterSheetStyles/CharacterDashboard.css";
+import "../styles/Characters/CharacterSheetStyles/CharacterDashboard.css";
 
 const CharacterDashboard = () => {
   const { user } = useContext(UserContext);

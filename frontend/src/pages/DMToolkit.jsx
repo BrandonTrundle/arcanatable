@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../styles/DMToolkit.css";
+import "../styles/DMToolkit/DMToolkit.css";
 import WizardsTower from "../assets/WizardsTower.png";
 
 import MonsterManager from "../components/DMToolkit/Monster/MonsterManager";

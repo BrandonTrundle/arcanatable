@@ -1,5 +1,5 @@
 import React from "react";
-import "../../styles/CharacterSheetStyles/CharacterSheet.css";
+import "../../styles/Characters/CharacterSheetStyles/CharacterSheet.css";
 import CharacterInfo from "./CharacterInfo";
 import AbilityScores from "./AbilityScores";
 import BonusSection from "./BonusSection";

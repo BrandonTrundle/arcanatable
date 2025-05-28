@@ -1,12 +1,12 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import '../styles/HomePage.css';
-import Navbar from '../components/Auth/Navbar';
-import heroArt from '../assets/HomePageBackground.png';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import "../styles/Auth/HomePage.css";
+import Navbar from "../components/Auth/Navbar";
+import heroArt from "../assets/HomePageBackground.png";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  
+
   return (
     <div className="homepage-container">
       <Navbar />
@@ -25,7 +25,7 @@ const HomePage = () => {
           <p className="hero-description">
             Your tabletop adventures await. Discover, create, and play.
           </p>
-          <button className="cta-button" onClick={() => navigate('/signup')}>
+          <button className="cta-button" onClick={() => navigate("/signup")}>
             Create Free Account
           </button>
         </div>
@@ -37,17 +37,23 @@ const HomePage = () => {
           <div className="feature-item">
             <div className="feature-icon">🎲</div>
             <h3 className="feature-title">Virtual Dice</h3>
-            <p className="feature-description">Roll with style and precision.</p>
+            <p className="feature-description">
+              Roll with style and precision.
+            </p>
           </div>
           <div className="feature-item">
             <div className="feature-icon">🗺️</div>
             <h3 className="feature-title">Custom Maps</h3>
-            <p className="feature-description">Explore immersive, editable battlemaps.</p>
+            <p className="feature-description">
+              Explore immersive, editable battlemaps.
+            </p>
           </div>
           <div className="feature-item">
             <div className="feature-icon">📚</div>
             <h3 className="feature-title">Narrative Tools</h3>
-            <p className="feature-description">Build worlds and stories with ease.</p>
+            <p className="feature-description">
+              Build worlds and stories with ease.
+            </p>
           </div>
         </div>
       </section>
@@ -57,8 +63,8 @@ const HomePage = () => {
         <div className="about-container">
           <h2 className="about-title">What is ArcanaTable?</h2>
           <p className="about-description">
-            ArcanaTable is a next-generation virtual tabletop for TTRPG players and GMs.
-            Designed for creativity, immersion, and seamless game flow.
+            ArcanaTable is a next-generation virtual tabletop for TTRPG players
+            and GMs. Designed for creativity, immersion, and seamless game flow.
           </p>
         </div>
       </section>
@@ -74,8 +80,10 @@ const HomePage = () => {
       {/* Call to Action */}
       <section className="cta-section">
         <h2 className="cta-title">Ready to Get Started?</h2>
-        <p className="cta-description">Join thousands of adventurers on ArcanaTable.</p>
-        <button className="cta-button" onClick={() => navigate('/signup')}>
+        <p className="cta-description">
+          Join thousands of adventurers on ArcanaTable.
+        </p>
+        <button className="cta-button" onClick={() => navigate("/signup")}>
           Sign up now for free
         </button>
       </section>
@@ -84,8 +92,12 @@ const HomePage = () => {
       <footer className="footer-section">
         <p className="footer-text">© 2025 ArcanaTable. All rights reserved.</p>
         <div className="footer-links">
-          <a href="#" className="footer-link">Privacy Policy</a>
-          <a href="#" className="footer-link">Terms of Use</a>
+          <a href="#" className="footer-link">
+            Privacy Policy
+          </a>
+          <a href="#" className="footer-link">
+            Terms of Use
+          </a>
         </div>
       </footer>
     </div>

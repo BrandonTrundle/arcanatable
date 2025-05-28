@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import "../../../styles/AoEControlPanel.css";
+import "../../../styles/Panels/AoEControlPanel.css";
 
 const SHAPES = ["cone", "circle", "square", "rectangle"];
 

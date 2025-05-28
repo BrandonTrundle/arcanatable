@@ -1,6 +1,6 @@
 import React from "react";
 import CharacterImageUpload from "./CharacterImageUpload";
-import "../../styles/CharacterSheetStyles/AppearanceAndAllies.css";
+import "../../styles/Characters/CharacterSheetStyles/AppearanceAndAllies.css";
 
 const AppearanceAndAllies = ({ formData, handleChange, setFormData }) => {
   // helper to resolve absolute vs. relative URLs

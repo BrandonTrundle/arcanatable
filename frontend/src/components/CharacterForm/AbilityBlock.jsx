@@ -1,5 +1,5 @@
 import React from "react";
-import "../../styles/CharacterSheetStyles/AbilityBlock.css";
+import "../../styles/Characters/CharacterSheetStyles/AbilityBlock.css";
 
 const AbilityBlock = ({
   label,

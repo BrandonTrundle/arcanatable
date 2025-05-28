@@ -1,6 +1,6 @@
 import React from "react";
 import PageTwoHeader from "./PageTwoHeader";
-import "../../styles/CharacterSheetStyles/CharacterSheet.css";
+import "../../styles/Characters/CharacterSheetStyles/CharacterSheet.css";
 import AppearanceAndAllies from "./AppearanceAndAllies";
 import BackstoryAndExtras from "./BackstoryAndExtras";
 

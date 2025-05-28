@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import "../../../styles/LayerControlPanel.css";
+import "../../../styles/DMToolkit/LayerControlPanel.css";
 import TokenList from "../TokenList";
 
 const LayerControlPanel = ({ activeLayer, onLayerChange }) => {

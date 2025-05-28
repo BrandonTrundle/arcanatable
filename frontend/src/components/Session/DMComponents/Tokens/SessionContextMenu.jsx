@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../../../../styles/MapEditor.css";
+import "../../../../styles/DMToolkit/MapEditor.css";
 
 const SessionContextMenu = ({ contextMenu, onAction, onClose }) => {
   const [selectedSize, setSelectedSize] = useState("");

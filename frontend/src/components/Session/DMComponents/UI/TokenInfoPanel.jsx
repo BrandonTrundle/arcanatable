@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import Draggable from "react-draggable";
-import "../../../../styles/TokenInfoPanel.css"; // optional, style manually if not ready
+import "../../../../styles/DMToolkit/TokenInfoPanel.css"; // optional, style manually if not ready
 
 const TokenInfoPanel = ({ token, onClose }) => {
   const [collapsed, setCollapsed] = useState(false);

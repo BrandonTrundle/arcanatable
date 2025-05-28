@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../../../styles/MonsterForm.css";
+import "../../../styles/DMToolkit/MonsterForm.css";
 import axios from "axios";
 
 import MonsterBasicInfo from "../Forms/MonsterBasicInfo";

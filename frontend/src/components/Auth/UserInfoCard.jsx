@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import "../../styles/UserInfoCard.css"; // Adjust if this is now under /styles/
+import "../../styles/Auth/UserInfoCard.css"; // Adjust if this is now under /styles/
 import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../../assets/defaultav.png";
 import { UserContext } from "../../context/UserContext";

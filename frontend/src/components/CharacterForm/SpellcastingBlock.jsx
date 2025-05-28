@@ -1,5 +1,5 @@
 import React from "react";
-import "../../styles/CharacterSheetStyles/Spellcasting.css";
+import "../../styles/Characters/CharacterSheetStyles/Spellcasting.css";
 
 const SpellcastingBlock = ({ formData, handleChange }) => {
   return (

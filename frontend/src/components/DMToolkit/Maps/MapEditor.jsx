@@ -10,9 +10,9 @@ import { updateMapTokens } from "../../../services/mapService";
 import { useUserContext } from "../../../context/UserContext";
 import useImage from "use-image";
 import { createPortal } from "react-dom";
-import "../../../styles/MapEditor.css";
+import "../../../styles/DMToolkit/MapEditor.css";
 import HPDOMOverlay from "./TokenLayerRefactor/visuals/HPDOMOverlay";
-import "../../../styles/HPDOMOverlay.css";
+import "../../../styles/SessionStyles/HPDOMOverlay.css";
 
 const MapEditor = ({ map, onClose, onMapUpdate }) => {
   const [image] = useImage(

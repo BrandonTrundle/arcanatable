@@ -1,5 +1,5 @@
 import React from "react";
-import "../../styles/CharacterSheetStyles/BackstoryAndExtras.css";
+import "../../styles/Characters/CharacterSheetStyles/BackstoryAndExtras.css";
 
 const BackstoryAndExtras = ({ formData, handleChange }) => {
   const treasureString = (formData.treasure || []).join("\n");

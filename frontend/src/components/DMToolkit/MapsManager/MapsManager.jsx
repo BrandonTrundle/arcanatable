@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import "../../../styles/MapsManager.css";
+import "../../../styles/DMToolkit/MapsManager.css";
 import {
   uploadMapImage,
   saveMap,

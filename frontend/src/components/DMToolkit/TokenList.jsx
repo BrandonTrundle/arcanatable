@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "../../styles/TokenList.css";
+import "../../styles/DMToolkit/TokenList.css";
 import { buildImageUrl } from "../../utils/imageUtils";
 
 const TokenList = ({ user }) => {
