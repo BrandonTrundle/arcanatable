@@ -52,14 +52,14 @@ const ZoomableStage = forwardRef(
         tabIndex={0}
         draggable={activeInteractionMode !== "aoe"}
         ref={ref}
-        width={width}
-        height={height}
+        width={Math.max(window.innerWidth, width + 1000)}
+        height={Math.max(window.innerHeight, height + 1000)}
         onWheel={handleWheel}
         onDrop={onDrop}
         onDragOver={onDragOver}
         onMouseMove={onMouseMove}
-        onMouseDown={onMouseDown} // ✅ use passed-in prop
-        onClick={onClick} // ✅ allow click fallback if needed
+        onMouseDown={onMouseDown}
+        onClick={onClick}
       >
         {children}
       </Stage>

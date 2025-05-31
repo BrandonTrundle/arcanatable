@@ -4,8 +4,21 @@
 .dm-session-container {
   display: flex;
   height: 100vh;
-  overflow: hidden;
   position: relative;
+  overflow: visible !important; /* <-- force it */
+  background-color: black;
+}
+
+.dm-map-wrapper {
+  flex-grow: 1;
+  position: relative;
+  overflow: visible !important; /* <-- also force it */
+  z-index: 0;
+}
+
+.map-rendered-view {
+  position: relative;
+  overflow: visible;
 }
 
 .dm-sidebar {
@@ -69,7 +82,7 @@
 
 .dm-map-area {
   flex: 1;
-  background: #f0f0f0;
+  background: black;
   padding: 1rem;
   display: flex;
   flex-direction: column;

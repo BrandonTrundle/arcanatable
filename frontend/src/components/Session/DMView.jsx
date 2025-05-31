@@ -128,23 +128,25 @@ const DMView = ({ campaign, socket, sessionMap }) => {
         />
       </aside>
 
-      <DMMapDisplay
-        activeMap={activeMap}
-        user={user}
-        socket={socket}
-        activeLayer="dm"
-        selectedTokenId={selectedTokenId}
-        setSelectedTokenId={setSelectedTokenId}
-        activeInteractionMode={activeInteractionMode}
-        setActiveInteractionMode={setActiveInteractionMode}
-        setFocusedToken={setFocusedToken}
-        setExternalTokens={setTokens}
-        isCombatMode={isCombatMode}
-        useRolledHP={useRolledHP}
-        showTokenInfo={showTokenInfo}
-        combatState={combatState}
-        campaignId={campaign._id}
-      />
+      <div className="dm-map-wrapper">
+        <DMMapDisplay
+          activeMap={activeMap}
+          user={user}
+          socket={socket}
+          activeLayer="dm"
+          selectedTokenId={selectedTokenId}
+          setSelectedTokenId={setSelectedTokenId}
+          activeInteractionMode={activeInteractionMode}
+          setActiveInteractionMode={setActiveInteractionMode}
+          setFocusedToken={setFocusedToken}
+          setExternalTokens={setTokens}
+          isCombatMode={isCombatMode}
+          useRolledHP={useRolledHP}
+          showTokenInfo={showTokenInfo}
+          combatState={combatState}
+          campaignId={campaign._id}
+        />
+      </div>
 
       <DMPanelManager
         activeTool={activeTool}
