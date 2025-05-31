@@ -25,7 +25,10 @@ const HomePage = () => {
           <p className="hero-description">
             Your tabletop adventures await. Discover, create, and play.
           </p>
-          <button className="cta-button" onClick={() => navigate("/signup")}>
+          <button
+            className="btn btn-primary"
+            onClick={() => navigate("/signup")}
+          >
             Create Free Account
           </button>
         </div>
@@ -83,7 +86,10 @@ const HomePage = () => {
         <p className="cta-description">
           Join thousands of adventurers on ArcanaTable.
         </p>
-        <button className="cta-button" onClick={() => navigate("/signup")}>
+        <button
+          className="btn btn-secondary"
+          onClick={() => navigate("/signup")}
+        >
           Sign up now for free
         </button>
       </section>

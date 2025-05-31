@@ -4,6 +4,7 @@ import "../../styles/Auth/Navbar.css";
 import logo from "../../assets/ArcanaTableLogo.png";
 import { UserContext } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
+import "../../styles/buttons.css";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -21,10 +22,8 @@ const Navbar = () => {
       );
 
       const { token } = res.data;
-
       localStorage.setItem("token", token);
 
-      // ✅ Fetch full user profile after login
       const userDetails = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/users/me`,
         {
@@ -34,7 +33,6 @@ const Navbar = () => {
 
       setUser({ ...userDetails.data, token });
 
-      // ✅ Route based on onboardingComplete
       if (userDetails.data.onboardingComplete) {
         navigate("/dashboard");
       } else {
@@ -59,34 +57,39 @@ const Navbar = () => {
       <div className="navbar-links">
         {user ? (
           <button
-            className="navbar-button"
+            className="btn btn-primary"
             onClick={() => navigate("/dashboard")}
           >
             Dashboard
           </button>
         ) : (
-          <a href="#">Play Now</a>
+          <a href="#" className="btn btn-outline">
+            Play Now
+          </a>
         )}
         <button
-          className="navbar-button"
+          className="btn btn-primary"
           onClick={() => navigate("/marketplace")}
         >
           Marketplace
         </button>
-        <button className="navbar-button" onClick={() => navigate("/tools")}>
+        <button className="btn btn-primary" onClick={() => navigate("/tools")}>
           Tools
         </button>
         <button
-          className="navbar-button"
+          className="btn btn-primary"
           onClick={() => navigate("/community")}
         >
           Community
         </button>
-        <button className="navbar-button" onClick={() => navigate("/updates")}>
+        <button
+          className="btn btn-primary"
+          onClick={() => navigate("/updates")}
+        >
           Updates
         </button>
         {user?.roles?.some((role) => ["admin", "owner"].includes(role)) && (
-          <button className="navbar-button" onClick={() => navigate("/admin")}>
+          <button className="btn btn-danger" onClick={() => navigate("/admin")}>
             Admin Panel
           </button>
         )}
@@ -96,7 +99,7 @@ const Navbar = () => {
         {!user ? (
           <>
             <button
-              className="sign-in-btn"
+              className="btn btn-secondary"
               onClick={() => setMenuOpen(!menuOpen)}
             >
               Sign In ▾
@@ -127,14 +130,20 @@ const Navbar = () => {
                     />
                   </div>
 
-                  <button type="submit">Sign in</button>
+                  <button type="submit" className="btn btn-primary">
+                    Sign in
+                  </button>
                 </form>
 
                 <div className="signin-links">
-                  <button type="button" onClick={() => navigate("/signup")}>
+                  <button
+                    type="button"
+                    className="btn btn-outline"
+                    onClick={() => navigate("/signup")}
+                  >
                     New to ArcanaTable? Sign up
                   </button>
-                  <button type="button" disabled>
+                  <button type="button" className="btn btn-outline" disabled>
                     Forgot password?
                   </button>
                 </div>
@@ -144,7 +153,7 @@ const Navbar = () => {
         ) : (
           <div className="user-info">
             <span>🧙 Logged In</span>
-            <button onClick={logout} className="sign-out">
+            <button onClick={logout} className="btn btn-secondary">
               Sign Out
             </button>
           </div>

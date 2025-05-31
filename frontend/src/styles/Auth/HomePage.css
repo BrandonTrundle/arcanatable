@@ -1,9 +1,9 @@
 /* src/css/HomePage.css */
-@import './variables.css'; /* Import the variables for colors */
+@import "@/styles/variables.css";
 
 /* General page container */
 .homepage-container {
-  font-family: 'Tagesschrift', system-ui, sans-serif;
+  font-family: "Tagesschrift", system-ui, sans-serif;
   color: var(--dark-brown); /* Apply the dark brown color */
   background-color: var(--parchment); /* Set background color to parchment */
   margin: 0;
@@ -57,22 +57,6 @@
 
 .hero-description {
   font-size: 1.5rem;
-}
-
-.cta-button {
-  padding: 10px 20px;
-  background-color: var(--gold);
-  border: none;
-  color: var(--parchment);
-  font-size: 1.2rem;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s;
-}
-
-.cta-button:hover {
-  background-color: var(--emerald-green); /* Hover effect */
-  color: var(--parchment); /* Light color for contrast */
 }
 
 /* Features Section */
@@ -180,21 +164,6 @@
   font-size: 1.2rem;
   margin-bottom: 20px;
   color: var(--parchment);
-}
-
-.cta-button {
-  padding: 10px 20px;
-  background-color: var(--parchment);
-  border: none;
-  color: var(--gold);
-  font-size: 1.2rem;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s;
-}
-
-.cta-button:hover {
-  background-color: var(--amber); /* Hover effect */
 }
 
 /* Footer Section */

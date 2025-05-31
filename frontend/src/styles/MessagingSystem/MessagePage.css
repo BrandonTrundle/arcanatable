@@ -1,4 +1,4 @@
-@import './variables.css';
+@import "@/styles/variables.css";
 
 .message-page {
   height: 100vh;
@@ -191,7 +191,7 @@
   color: var(--leaf-green);
 }
 
-.message-body{
+.message-body {
   border: 1px solid var(--steel-blue);
   border-radius: 10px;
   padding: 5px;

@@ -1,0 +1,45 @@
+@import "./variables.css";
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  font-family: inherit;
+}
+
+/* Primary Button */
+.btn-primary {
+  background: var(--button-bg, var(--dark-brown));
+  color: var(--button-text, var(--parchment));
+}
+
+/* Secondary Button */
+.btn-secondary {
+  background: var(--gold);
+  color: white;
+}
+
+/* Danger Button */
+.btn-danger {
+  background: var(--burnt-orange);
+  color: white;
+}
+
+/* Outline Button */
+.btn-outline {
+  background: transparent;
+  color: var(--dark-brown);
+}
+
+/* Hover States */
+.btn:hover {
+  opacity: 0.9;
+}
+
+.btn-outline:hover {
+  background: var(--dark-brown);
+  color: var(--parchment);
+}

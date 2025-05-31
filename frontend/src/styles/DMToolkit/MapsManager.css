@@ -1,5 +1,5 @@
 /* src/styles/MapsManager.css */
-@import "./variables.css";
+@import "@/styles/variables.css";
 
 .maps-manager {
   padding: 2rem;

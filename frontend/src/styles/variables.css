@@ -1,22 +1,20 @@
 /* src/css/variables.css */
 :root {
-    --dark-brown: #4E3629;
-    --beige-tan: #D9CBB5;
-    --gold:rgb(238, 181, 25);
-    --emerald-green: #2E8B57;
-    --steel-blue: #4682B4;
-    --amber: #FFBF00;
-    --parchment: #F5F5DC;
-    --burnt-orange:rgb(212, 131, 24);
-    --userWelcomeTile:rgb(199, 148, 54);
-    --userWelcomeTileHover: #F5F5DC;
-    --parchment4:rgb(146, 127, 64);
-      /* Updated references */
-    --sidebar-bg: var(--parchment);
-    --viewer-bg: var(--stone);
-    --accent: var(--leaf-green);
-    --button-bg: var(--leather);
-    --button-text: var(--parchment);
-    --unread-highlight: #fff7cc;
-  }
-  
+  --dark-brown: #4e3629;
+  --beige-tan: #d9cbb5;
+  --gold: rgb(238, 181, 25);
+  --emerald-green: #2e8b57;
+  --steel-blue: #4682b4;
+  --amber: #ffbf00;
+  --parchment: #f5f5dc;
+  --burnt-orange: rgb(212, 131, 24);
+  --userWelcomeTile: rgb(199, 148, 54);
+  --userWelcomeTileHover: #f5f5dc;
+  --parchment4: rgb(146, 127, 64);
+  --sidebar-bg: var(--parchment);
+  --viewer-bg: var(--stone);
+  --accent: var(--leaf-green);
+  --button-bg: var(--leather);
+  --button-text: var(--parchment);
+  --unread-highlight: #fff7cc;
+}
