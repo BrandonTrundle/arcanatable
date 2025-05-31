@@ -45,13 +45,13 @@ const MapStageScene = ({
   setMeasureTarget,
   gridVisible,
 }) => {
-  console.log("📏 Map size check", {
-    mapWidth: map?.content?.width,
-    mapHeight: map?.content?.height,
-    gridWidth,
-    gridHeight,
-    cellSize,
-  });
+  //console.log("📏 Map size check", {
+  //  mapWidth: map?.content?.width,
+  //  mapHeight: map?.content?.height,
+  //  gridWidth,
+  //  gridHeight,
+  //  cellSize,
+  //});
   return (
     <ZoomableStage
       ref={stageRef}

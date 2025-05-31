@@ -13,7 +13,7 @@ const MapBackground = ({
   onMapClick,
   gridVisible, // ✅ Controls opacity
 }) => {
-  console.log("🔍 Grid is visible?", gridVisible);
+  //console.log("🔍 Grid is visible?", gridVisible);
   const [image] = useImage(
     imageUrl?.startsWith("/uploads")
       ? `${import.meta.env.VITE_API_URL}${imageUrl}`

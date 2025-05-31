@@ -29,16 +29,38 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
   const [volume, setVolume] = useState(0.5);
   const [currentTrack, setCurrentTrack] = useState(null);
   const audioRef = useRef(null);
+  const [pendingTrack, setPendingTrack] = useState(null);
+  const [hasConsentedToMusic, setHasConsentedToMusic] = useState(false);
+  const consentRef = useRef(false);
 
   useEffect(() => {
     if (sessionMap) setActiveMap(sessionMap);
   }, [sessionMap]);
 
   useEffect(() => {
+    consentRef.current = hasConsentedToMusic;
+  }, [hasConsentedToMusic]);
+
+  useEffect(() => {
     if (campaign?._id && socket) {
       socket.emit("joinRoom", campaign._id);
     }
   }, [campaign?._id, socket]);
+
+  useEffect(() => {
+    if (user && socket && campaign?._id) {
+      console.log("📡 Registering user...");
+      socket.emit("registerUser", {
+        userId: user._id,
+        campaignId: campaign._id,
+      });
+
+      // 🔁 Ask the DM what’s currently playing
+      socket.emit("requestCurrentTrack", {
+        campaignId: campaign._id,
+      });
+    }
+  }, [user, socket, campaign?._id]);
 
   useEffect(() => {
     if (user && socket) {
@@ -105,28 +127,15 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
   useEffect(() => {
     if (!socket) return;
 
-    const handleIncomingTrack = ({ campaignId, track }) => {
-      if (campaignId === campaign._id) {
-        if (audioRef.current) {
-          audioRef.current.pause();
-        }
+    const handleIncomingTrack = ({ campaignId, track, startedAt }) => {
+      console.log("🎵 Incoming track:", { campaignId, track, startedAt });
 
-        const audio = new Audio(track.url);
-        audio.volume = volume;
+      if (campaignId !== campaign._id) return;
 
-        audio
-          .play()
-          .then(() => {
-            audioRef.current = audio;
-            setCurrentTrack(track);
-          })
-          .catch((err) => {
-            console.warn(
-              "🔇 Audio playback failed (probably due to autoplay block):",
-              err
-            );
-            // You could show a UI notification to the player here if needed.
-          });
+      if (consentRef.current) {
+        playTrack(track, startedAt); // ✅ auto-play
+      } else if (!pendingTrack) {
+        setPendingTrack({ track, startedAt }); // ❓ prompt
       }
     };
 
@@ -139,6 +148,77 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
       }
     };
   }, [socket, campaign._id]);
+
+  const playPendingTrack = () => {
+    if (!pendingTrack) return;
+
+    const { track, startedAt } = pendingTrack;
+    setHasConsentedToMusic(true); // ✅ mark consent
+
+    playTrack(track, startedAt);
+    setPendingTrack(null);
+  };
+
+  const playTrack = (track, startedAt) => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+
+    const audio = new Audio(track.url);
+    audio.muted = true;
+
+    const now = Date.now();
+    const elapsed = startedAt ? (now - startedAt) / 1000 : 0;
+
+    audio.addEventListener("loadedmetadata", () => {
+      const duration = audio.duration;
+      const seekTime = Math.min(elapsed, duration - 0.5);
+      console.log("⏱️ Adjusted seekTime:", seekTime, "of", duration);
+      audio.currentTime = seekTime;
+    });
+
+    audioRef.current = audio;
+
+    audio
+      .play()
+      .then(() => {
+        if (audio.paused) {
+          console.warn("🔇 Playback was blocked despite .play() resolving.");
+          return;
+        }
+
+        console.log("✅ Playback confirmed (muted), fading in...");
+        audio.muted = false;
+        setCurrentTrack(track);
+
+        let step = 0.05;
+        const fadeIn = setInterval(() => {
+          if (!audioRef.current) {
+            clearInterval(fadeIn);
+            return;
+          }
+
+          const vol = Math.min(audio.volume + step, volume);
+          audio.volume = vol;
+
+          if (vol >= volume || volume === 0) {
+            clearInterval(fadeIn);
+            console.log("🔊 Volume fade-in complete:", vol);
+
+            console.log("🎧 Audio final state:", {
+              currentTime: audio.currentTime,
+              volume: audio.volume,
+              paused: audio.paused,
+              ended: audio.ended,
+              duration: audio.duration,
+            });
+          }
+        }, 100);
+      })
+      .catch((err) => {
+        console.warn("🔇 Playback failed:", err);
+      });
+  };
 
   useEffect(() => {
     if (audioRef.current) {
@@ -309,6 +389,53 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
         volume={volume}
         setVolume={setVolume}
       />
+      {pendingTrack && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            background: "#222",
+            color: "white",
+            padding: "12px 20px",
+            borderRadius: "8px",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.6)",
+            zIndex: 2000,
+          }}
+        >
+          🎵 Music is playing! Would you like to listen?
+          <button
+            onClick={() => playPendingTrack()}
+            style={{
+              marginLeft: "12px",
+              background: "#4caf50",
+              border: "none",
+              color: "white",
+              padding: "6px 12px",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            ✅ Yes
+          </button>
+          <button
+            onClick={() => setPendingTrack(null)}
+            style={{
+              marginLeft: "8px",
+              background: "#aaa",
+              border: "none",
+              color: "black",
+              padding: "6px 12px",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            ❌ No
+          </button>
+        </div>
+      )}
+
       <button
         onClick={() => setShowTokenInfo((prev) => !prev)}
         style={{

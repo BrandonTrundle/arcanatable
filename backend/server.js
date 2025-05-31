@@ -273,6 +273,16 @@ io.on("connection", (socket) => {
       socket.to(campaignId).emit("music:stop", { campaignId });
     }
   });
+
+  socket.on("requestCurrentTrack", ({ campaignId }) => {
+    console.log(
+      "📨 requestCurrentTrack received from socket:",
+      socket.id,
+      "for campaign:",
+      campaignId
+    );
+    io.to(campaignId).emit("requestCurrentTrack", { campaignId });
+  });
 });
 
 // Middleware

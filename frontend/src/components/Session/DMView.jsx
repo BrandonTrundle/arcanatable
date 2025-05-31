@@ -29,6 +29,7 @@ const DMView = ({ campaign, socket, sessionMap }) => {
   const [repeat, setRepeat] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const [playlist, setPlaylist] = useState([]);
+  const [trackStartedAt, setTrackStartedAt] = useState(null);
 
   const {
     sidebarOpen,
@@ -87,23 +88,24 @@ const DMView = ({ campaign, socket, sessionMap }) => {
       } else {
         setCurrentTrack(null);
         setCurrentTrackIndex(null);
-
-        // 🔁 Optional: notify players that music stopped
         if (socket && campaign?._id) {
           socket.emit("music:stop", { campaignId: campaign._id });
         }
       }
     });
 
+    const startedAt = Date.now(); // Local variable
     setAudioInstance(audio);
     setCurrentTrack(track);
     setCurrentTrackIndex(index);
+    setTrackStartedAt(startedAt); // This will still update React state
 
-    // 📢 Emit track to all players in this campaign
+    // ✅ Immediately emit with local `startedAt` (no async delay!)
     if (socket && campaign?._id) {
       socket.emit("music:play", {
         campaignId: campaign._id,
         track,
+        startedAt,
       });
     }
   };
@@ -122,6 +124,35 @@ const DMView = ({ campaign, socket, sessionMap }) => {
       }
     }
   };
+
+  useEffect(() => {
+    if (!socket || !campaign?._id) return;
+
+    const handleRequestCurrentTrack = ({ campaignId }) => {
+      console.log("📥 Received track request for campaign:", campaignId);
+
+      if (campaignId === campaign._id && currentTrack && trackStartedAt) {
+        console.log("📤 Sending current track to player:", {
+          track: currentTrack,
+          startedAt: trackStartedAt,
+        });
+
+        socket.emit("music:play", {
+          campaignId,
+          track: currentTrack,
+          startedAt: trackStartedAt,
+        });
+      } else {
+        console.warn("⚠️ No track to send or campaign mismatch");
+      }
+    };
+
+    socket.on("requestCurrentTrack", handleRequestCurrentTrack);
+
+    return () => {
+      socket.off("requestCurrentTrack", handleRequestCurrentTrack);
+    };
+  }, [socket, campaign?._id, currentTrack, trackStartedAt]);
 
   useEffect(() => {
     if (audioInstance) {
