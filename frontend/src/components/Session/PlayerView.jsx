@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import "../../styles/SessionStyles/DMStyles/DMView.css";
 import { UserContext } from "../../context/UserContext";
 
@@ -28,7 +28,7 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
   const [gridVisible, setGridVisible] = useState(true);
   const [volume, setVolume] = useState(0.5);
   const [currentTrack, setCurrentTrack] = useState(null);
-  const [audioInstance, setAudioInstance] = useState(null);
+  const audioRef = useRef(null);
 
   useEffect(() => {
     if (sessionMap) setActiveMap(sessionMap);
@@ -107,16 +107,26 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
 
     const handleIncomingTrack = ({ campaignId, track }) => {
       if (campaignId === campaign._id) {
-        if (audioInstance) {
-          audioInstance.pause();
+        if (audioRef.current) {
+          audioRef.current.pause();
         }
 
         const audio = new Audio(track.url);
         audio.volume = volume;
-        audio.play();
 
-        setAudioInstance(audio);
-        setCurrentTrack(track);
+        audio
+          .play()
+          .then(() => {
+            audioRef.current = audio;
+            setCurrentTrack(track);
+          })
+          .catch((err) => {
+            console.warn(
+              "🔇 Audio playback failed (probably due to autoplay block):",
+              err
+            );
+            // You could show a UI notification to the player here if needed.
+          });
       }
     };
 
@@ -124,25 +134,25 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
 
     return () => {
       socket.off("music:play", handleIncomingTrack);
-      if (audioInstance) {
-        audioInstance.pause();
+      if (audioRef.current) {
+        audioRef.current.pause();
       }
     };
-  }, [socket, campaign._id, audioInstance, volume]);
+  }, [socket, campaign._id]);
 
   useEffect(() => {
-    if (audioInstance) {
-      audioInstance.volume = volume;
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
     }
-  }, [volume, audioInstance]);
+  }, [volume]);
 
   useEffect(() => {
     const handleStop = ({ campaignId }) => {
       if (campaignId === campaign._id) {
-        if (audioInstance) {
-          audioInstance.pause();
-          audioInstance.currentTime = 0;
-          setAudioInstance(null);
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.currentTime = 0;
+          audioRef.current = null;
         }
         setCurrentTrack(null);
       }
@@ -150,7 +160,7 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
 
     socket.on("music:stop", handleStop);
     return () => socket.off("music:stop", handleStop);
-  }, [socket, campaign._id, audioInstance]);
+  }, [socket, campaign._id]);
 
   const handleFormChange = (e) => {
     const { name, type, value, checked } = e.target;

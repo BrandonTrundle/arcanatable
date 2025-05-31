@@ -113,4 +113,4 @@ const PlayerMusicPanel = ({ currentTrack, volume, setVolume }) => {
   );
 };
 
-export default PlayerMusicPanel;
+export default React.memo(PlayerMusicPanel);
