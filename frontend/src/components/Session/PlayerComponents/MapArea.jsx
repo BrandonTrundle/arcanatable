@@ -69,7 +69,17 @@ const MapArea = ({
   const { onDrop, onDragOver } = useDropHandler(handleDrop);
 
   return (
-    <main className="dm-map-area" onDrop={onDrop} onDragOver={onDragOver}>
+    <main
+      className="dm-map-area"
+      onDrop={onDrop}
+      onDragOver={onDragOver}
+      style={{
+        width: "100%",
+        height: "100%",
+        overflow: "hidden",
+        position: "relative",
+      }}
+    >
       {activeMap && activeMap.content ? (
         <RefactoredMap
           map={activeMap}

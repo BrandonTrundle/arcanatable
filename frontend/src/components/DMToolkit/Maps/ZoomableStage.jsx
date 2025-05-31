@@ -52,8 +52,8 @@ const ZoomableStage = forwardRef(
         tabIndex={0}
         draggable={activeInteractionMode !== "aoe"}
         ref={ref}
-        width={Math.max(window.innerWidth, width + 1000)}
-        height={Math.max(window.innerHeight, height + 1000)}
+        width={width}
+        height={height}
         onWheel={handleWheel}
         onDrop={onDrop}
         onDragOver={onDragOver}

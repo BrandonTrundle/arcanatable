@@ -60,6 +60,7 @@ const RefactoredMap = ({
 }) => {
   const [showMeasurementPanel, setShowMeasurementPanel] = useState(true);
   const prevInteractionMode = useRef(null);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const { stageRef, cellSize, gridWidth, gridHeight } = useStageContext(
     map || {}
   );
@@ -159,6 +160,21 @@ const RefactoredMap = ({
   }, [socket, map?._id]);
 
   useEffect(() => {
+    const updateSize = () => {
+      if (containerRef.current) {
+        setDimensions({
+          width: containerRef.current.clientWidth,
+          height: containerRef.current.clientHeight,
+        });
+      }
+    };
+
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+
+  useEffect(() => {
     if (
       activeInteractionMode === "measure" &&
       prevInteractionMode.current !== "measure"
@@ -254,6 +270,12 @@ const RefactoredMap = ({
       ref={containerRef}
       onDrop={onDrop}
       onDragOver={onDragOver}
+      style={{
+        width: "100%",
+        height: "100%",
+        overflow: "hidden",
+        position: "relative",
+      }}
     >
       {activeInteractionMode === "aoe" && selectedTokenId && (
         <AoEControlPanel
@@ -327,6 +349,8 @@ const RefactoredMap = ({
         remoteMeasurements={remoteMeasurements}
         setMeasureTarget={setMeasureTarget}
         gridVisible={gridVisible}
+        width={dimensions.width}
+        height={dimensions.height}
       />
 
       <HPDOMOverlay

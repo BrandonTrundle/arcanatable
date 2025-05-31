@@ -44,6 +44,8 @@ const MapStageScene = ({
   remoteMeasurements,
   setMeasureTarget,
   gridVisible,
+  width, // ✅ ADD THIS
+  height, // ✅ ADD THIS
 }) => {
   //console.log("📏 Map size check", {
   //  mapWidth: map?.content?.width,
@@ -55,8 +57,8 @@ const MapStageScene = ({
   return (
     <ZoomableStage
       ref={stageRef}
-      width={gridWidth}
-      height={gridHeight}
+      width={width}
+      height={height}
       onMouseMove={(e) => {
         if (
           activeInteractionMode === "measure" &&
