@@ -44,6 +44,13 @@ const MapStageScene = ({
   remoteMeasurements,
   setMeasureTarget,
 }) => {
+  console.log("📏 Map size check", {
+    mapWidth: map?.content?.width,
+    mapHeight: map?.content?.height,
+    gridWidth,
+    gridHeight,
+    cellSize,
+  });
   return (
     <ZoomableStage
       ref={stageRef}
@@ -86,8 +93,8 @@ const MapStageScene = ({
         gridWidth={gridWidth}
         gridHeight={gridHeight}
         cellSize={cellSize}
-        mapWidth={map?.content?.width}
-        mapHeight={map?.content?.height}
+        mapWidth={Math.floor(gridWidth / cellSize)}
+        mapHeight={Math.floor(gridHeight / cellSize)}
         onMapClick={handleMapClick}
         onMouseDown={handleMouseDown}
       />
