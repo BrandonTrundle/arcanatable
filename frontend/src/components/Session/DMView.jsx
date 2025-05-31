@@ -268,25 +268,7 @@ const DMView = ({ campaign, socket, sessionMap }) => {
         />
       </div>
 
-      <MusicPanel
-        campaign={campaign}
-        socket={socket}
-        currentTrack={currentTrack}
-        setCurrentTrack={setCurrentTrack}
-        audioInstance={audioInstance}
-        setAudioInstance={setAudioInstance}
-        currentTrackIndex={currentTrackIndex}
-        setCurrentTrackIndex={setCurrentTrackIndex}
-        repeat={repeat}
-        setRepeat={setRepeat}
-        volume={volume}
-        setVolume={setVolume}
-        playlist={playlist}
-        setPlaylist={setPlaylist}
-        handlePlay={handlePlay}
-      />
-
-      {currentTrack && (
+      {currentTrack && activeTool !== "music" && (
         <FloatingMusicPlayer
           track={currentTrack}
           onNext={handleNext}
