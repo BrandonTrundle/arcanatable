@@ -11,7 +11,9 @@ const MapBackground = ({
   mapWidth,
   mapHeight,
   onMapClick,
+  gridVisible, // ✅ Controls opacity
 }) => {
+  console.log("🔍 Grid is visible?", gridVisible);
   const [image] = useImage(
     imageUrl?.startsWith("/uploads")
       ? `${import.meta.env.VITE_API_URL}${imageUrl}`
@@ -20,6 +22,7 @@ const MapBackground = ({
 
   return (
     <>
+      {/* Background Image + Click Detection Layer */}
       <Layer>
         {image && (
           <KonvaImage image={image} width={gridWidth} height={gridHeight} />
@@ -43,12 +46,13 @@ const MapBackground = ({
         />
       </Layer>
 
+      {/* Grid Layer */}
       <Layer>
         <GridOverlay
-          width={mapWidth}
-          height={mapHeight}
+          width={parseInt(mapWidth, 10)}
+          height={parseInt(mapHeight, 10)}
           cellSize={cellSize}
-          lineOpacity={0.5}
+          lineOpacity={gridVisible ? 0.5 : 0} // ✅ Controlled opacity
         />
       </Layer>
     </>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import RefactoredMap from "../DMComponents/Maps/RefactoredMap";
 import InteractionToolbar from "../DMComponents/UI/InteractionToolbar";
 import loadMapFallback from "../../../assets/LoadMapToProceed.png";
@@ -16,6 +16,7 @@ const MapArea = ({
   setSelectedTokenId,
   showTokenInfo,
   campaignId,
+  gridVisible,
 }) => {
   const {
     tokens,
@@ -89,6 +90,7 @@ const MapArea = ({
           addAOE={addAOE}
           removeAOE={removeAOE}
           updateAOE={updateAOE}
+          gridVisible={gridVisible}
         />
       ) : (
         <div className="map-placeholder">

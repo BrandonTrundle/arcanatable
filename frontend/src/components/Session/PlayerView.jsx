@@ -24,6 +24,7 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
   const [tokens, setTokens] = useState([]);
   const [showTokenInfo, setShowTokenInfo] = useState(false);
   const [showDiceRoller, setShowDiceRoller] = useState(false);
+  const [gridVisible, setGridVisible] = useState(true);
 
   useEffect(() => {
     if (sessionMap) setActiveMap(sessionMap);
@@ -229,6 +230,7 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
         setSelectedTokenId={setSelectedTokenId}
         showTokenInfo={showTokenInfo}
         campaignId={campaign._id}
+        gridVisible={gridVisible}
       />
 
       <ChatPanel
@@ -252,6 +254,22 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
         }}
       >
         {showTokenInfo ? "🧷 Hide Token Info" : "🧷 Show Token Info"}
+      </button>
+      <button
+        onClick={() => setGridVisible((prev) => !prev)}
+        style={{
+          position: "absolute",
+          bottom: "50px",
+          left: "10px",
+          padding: "6px 12px",
+          background: "#333",
+          color: "white",
+          borderRadius: "6px",
+          border: "none",
+          zIndex: 1000,
+        }}
+      >
+        {gridVisible ? "🧮 Hide Grid" : "🧮 Show Grid"}
       </button>
     </div>
   );

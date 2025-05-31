@@ -43,6 +43,7 @@ const MapStageScene = ({
   lockedMeasurements,
   remoteMeasurements,
   setMeasureTarget,
+  gridVisible,
 }) => {
   console.log("📏 Map size check", {
     mapWidth: map?.content?.width,
@@ -97,6 +98,7 @@ const MapStageScene = ({
         mapHeight={Math.floor(gridHeight / cellSize)}
         onMapClick={handleMapClick}
         onMouseDown={handleMouseDown}
+        gridVisible={gridVisible}
       />
       <AoELayer
         aoes={aoes}

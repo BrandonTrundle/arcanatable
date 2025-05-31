@@ -19,6 +19,7 @@ const DMMapDisplay = ({
   showTokenInfo,
   combatState,
   campaignId,
+  gridVisible,
 }) => {
   const { aoes, addAOE, updateAOE, removeAOE, setAoes } = useAOEManager(
     [],
@@ -71,6 +72,7 @@ const DMMapDisplay = ({
         useRolledHP={useRolledHP}
         showTokenInfo={showTokenInfo}
         combatState={combatState}
+        gridVisible={gridVisible}
       />
     );
   }

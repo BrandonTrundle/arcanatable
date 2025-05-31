@@ -56,6 +56,7 @@ const RefactoredMap = ({
   addAOE,
   removeAOE,
   updateAOE,
+  gridVisible,
 }) => {
   const [showMeasurementPanel, setShowMeasurementPanel] = useState(true);
   const prevInteractionMode = useRef(null);
@@ -325,6 +326,7 @@ const RefactoredMap = ({
         lockedMeasurements={lockedMeasurements}
         remoteMeasurements={remoteMeasurements}
         setMeasureTarget={setMeasureTarget}
+        gridVisible={gridVisible}
       />
 
       <HPDOMOverlay

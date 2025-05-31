@@ -20,6 +20,7 @@ const DMView = ({ campaign, socket, sessionMap }) => {
   const [showCombatTracker, setShowCombatTracker] = useState(false);
   const [showTokenInfo, setShowTokenInfo] = useState(false);
   const [showDiceRoller, setShowDiceRoller] = useState(false);
+  const [gridVisible, setGridVisible] = useState(true);
 
   const {
     sidebarOpen,
@@ -145,6 +146,7 @@ const DMView = ({ campaign, socket, sessionMap }) => {
           showTokenInfo={showTokenInfo}
           combatState={combatState}
           campaignId={campaign._id}
+          gridVisible={gridVisible}
         />
       </div>
 
@@ -232,6 +234,22 @@ const DMView = ({ campaign, socket, sessionMap }) => {
         }}
       >
         {showTokenInfo ? "🧷 Hide Token Info" : "🧷 Show Token Info"}
+      </button>
+      <button
+        onClick={() => setGridVisible((prev) => !prev)}
+        style={{
+          position: "absolute",
+          bottom: "50px",
+          left: "10px",
+          padding: "6px 12px",
+          background: "#333",
+          color: "white",
+          borderRadius: "6px",
+          border: "none",
+          zIndex: 1000,
+        }}
+      >
+        {gridVisible ? "🧮 Hide Grid" : "🧮 Show Grid"}
       </button>
     </div>
   );
