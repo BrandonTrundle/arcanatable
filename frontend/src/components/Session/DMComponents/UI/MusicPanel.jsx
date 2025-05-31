@@ -32,7 +32,7 @@ const MusicPanel = ({
 
   const fetchPlaylists = async () => {
     try {
-      const res = await fetch("/api/playlists", {
+      fetch(`${import.meta.env.VITE_API_URL}/api/playlists`, {
         headers: {
           "user-id": user._id,
         },
@@ -82,7 +82,7 @@ const MusicPanel = ({
     if (!playlistName || playlist.length === 0) return;
 
     try {
-      const res = await fetch("/api/playlists", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/playlists`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -107,7 +107,7 @@ const MusicPanel = ({
 
   const handleDeletePlaylist = async (id) => {
     try {
-      const res = await fetch(`/api/playlists/${id}`, {
+      fetch(`${import.meta.env.VITE_API_URL}/api/playlists/${id}`, {
         method: "DELETE",
         headers: {
           "user-id": user._id,
