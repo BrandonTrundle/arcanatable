@@ -131,6 +131,12 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
   }, [socket, campaign._id, audioInstance, volume]);
 
   useEffect(() => {
+    if (audioInstance) {
+      audioInstance.volume = volume;
+    }
+  }, [volume, audioInstance]);
+
+  useEffect(() => {
     const handleStop = ({ campaignId }) => {
       if (campaignId === campaign._id) {
         if (audioInstance) {
