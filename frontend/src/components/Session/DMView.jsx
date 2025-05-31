@@ -13,6 +13,8 @@ import DMMapDisplay from "../Session/DMComponents/UI/DMMapDisplay";
 import useCombatTracker from "../Session/DMComponents/CombatTracker/hooks/useCombatTracker";
 import CombatTrackerPanel from "../Session/DMComponents/CombatTracker/CombatTrackerPanel";
 import DiceRoller from "../Session/SharedComponents/DiceRoller";
+import FloatingMusicPlayer from "../Session/Music/FloatingMusicPlayer";
+import MusicPanel from "../Session/DMComponents/UI/MusicPanel";
 
 const DMView = ({ campaign, socket, sessionMap }) => {
   const { user } = useContext(UserContext);
@@ -21,6 +23,12 @@ const DMView = ({ campaign, socket, sessionMap }) => {
   const [showTokenInfo, setShowTokenInfo] = useState(false);
   const [showDiceRoller, setShowDiceRoller] = useState(false);
   const [gridVisible, setGridVisible] = useState(true);
+  const [currentTrack, setCurrentTrack] = useState(null);
+  const [audioInstance, setAudioInstance] = useState(null);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(null);
+  const [repeat, setRepeat] = useState(false);
+  const [volume, setVolume] = useState(0.5);
+  const [playlist, setPlaylist] = useState([]);
 
   const {
     sidebarOpen,
@@ -60,6 +68,85 @@ const DMView = ({ campaign, socket, sessionMap }) => {
     addCondition,
     removeCondition,
   } = useCombatTracker(socket, activeMap?._id, tokens);
+
+  const handlePlay = (track, index = null) => {
+    if (audioInstance) {
+      audioInstance.pause();
+    }
+
+    const audio = new Audio(track.url);
+    audio.volume = volume;
+    audio.play();
+
+    audio.addEventListener("ended", () => {
+      if (repeat) {
+        handlePlay(track, index);
+      } else if (index !== null && playlist.length > index + 1) {
+        const nextTrack = playlist[index + 1];
+        handlePlay(nextTrack, index + 1);
+      } else {
+        setCurrentTrack(null);
+        setCurrentTrackIndex(null);
+
+        // 🔁 Optional: notify players that music stopped
+        if (socket && campaign?._id) {
+          socket.emit("music:stop", { campaignId: campaign._id });
+        }
+      }
+    });
+
+    setAudioInstance(audio);
+    setCurrentTrack(track);
+    setCurrentTrackIndex(index);
+
+    // 📢 Emit track to all players in this campaign
+    if (socket && campaign?._id) {
+      socket.emit("music:play", {
+        campaignId: campaign._id,
+        track,
+      });
+    }
+  };
+
+  const handleStop = () => {
+    if (audioInstance) {
+      audioInstance.pause();
+      audioInstance.currentTime = 0;
+      setAudioInstance(null);
+      setCurrentTrack(null);
+      setCurrentTrackIndex(null);
+
+      // 📢 Emit stop event to all players
+      if (socket && campaign?._id) {
+        socket.emit("music:stop", { campaignId: campaign._id });
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (audioInstance) {
+      console.log("🔊 Updating volume to:", volume);
+      audioInstance.volume = volume;
+    }
+  }, [volume, audioInstance]);
+
+  const handleNext = () => {
+    if (
+      playlist &&
+      currentTrackIndex !== null &&
+      currentTrackIndex < playlist.length - 1
+    ) {
+      const nextIndex = currentTrackIndex + 1;
+      handlePlay(playlist[nextIndex], nextIndex);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (playlist && currentTrackIndex !== null && currentTrackIndex > 0) {
+      const prevIndex = currentTrackIndex - 1;
+      handlePlay(playlist[prevIndex], prevIndex);
+    }
+  };
 
   useEffect(() => {
     // console.log("🧠 Combat state updated:", combatState);
@@ -150,6 +237,37 @@ const DMView = ({ campaign, socket, sessionMap }) => {
         />
       </div>
 
+      <MusicPanel
+        campaign={campaign}
+        socket={socket}
+        currentTrack={currentTrack}
+        setCurrentTrack={setCurrentTrack}
+        audioInstance={audioInstance}
+        setAudioInstance={setAudioInstance}
+        currentTrackIndex={currentTrackIndex}
+        setCurrentTrackIndex={setCurrentTrackIndex}
+        repeat={repeat}
+        setRepeat={setRepeat}
+        volume={volume}
+        setVolume={setVolume}
+        playlist={playlist}
+        setPlaylist={setPlaylist}
+        handlePlay={handlePlay}
+      />
+
+      {currentTrack && (
+        <FloatingMusicPlayer
+          track={currentTrack}
+          onNext={handleNext}
+          onPrev={handlePrevious}
+          onStop={handleStop}
+          volume={volume}
+          onVolumeChange={setVolume}
+          repeat={repeat}
+          setRepeat={setRepeat}
+        />
+      )}
+
       <DMPanelManager
         activeTool={activeTool}
         user={user}
@@ -174,6 +292,20 @@ const DMView = ({ campaign, socket, sessionMap }) => {
         updateHP={updateHP}
         addCondition={addCondition}
         removeCondition={removeCondition}
+        // Music Props
+        currentTrack={currentTrack}
+        setCurrentTrack={setCurrentTrack}
+        audioInstance={audioInstance}
+        setAudioInstance={setAudioInstance}
+        currentTrackIndex={currentTrackIndex}
+        setCurrentTrackIndex={setCurrentTrackIndex}
+        repeat={repeat}
+        setRepeat={setRepeat}
+        volume={volume}
+        setVolume={setVolume}
+        playlist={playlist}
+        setPlaylist={setPlaylist}
+        handlePlay={handlePlay}
       />
 
       {showCombatTracker && (

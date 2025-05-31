@@ -11,6 +11,7 @@ import TokenInfoPanel from "../UI/TokenInfoPanel";
 import DMCharacterPanel from "../CharacterSheets/DMCharacterPanel";
 import CharacterSheetPanel from "../../PlayerComponents/CharacterSheetPanel";
 import DMCharacterSheetPanel from "./DMCharacterSheetPanel";
+import MusicPanel from "./MusicPanel";
 
 const DMPanelManager = ({
   activeTool,
@@ -37,6 +38,20 @@ const DMPanelManager = ({
   updateHP,
   addCondition,
   removeCondition,
+  // Props from Music
+  currentTrack,
+  setCurrentTrack,
+  audioInstance,
+  setAudioInstance,
+  currentTrackIndex,
+  setCurrentTrackIndex,
+  repeat,
+  setRepeat,
+  volume,
+  setVolume,
+  playlist,
+  setPlaylist,
+  handlePlay,
 }) => {
   //console.log("📦 DMPanelManager focusedToken:", focusedToken);
   const liveToken =
@@ -196,6 +211,28 @@ const DMPanelManager = ({
           campaignId={campaign._id}
           setActiveTool={setActiveTool}
         />
+      )}
+
+      {activeTool === "music" && (
+        <div className="floating-panel" style={floatingStyle(0)}>
+          <MusicPanel
+            campaign={campaign}
+            socket={socket}
+            currentTrack={currentTrack}
+            setCurrentTrack={setCurrentTrack}
+            audioInstance={audioInstance}
+            setAudioInstance={setAudioInstance}
+            currentTrackIndex={currentTrackIndex}
+            setCurrentTrackIndex={setCurrentTrackIndex}
+            repeat={repeat}
+            setRepeat={setRepeat}
+            volume={volume}
+            setVolume={setVolume}
+            playlist={playlist}
+            setPlaylist={setPlaylist}
+            handlePlay={handlePlay}
+          />
+        </div>
       )}
 
       {selectedNPC && (

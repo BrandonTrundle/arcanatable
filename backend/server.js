@@ -1,3 +1,4 @@
+const Playlist = require("./models/Playlist");
 const express = require("express");
 const http = require("http");
 const path = require("path");
@@ -256,6 +257,22 @@ io.on("connection", (socket) => {
     //   console.log(`[SERVER] Clearing all measurements in map ${mapId}`);
     io.to(mapId).emit("measurement:clearAll");
   });
+
+  socket.on("music:play", ({ campaignId, track }) => {
+    if (campaignId && track) {
+      // Broadcast to all other clients in the same room
+      socket.to(campaignId).emit("music:play", {
+        campaignId,
+        track,
+      });
+    }
+  });
+
+  socket.on("music:stop", ({ campaignId }) => {
+    if (campaignId) {
+      socket.to(campaignId).emit("music:stop", { campaignId });
+    }
+  });
 });
 
 // Middleware
@@ -316,6 +333,49 @@ if (!isDev) {
     res.sendFile(path.join(buildPath, "index.html"));
   });
 }
+
+// Get playlists for the current user
+app.get("/api/playlists", async (req, res) => {
+  const userId = req.headers["user-id"];
+  if (!userId) return res.status(401).json({ message: "Missing user ID" });
+
+  const playlists = await Playlist.find({ userId });
+  res.json(playlists);
+});
+
+// Save a new playlist
+app.post("/api/playlists", async (req, res) => {
+  const userId = req.headers["user-id"];
+  if (!userId) return res.status(401).json({ message: "Missing user ID" });
+
+  const { name, tracks } = req.body;
+
+  const playlist = new Playlist({
+    name,
+    userId,
+    tracks,
+  });
+
+  await playlist.save();
+  res.json(playlist);
+});
+
+app.delete("/api/playlists/:id", async (req, res) => {
+  const userId = req.headers["user-id"];
+  const playlistId = req.params.id;
+
+  if (!userId) return res.status(401).json({ message: "Missing user ID" });
+
+  const deleted = await Playlist.findOneAndDelete({ _id: playlistId, userId });
+
+  if (!deleted) {
+    return res
+      .status(404)
+      .json({ message: "Playlist not found or unauthorized" });
+  }
+
+  res.json({ message: "Playlist deleted", id: playlistId });
+});
 
 // Health check
 app.get("/", (req, res) => res.send("API is running..."));

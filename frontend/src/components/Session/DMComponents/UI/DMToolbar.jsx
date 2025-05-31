@@ -31,6 +31,7 @@ const DMToolbar = ({
         <button onClick={() => handleToolClick("files")}>📁 Files</button>
         <button onClick={() => handleToolClick("players")}>🧑‍🤝‍🧑 PC's</button>
         <button onClick={() => handleToolClick("notes")}>📝 Notes</button>
+        <button onClick={() => handleToolClick("music")}>🎵 Music</button>
       </div>
     </div>
   );

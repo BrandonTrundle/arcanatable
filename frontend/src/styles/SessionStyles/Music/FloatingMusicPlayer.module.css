@@ -1,0 +1,59 @@
+.player {
+  position: absolute;
+  z-index: 10000;
+  top: 80px;
+  left: 20px;
+  width: 300px;
+  background: #1f1f1f;
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  user-select: none;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+
+.header {
+  background: #333;
+  padding: 6px 12px;
+  font-weight: bold;
+  cursor: move;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toggleBtn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.controls {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.buttons button {
+  padding: 4px 8px;
+  background: #444;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.volume {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
