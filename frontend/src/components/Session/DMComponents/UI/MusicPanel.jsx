@@ -38,9 +38,22 @@ const MusicPanel = ({
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/playlists`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "user-id": user?._id, // ✅ Add this header
         },
       });
+
       const data = await res.json();
+
+      if (!res.ok) {
+        console.error("❌ Playlist fetch failed:", data.message || data);
+        return;
+      }
+
+      if (!Array.isArray(data)) {
+        console.error("❌ Expected array but got:", data);
+        return;
+      }
+
       setSavedPlaylists(data);
     } catch (err) {
       console.error("❌ Failed to fetch playlists:", err);
@@ -90,6 +103,7 @@ const MusicPanel = ({
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "user-id": user?._id, // ✅ Added here
         },
         body: JSON.stringify({
           name: playlistName,
@@ -119,6 +133,7 @@ const MusicPanel = ({
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "user-id": user?._id,
           },
         }
       );
