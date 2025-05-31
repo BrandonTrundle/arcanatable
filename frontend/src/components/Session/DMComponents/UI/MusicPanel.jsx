@@ -25,16 +25,19 @@ const MusicPanel = ({
   const [selectedTrackIndex, setSelectedTrackIndex] = useState(0);
   const [playlistName, setPlaylistName] = useState("");
   const [savedPlaylists, setSavedPlaylists] = useState([]);
+
   useEffect(() => {
     setTracks(musicTracks);
-    fetchPlaylists();
-  }, []);
+    if (user?._id) {
+      fetchPlaylists();
+    }
+  }, [user?._id]);
 
   const fetchPlaylists = async () => {
     try {
-      fetch(`${import.meta.env.VITE_API_URL}/api/playlists`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/playlists`, {
         headers: {
-          "user-id": user._id,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
       const data = await res.json();
@@ -86,7 +89,7 @@ const MusicPanel = ({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "user-id": user._id,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
           name: playlistName,
@@ -99,6 +102,9 @@ const MusicPanel = ({
         setSavedPlaylists([...savedPlaylists, newPlaylist]);
         setPlaylist([]);
         setPlaylistName("");
+      } else {
+        const error = await res.text();
+        console.error("❌ Failed to save playlist:", error);
       }
     } catch (err) {
       console.error("❌ Failed to save playlist:", err);
@@ -107,15 +113,21 @@ const MusicPanel = ({
 
   const handleDeletePlaylist = async (id) => {
     try {
-      fetch(`${import.meta.env.VITE_API_URL}/api/playlists/${id}`, {
-        method: "DELETE",
-        headers: {
-          "user-id": user._id,
-        },
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/playlists/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       if (res.ok) {
         setSavedPlaylists((prev) => prev.filter((pl) => pl._id !== id));
+      } else {
+        const error = await res.text();
+        console.error("❌ Failed to delete playlist:", error);
       }
     } catch (err) {
       console.error("❌ Failed to delete playlist:", err);

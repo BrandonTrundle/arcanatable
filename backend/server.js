@@ -294,8 +294,8 @@ app.use(
   cors({
     origin: allowed,
     credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], // ✅ PATCH added
-    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "user-id"], // 👈 ADD THIS
   })
 );
 app.use(express.json({ limit: "20mb" }));
