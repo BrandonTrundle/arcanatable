@@ -9,6 +9,7 @@ const passport = require("passport");
 const { Server } = require("socket.io");
 const Campaign = require("../backend/models/campaignModel");
 const AoEModel = require("./models/AoE");
+const User = require("./models/userModel"); // ⬅️ make sure you have this model
 
 const dotenv = require("dotenv");
 
@@ -65,6 +66,7 @@ const io = new Server(server, {
     : undefined,
 });
 const userSocketMap = new Map();
+const campaignPlayersMap = new Map(); // campaignId => [ { userId, username, avatarUrl } ]
 
 io.on("connection", (socket) => {
   socket.on("joinRoom", (campaignId) => {
@@ -73,9 +75,17 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    for (const [userId, id] of userSocketMap.entries()) {
-      if (id === socket.id) {
+    for (const [userId, { socketId, campaignId }] of userSocketMap.entries()) {
+      if (socketId === socket.id) {
         userSocketMap.delete(userId);
+
+        const players = campaignPlayersMap.get(campaignId);
+        if (players) {
+          const updated = players.filter((p) => p.userId !== userId);
+          campaignPlayersMap.set(campaignId, updated);
+          io.to(campaignId).emit("players:connected", updated);
+        }
+
         break;
       }
     }
@@ -110,12 +120,46 @@ io.on("connection", (socket) => {
     io.to(message.campaignId).emit("chatMessage", message);
   });
 
-  socket.on("registerUser", ({ userId, campaignId }) => {
-    userSocketMap.set(userId, {
-      socketId: socket.id,
-      campaignId,
-    });
-  });
+  socket.on(
+    "registerUser",
+    async ({ userId, campaignId, username, avatarUrl }) => {
+      try {
+        // 🛡 Fallback: Load user from DB if needed
+        if (!username || !avatarUrl) {
+          const user = await User.findById(userId).select("username avatarUrl");
+          if (user) {
+            username = user.username;
+            avatarUrl = user.avatarUrl;
+          }
+        }
+
+        // 🔁 Always overwrite user socket tracking
+        userSocketMap.set(userId, {
+          socketId: socket.id,
+          campaignId,
+        });
+
+        socket.join(campaignId);
+
+        // 🧹 Remove stale duplicates of this user
+        const currentPlayers = campaignPlayersMap.get(campaignId) || [];
+        const filteredPlayers = currentPlayers.filter(
+          (p) => p.userId !== userId
+        );
+
+        // ✅ Add (or re-add) this user freshly
+        const updatedPlayers = [
+          ...filteredPlayers,
+          { userId, username, avatarUrl },
+        ];
+
+        campaignPlayersMap.set(campaignId, updatedPlayers);
+        io.to(campaignId).emit("players:connected", updatedPlayers);
+      } catch (err) {
+        console.error("❌ Failed to register user:", err);
+      }
+    }
+  );
 
   socket.on("loadMap", (map) => {
     const campaignId = map.content?.campaign;

@@ -15,6 +15,7 @@ import CombatTrackerPanel from "../Session/DMComponents/CombatTracker/CombatTrac
 import DiceRoller from "../Session/SharedComponents/DiceRoller";
 import FloatingMusicPlayer from "../Session/Music/FloatingMusicPlayer";
 import MusicPanel from "../Session/DMComponents/UI/MusicPanel";
+import DMConnectedPlayerCards from "../Session/DMComponents/ConnectedPlayers/DMConnectedPlayerCards";
 
 const DMView = ({ campaign, socket, sessionMap }) => {
   const { user } = useContext(UserContext);
@@ -30,6 +31,8 @@ const DMView = ({ campaign, socket, sessionMap }) => {
   const [volume, setVolume] = useState(0.5);
   const [playlist, setPlaylist] = useState([]);
   const [trackStartedAt, setTrackStartedAt] = useState(null);
+  const [connectedPlayers, setConnectedPlayers] = useState([]);
+  const [showPlayerCards, setShowPlayerCards] = useState(false);
 
   const {
     sidebarOpen,
@@ -155,6 +158,26 @@ const DMView = ({ campaign, socket, sessionMap }) => {
   }, [socket, campaign?._id, currentTrack, trackStartedAt]);
 
   useEffect(() => {
+    if (!socket) return;
+
+    const handleConnectedPlayers = (players) => {
+      console.log("📥 players:connected payload:", players);
+
+      setConnectedPlayers((prev) => {
+        const same = JSON.stringify(prev) === JSON.stringify(players);
+        console.log("🔁 Are players identical?", same);
+        return same ? prev : players;
+      });
+    };
+
+    socket.on("players:connected", handleConnectedPlayers);
+
+    return () => {
+      socket.off("players:connected", handleConnectedPlayers);
+    };
+  }, [socket]);
+
+  useEffect(() => {
     if (audioInstance) {
       console.log("🔊 Updating volume to:", volume);
       audioInstance.volume = volume;
@@ -244,6 +267,8 @@ const DMView = ({ campaign, socket, sessionMap }) => {
           sidebarOpen={sidebarOpen}
           setSidebarOpen={setSidebarOpen}
           setShowDiceRoller={setShowDiceRoller}
+          setShowPlayerCards={setShowPlayerCards}
+          showPlayerCards={showPlayerCards}
         />
       </aside>
 
@@ -321,6 +346,16 @@ const DMView = ({ campaign, socket, sessionMap }) => {
         handlePlay={handlePlay}
       />
 
+      {showPlayerCards && (
+        <DMConnectedPlayerCards
+          players={connectedPlayers}
+          currentUserId={user._id}
+          onSendMessage={(player) => {
+            console.log("💬 Send message to", player.username);
+          }}
+        />
+      )}
+
       {showCombatTracker && (
         <CombatTrackerPanel
           onClose={() => setShowCombatTracker(false)}
@@ -364,6 +399,22 @@ const DMView = ({ campaign, socket, sessionMap }) => {
           userId={user._id}
         />
       </aside>
+      <button
+        onClick={() => setShowPlayerCards((prev) => !prev)}
+        style={{
+          position: "absolute",
+          bottom: "90px",
+          left: "10px",
+          padding: "6px 12px",
+          background: "#333",
+          color: "white",
+          borderRadius: "6px",
+          border: "none",
+          zIndex: 1000,
+        }}
+      >
+        {showPlayerCards ? "🙈 Hide Users" : "🧑‍🤝‍🧑 Show Users"}
+      </button>
       <button
         onClick={() => setShowTokenInfo((prev) => !prev)}
         style={{

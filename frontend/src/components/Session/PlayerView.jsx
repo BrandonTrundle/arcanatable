@@ -11,6 +11,7 @@ import ChatPanel from "./PlayerComponents/ChatPanel";
 import RefactoredMap from "./DMComponents/Maps/RefactoredMap";
 import InteractionToolbar from "./DMComponents/UI/InteractionToolbar";
 import PlayerMusicPanel from "../Session/PlayerComponents/PlayerMusicPanel";
+import DMConnectedPlayerCards from "../Session/DMComponents/ConnectedPlayers/DMConnectedPlayerCards";
 
 const PlayerView = ({ campaign, socket, sessionMap }) => {
   const { user } = useContext(UserContext);
@@ -32,10 +33,29 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
   const [pendingTrack, setPendingTrack] = useState(null);
   const [hasConsentedToMusic, setHasConsentedToMusic] = useState(false);
   const consentRef = useRef(false);
+  const [connectedPlayers, setConnectedPlayers] = useState([]);
+  const [showPlayerCards, setShowPlayerCards] = useState(true);
 
   useEffect(() => {
     if (sessionMap) setActiveMap(sessionMap);
   }, [sessionMap]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleConnectedPlayers = (players) => {
+      setConnectedPlayers((prev) => {
+        const same = JSON.stringify(prev) === JSON.stringify(players);
+        return same ? prev : players;
+      });
+    };
+
+    socket.on("players:connected", handleConnectedPlayers);
+
+    return () => {
+      socket.off("players:connected", handleConnectedPlayers);
+    };
+  }, [socket]);
 
   useEffect(() => {
     consentRef.current = hasConsentedToMusic;
@@ -53,6 +73,8 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
       socket.emit("registerUser", {
         userId: user._id,
         campaignId: campaign._id,
+        username: user.username,
+        avatarUrl: user.avatarUrl || "/default-avatar.png",
       });
 
       // 🔁 Ask the DM what’s currently playing
@@ -384,6 +406,14 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
         userId={user._id}
       />
 
+      {showPlayerCards && (
+        <DMConnectedPlayerCards
+          players={connectedPlayers}
+          onSendMessage={(player) => console.log("Message:", player)}
+          currentUserId={user?._id}
+        />
+      )}
+
       <PlayerMusicPanel
         currentTrack={currentTrack}
         volume={volume}
@@ -435,6 +465,23 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
           </button>
         </div>
       )}
+
+      <button
+        onClick={() => setShowPlayerCards((prev) => !prev)}
+        style={{
+          position: "absolute",
+          bottom: "90px",
+          left: "10px",
+          padding: "6px 12px",
+          background: "#333",
+          color: "white",
+          borderRadius: "6px",
+          border: "none",
+          zIndex: 1000,
+        }}
+      >
+        {showPlayerCards ? "🙈 Hide Users" : "🧑‍🤝‍🧑 Show Users"}
+      </button>
 
       <button
         onClick={() => setShowTokenInfo((prev) => !prev)}

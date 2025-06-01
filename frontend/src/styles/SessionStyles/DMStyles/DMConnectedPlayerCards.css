@@ -1,0 +1,46 @@
+.dm-player-cards-container {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1500;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.dm-player-card {
+  background: #222;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  width: 150px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dm-player-card img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 8px;
+}
+
+.dm-player-card .username {
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.dm-player-card button {
+  background: #444;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}

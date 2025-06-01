@@ -7,6 +7,8 @@ const DMToolbar = ({
   sidebarOpen,
   setSidebarOpen,
   setShowDiceRoller,
+  setShowPlayerCards,
+  showPlayerCards,
 }) => {
   const handleToolClick = (tool) => {
     if (tool === "dice") {
