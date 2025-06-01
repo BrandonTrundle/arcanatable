@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
 import { getApiUrl } from "../../../../utils/env";
 import { UserContext } from "../../../../context/UserContext";
+import styles from "../../../../styles/SessionStyles/PrivateMessage/PrivateMessageModal.module.css";
 
 const PrivateMessageModal = ({ player, socket, onClose }) => {
   const [loading, setLoading] = useState(true);
@@ -17,9 +18,7 @@ const PrivateMessageModal = ({ player, socket, onClose }) => {
         const res = await fetch(
           `${getApiUrl()}/api/messages/thread/${player.userId}`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
         const data = await res.json();
@@ -97,89 +96,56 @@ const PrivateMessageModal = ({ player, socket, onClose }) => {
   };
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: "10%",
-        left: "50%",
-        transform: "translateX(-50%)",
-        width: "600px",
-        height: "500px",
-        backgroundColor: "#222",
-        color: "white",
-        borderRadius: "10px",
-        boxShadow: "0 0 20px rgba(0,0,0,0.6)",
-        zIndex: 4000,
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <div
-        style={{
-          padding: "12px 16px",
-          backgroundColor: "#333",
-          borderTopLeftRadius: "10px",
-          borderTopRightRadius: "10px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          borderBottom: "1px solid #444",
-        }}
-      >
+    <div className={styles.modal}>
+      <div className={styles.header}>
         <strong>🗨️ Private Chat with {player.username}</strong>
-        <button
-          onClick={onClose}
-          style={{
-            background: "transparent",
-            border: "none",
-            color: "white",
-            fontSize: "18px",
-            cursor: "pointer",
-          }}
-        >
+        <button onClick={onClose} className={styles.closeButton}>
           ✖
         </button>
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          flex: 1,
-          minHeight: 0,
-        }}
-      >
-        <div
-          style={{
-            width: "180px",
-            borderRight: "1px solid #444",
-            padding: "8px",
-            overflowY: "auto",
-          }}
-        >
+      <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
+        <div className={styles.threadSidebar}>
           <p style={{ opacity: 0.7 }}>🗂️ Threads (coming soon)</p>
+
+          {thread && (
+            <button
+              className={styles.deleteButton}
+              onClick={async () => {
+                if (
+                  !window.confirm(
+                    "Are you sure you want to delete this conversation?"
+                  )
+                )
+                  return;
+                try {
+                  const res = await fetch(
+                    `${getApiUrl()}/api/messages/thread/${thread._id}`,
+                    {
+                      method: "DELETE",
+                      headers: { Authorization: `Bearer ${token}` },
+                    }
+                  );
+                  if (res.ok) {
+                    setThread(null);
+                    setLoading(false);
+                    alert("Conversation deleted.");
+                  } else {
+                    alert("Failed to delete.");
+                  }
+                } catch (err) {
+                  console.error("❌ Error deleting thread:", err);
+                  alert("An error occurred.");
+                }
+              }}
+            >
+              🗑️ Delete Conversation
+            </button>
+          )}
         </div>
 
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            padding: "8px",
-            minHeight: 0,
-          }}
-        >
-          <div
-            style={{
-              flex: 1,
-              background: "#111",
-              borderRadius: "6px",
-              marginBottom: "8px",
-              padding: "8px",
-              overflowY: "auto",
-              height: "100%",
-              minHeight: 0,
-            }}
-          >
+        <div className={styles.mainArea}>
+          <div className={styles.messageList}>
             {loading ? (
               <p style={{ opacity: 0.5 }}>Loading messages...</p>
             ) : thread?.messages?.length ? (
@@ -192,11 +158,11 @@ const PrivateMessageModal = ({ player, socket, onClose }) => {
                       msg.from?._id === currentUserId ? "right" : "left",
                   }}
                 >
-                  <div style={{ fontSize: "0.85rem", opacity: 0.7 }}>
+                  <div className={styles.messageMeta}>
                     {msg.from?.username || "You"}
                   </div>
                   <div>{msg.content}</div>
-                  <div style={{ fontSize: "0.7rem", opacity: 0.5 }}>
+                  <div className={styles.messageTime}>
                     {new Date(msg.timestamp).toLocaleString()}
                   </div>
                 </div>
@@ -207,35 +173,18 @@ const PrivateMessageModal = ({ player, socket, onClose }) => {
             <div ref={messagesEndRef} />
           </div>
 
-          <div style={{ display: "flex", gap: "8px" }}>
+          <div className={styles.inputRow}>
             <input
               type="text"
               value={messageInput}
               onChange={(e) => setMessageInput(e.target.value)}
               placeholder="Type a message..."
-              style={{
-                flex: 1,
-                padding: "8px",
-                borderRadius: "6px",
-                border: "1px solid #555",
-                background: "#222",
-                color: "white",
-              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSendMessage();
               }}
+              className={styles.textInput}
             />
-            <button
-              onClick={handleSendMessage}
-              style={{
-                background: "#4caf50",
-                border: "none",
-                borderRadius: "6px",
-                padding: "8px 12px",
-                color: "white",
-                cursor: "pointer",
-              }}
-            >
+            <button onClick={handleSendMessage} className={styles.sendButton}>
               Send
             </button>
           </div>

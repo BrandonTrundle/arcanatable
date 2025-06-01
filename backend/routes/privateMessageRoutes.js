@@ -46,4 +46,31 @@ router.post("/thread/:threadId", protect, async (req, res) => {
   }
 });
 
+// DELETE thread by ID
+router.delete("/thread/:threadId", protect, async (req, res) => {
+  const userId = req.user._id;
+  const threadId = req.params.threadId;
+
+  try {
+    const thread = await PrivateMessageThread.findById(threadId);
+
+    if (!thread) {
+      return res.status(404).json({ error: "Thread not found" });
+    }
+
+    // Ensure the requesting user is a participant
+    if (!thread.participants.includes(userId)) {
+      return res
+        .status(403)
+        .json({ error: "Not authorized to delete this thread" });
+    }
+
+    await thread.deleteOne();
+    res.status(200).json({ message: "Thread deleted successfully" });
+  } catch (err) {
+    console.error("❌ Error deleting thread:", err);
+    res.status(500).json({ error: "Failed to delete thread" });
+  }
+});
+
 module.exports = router;
