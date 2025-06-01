@@ -378,7 +378,14 @@ io.on("connection", (socket) => {
     io.to(campaignId).emit("requestCurrentTrack", { campaignId });
   });
 
-  socket.on("private:message", ({ toUserId, message }) => {
+  socket.on("private:message", (data) => {
+    const { toUserId, ...message } = data;
+
+    if (!toUserId || !message?.from || !message?.threadId) {
+      console.warn("❌ Invalid private message payload received:", data);
+      return;
+    }
+
     const recipientInfo = userSocketMap.get(toUserId);
 
     if (recipientInfo?.socketId) {
@@ -390,12 +397,11 @@ io.on("connection", (socket) => {
       );
     }
 
-    // 🔁 Also emit to the sender, if tracked
+    // 🔁 Echo back to the sender as well
     const senderEntry = [...userSocketMap.entries()].find(
       ([, val]) => val.socketId === socket.id
     );
     if (senderEntry) {
-      const senderUserId = senderEntry[0];
       io.to(socket.id).emit("private:message", message);
     }
   });

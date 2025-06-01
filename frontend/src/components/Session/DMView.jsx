@@ -16,6 +16,7 @@ import DiceRoller from "../Session/SharedComponents/DiceRoller";
 import FloatingMusicPlayer from "../Session/Music/FloatingMusicPlayer";
 import MusicPanel from "../Session/DMComponents/UI/MusicPanel";
 import DMConnectedPlayerCards from "../Session/DMComponents/ConnectedPlayers/DMConnectedPlayerCards";
+import PrivateMessageModal from "./DMComponents/PrivateMessages/PrivateMessageModal";
 
 const DMView = ({ campaign, socket, sessionMap }) => {
   const { user } = useContext(UserContext);
@@ -34,6 +35,8 @@ const DMView = ({ campaign, socket, sessionMap }) => {
   const [connectedPlayers, setConnectedPlayers] = useState([]);
   const [showPlayerCards, setShowPlayerCards] = useState(false);
   const [incomingHandout, setIncomingHandout] = useState(null);
+  const [privateMessageModalPlayer, setPrivateMessageModalPlayer] =
+    useState(null);
 
   const {
     sidebarOpen,
@@ -130,11 +133,27 @@ const DMView = ({ campaign, socket, sessionMap }) => {
   };
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !user) return;
 
     const handleIncomingPrivateMessage = (msg) => {
-      console.log("📩 DM Received private message:", msg);
-      // You can later route this into state or a modal
+      console.log("📩 Received private message:", msg);
+
+      if (msg.from?._id !== user._id) {
+        const senderId = msg.from?._id || msg.from?.id || msg.from;
+        const senderUsername = msg.from?.username || "Unknown";
+
+        if (senderId) {
+          setPrivateMessageModalPlayer({
+            userId: senderId,
+            username: senderUsername,
+          });
+        } else {
+          console.warn(
+            "⚠️ Could not determine sender userId from message:",
+            msg
+          );
+        }
+      }
     };
 
     socket.on("private:message", handleIncomingPrivateMessage);
@@ -142,7 +161,7 @@ const DMView = ({ campaign, socket, sessionMap }) => {
     return () => {
       socket.off("private:message", handleIncomingPrivateMessage);
     };
-  }, [socket]);
+  }, [socket, user]);
 
   useEffect(() => {
     if (!socket) return;
@@ -323,6 +342,14 @@ const DMView = ({ campaign, socket, sessionMap }) => {
           gridVisible={gridVisible}
         />
       </div>
+
+      {privateMessageModalPlayer && (
+        <PrivateMessageModal
+          player={privateMessageModalPlayer}
+          socket={socket}
+          onClose={() => setPrivateMessageModalPlayer(null)}
+        />
+      )}
 
       {incomingHandout && (
         <div

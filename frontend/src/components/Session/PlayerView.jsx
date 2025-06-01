@@ -12,6 +12,7 @@ import RefactoredMap from "./DMComponents/Maps/RefactoredMap";
 import InteractionToolbar from "./DMComponents/UI/InteractionToolbar";
 import PlayerMusicPanel from "../Session/PlayerComponents/PlayerMusicPanel";
 import DMConnectedPlayerCards from "../Session/DMComponents/ConnectedPlayers/DMConnectedPlayerCards";
+import PrivateMessageModal from "./DMComponents/PrivateMessages/PrivateMessageModal";
 
 const PlayerView = ({ campaign, socket, sessionMap }) => {
   const { user } = useContext(UserContext);
@@ -37,6 +38,8 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
   const [connectedPlayers, setConnectedPlayers] = useState([]);
   const [showPlayerCards, setShowPlayerCards] = useState(true);
   const [incomingHandout, setIncomingHandout] = useState(null);
+  const [privateMessageModalPlayer, setPrivateMessageModalPlayer] =
+    useState(null);
 
   useEffect(() => {
     if (sessionMap) setActiveMap(sessionMap);
@@ -58,19 +61,34 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
   }, [socket]);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !user) return;
 
     const handleIncomingPrivateMessage = (msg) => {
       console.log("📩 Received private message:", msg);
-      // TODO: Display a notification or open a modal if active thread is open
+
+      if (msg.from?._id !== user._id) {
+        const senderId = msg.from?._id || msg.from?.id || msg.from;
+        const senderUsername = msg.from?.username || "Unknown";
+
+        if (senderId) {
+          setPrivateMessageModalPlayer({
+            userId: senderId,
+            username: senderUsername,
+          });
+        } else {
+          console.warn(
+            "⚠️ Could not determine sender userId from message:",
+            msg
+          );
+        }
+      }
     };
 
     socket.on("private:message", handleIncomingPrivateMessage);
-
     return () => {
       socket.off("private:message", handleIncomingPrivateMessage);
     };
-  }, [socket]);
+  }, [socket, user]);
 
   useEffect(() => {
     if (!socket) return;
@@ -387,6 +405,14 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
           campaignId={campaign._id}
           userToken={user.token}
           onClose={() => setActiveTool(null)}
+        />
+      )}
+
+      {privateMessageModalPlayer && (
+        <PrivateMessageModal
+          player={privateMessageModalPlayer}
+          socket={socket}
+          onClose={() => setPrivateMessageModalPlayer(null)}
         />
       )}
 
