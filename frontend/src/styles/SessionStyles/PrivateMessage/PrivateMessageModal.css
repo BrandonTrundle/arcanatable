@@ -1,0 +1,40 @@
+.modal {
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  max-height: 80vh;
+  background: #222;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  z-index: 4000;
+}
+
+.modal-header,
+.modal-footer {
+  padding: 10px;
+  background: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body {
+  padding: 10px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.message {
+  margin-bottom: 10px;
+}
+
+.timestamp {
+  font-size: 0.75rem;
+  color: #aaa;
+}

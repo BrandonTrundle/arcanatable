@@ -10,6 +10,7 @@ const { Server } = require("socket.io");
 const Campaign = require("../backend/models/campaignModel");
 const AoEModel = require("./models/AoE");
 const User = require("./models/userModel"); // ⬅️ make sure you have this model
+const privateMessageRoutes = require("./routes/privateMessageRoutes");
 
 const dotenv = require("dotenv");
 
@@ -376,6 +377,33 @@ io.on("connection", (socket) => {
     );
     io.to(campaignId).emit("requestCurrentTrack", { campaignId });
   });
+
+  socket.on("private:message", ({ toUserId, message }) => {
+    const recipientInfo = userSocketMap.get(toUserId);
+
+    if (recipientInfo?.socketId) {
+      io.to(recipientInfo.socketId).emit("private:message", message);
+    } else {
+      console.warn(
+        "🔇 No active socket for private message recipient:",
+        toUserId
+      );
+    }
+
+    // 🔁 Also emit to the sender, if tracked
+    const senderEntry = [...userSocketMap.entries()].find(
+      ([, val]) => val.socketId === socket.id
+    );
+    if (senderEntry) {
+      const senderUserId = senderEntry[0];
+      io.to(socket.id).emit("private:message", message);
+    }
+  });
+
+  const connectedUsers = {};
+  function findSocketByUserId(userId) {
+    return connectedUsers[userId];
+  }
 });
 
 // Middleware
@@ -421,6 +449,7 @@ uploadDirs.forEach((dir) => {
 
 // API routes
 app.use("/api", require("./routes"));
+app.use("/api/messages", privateMessageRoutes);
 
 // Serve React in production
 if (!isDev) {

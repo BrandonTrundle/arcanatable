@@ -18,6 +18,7 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
   const [isCombatMode, setIsCombatMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTool, setActiveTool] = useState(null);
+  1;
   const [activeMap, setActiveMap] = useState(sessionMap || null);
   const [activeInteractionMode, setActiveInteractionMode] = useState("select");
   const [selectedTokenId, setSelectedTokenId] = useState(null);
@@ -53,6 +54,21 @@ const PlayerView = ({ campaign, socket, sessionMap }) => {
 
     return () => {
       socket.off("handout:offer", handleIncomingHandout);
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleIncomingPrivateMessage = (msg) => {
+      console.log("📩 Received private message:", msg);
+      // TODO: Display a notification or open a modal if active thread is open
+    };
+
+    socket.on("private:message", handleIncomingPrivateMessage);
+
+    return () => {
+      socket.off("private:message", handleIncomingPrivateMessage);
     };
   }, [socket]);
 

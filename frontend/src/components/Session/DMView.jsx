@@ -132,6 +132,21 @@ const DMView = ({ campaign, socket, sessionMap }) => {
   useEffect(() => {
     if (!socket) return;
 
+    const handleIncomingPrivateMessage = (msg) => {
+      console.log("📩 DM Received private message:", msg);
+      // You can later route this into state or a modal
+    };
+
+    socket.on("private:message", handleIncomingPrivateMessage);
+
+    return () => {
+      socket.off("private:message", handleIncomingPrivateMessage);
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    if (!socket) return;
+
     const handleIncomingHandout = (data) => {
       console.log("📎 Incoming handout offer:", data); // <- THIS
       setIncomingHandout(data);

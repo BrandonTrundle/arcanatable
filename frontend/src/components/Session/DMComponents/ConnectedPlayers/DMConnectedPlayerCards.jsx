@@ -1,6 +1,7 @@
 import React, { memo, useState, useRef } from "react";
 import { getApiUrl } from "../../../../utils/env";
 import "../../../../styles/SessionStyles/DMStyles/DMConnectedPlayerCards.css";
+import PrivateMessageModal from "../PrivateMessages/PrivateMessageModal";
 
 const CARD_WIDTH = 160;
 
@@ -13,6 +14,7 @@ const DMConnectedPlayerCards = memo(
     const broadcastFileInputRef = useRef(null);
     const pendingTargetRef = useRef(null);
     const [uploadProgress, setUploadProgress] = useState(null);
+    const [selectedChatUser, setSelectedChatUser] = useState(null);
 
     const handleSendHandout = (player) => {
       pendingTargetRef.current = player;
@@ -228,8 +230,8 @@ const DMConnectedPlayerCards = memo(
 
               {!isCollapsed && (
                 <>
-                  <button onClick={() => onSendMessage(player)}>
-                    💬 Send Message
+                  <button onClick={() => setSelectedChatUser(player)}>
+                    💬 Message
                   </button>
                   <button onClick={() => handleSendHandout(player)}>
                     📎 Send Handout
@@ -309,9 +311,17 @@ const DMConnectedPlayerCards = memo(
           accept="*/*"
           onChange={handleBroadcastFileChange}
         />
+
+        {selectedChatUser && (
+          <PrivateMessageModal
+            player={selectedChatUser}
+            socket={socket}
+            onClose={() => setSelectedChatUser(null)}
+          />
+        )}
       </>
     );
-  }
-);
+  } // ← CLOSES the component function
+); // ← CLOSES memo()
 
 export default DMConnectedPlayerCards;
