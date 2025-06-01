@@ -161,6 +161,55 @@ io.on("connection", (socket) => {
     }
   );
 
+  socket.on("handout:offer", async ({ to, from, ...rest }) => {
+    const recipientInfo = userSocketMap.get(to);
+    if (recipientInfo?.socketId) {
+      // Ensure `from` includes username
+      if (!from?.username) {
+        try {
+          const senderUser = await User.findById(from.userId).select(
+            "username"
+          );
+          from.username = senderUser?.username || "Unknown";
+        } catch (err) {
+          console.error("❌ Failed to fetch sender username:", err);
+          from.username = "Unknown";
+        }
+      }
+
+      io.to(recipientInfo.socketId).emit("handout:offer", { from, ...rest });
+    }
+  });
+
+  socket.on("handout:broadcast", async ({ from, filename, type, url }) => {
+    const sender = [...userSocketMap.entries()].find(
+      ([userId, entry]) => entry.socketId === socket.id
+    );
+
+    if (!sender) return;
+
+    const [senderUserId, { campaignId }] = sender;
+
+    // Ensure `from` includes username
+    if (!from?.username) {
+      try {
+        const senderUser = await User.findById(from.userId).select("username");
+        from.username = senderUser?.username || "Unknown";
+      } catch (err) {
+        console.error("❌ Failed to fetch sender username:", err);
+        from.username = "Unknown";
+      }
+    }
+
+    // Broadcast to all users in the room, except the sender
+    socket.to(campaignId).emit("handout:offer", {
+      from,
+      filename,
+      type,
+      url,
+    });
+  });
+
   socket.on("loadMap", (map) => {
     const campaignId = map.content?.campaign;
     if (!campaignId) return;

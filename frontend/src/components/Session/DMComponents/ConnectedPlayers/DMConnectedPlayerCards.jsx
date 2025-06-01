@@ -1,35 +1,139 @@
-import React, { memo, useState } from "react";
+import React, { memo, useState, useRef } from "react";
 import { getApiUrl } from "../../../../utils/env";
 import "../../../../styles/SessionStyles/DMStyles/DMConnectedPlayerCards.css";
 
 const CARD_WIDTH = 160;
 
 const DMConnectedPlayerCards = memo(
-  ({ players, onSendMessage, currentUserId }) => {
+  ({ players, onSendMessage, currentUserId, socket, user }) => {
     const [positions, setPositions] = useState({});
     const [collapsedStates, setCollapsedStates] = useState({});
     const [dragging, setDragging] = useState(null);
+    const fileInputRef = useRef(null);
+    const broadcastFileInputRef = useRef(null);
+    const pendingTargetRef = useRef(null);
+    const [uploadProgress, setUploadProgress] = useState(null);
+
+    const handleSendHandout = (player) => {
+      pendingTargetRef.current = player;
+      if (fileInputRef.current) {
+        fileInputRef.current.click();
+      }
+    };
+
+    const handleFileChange = (event) => {
+      const file = event.target.files[0];
+      const player = pendingTargetRef.current;
+      if (!file || !player) return;
+
+      const token = localStorage.getItem("token");
+      if (file.size > 50 * 1024 * 1024) {
+        alert("File too large! Max size is 50MB.");
+        return;
+      }
+      const formData = new FormData();
+      formData.append("file", file); // same field name as before
+
+      const xhr = new XMLHttpRequest();
+
+      xhr.upload.addEventListener("progress", (e) => {
+        if (e.lengthComputable) {
+          const percent = Math.round((e.loaded / e.total) * 100);
+          setUploadProgress(percent);
+        }
+      });
+
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          setUploadProgress(null); // reset
+
+          if (xhr.status === 200) {
+            const { url } = JSON.parse(xhr.responseText);
+
+            socket.emit("handout:offer", {
+              to: player.userId,
+              from: { userId: currentUserId, username: user.username },
+              filename: file.name,
+              type: file.type,
+              url,
+            });
+
+            fileInputRef.current.value = null;
+            pendingTargetRef.current = null;
+          } else {
+            console.error("❌ Upload failed:", xhr.responseText);
+            alert("File upload failed.");
+          }
+        }
+      };
+
+      xhr.open("POST", `${getApiUrl()}/api/uploads/handouts`);
+      xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+      xhr.send(formData);
+    };
+
+    const handleBroadcastHandout = () => {
+      if (broadcastFileInputRef.current) {
+        broadcastFileInputRef.current.click();
+      }
+    };
+
+    const handleBroadcastFileChange = (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const token = localStorage.getItem("token");
+      const formData = new FormData();
+      formData.append("file", file); // ✅ match multer field
+
+      const xhr = new XMLHttpRequest();
+
+      xhr.upload.addEventListener("progress", (e) => {
+        if (e.lengthComputable) {
+          const percent = Math.round((e.loaded / e.total) * 100);
+          setUploadProgress(percent);
+        }
+      });
+
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          setUploadProgress(null); // reset progress bar
+
+          if (xhr.status === 200) {
+            const { url } = JSON.parse(xhr.responseText);
+
+            socket.emit("handout:broadcast", {
+              from: { userId: currentUserId, username: user.username }, // ✅ include sender info
+              filename: file.name,
+              type: file.type,
+              url,
+            });
+
+            broadcastFileInputRef.current.value = null;
+          } else {
+            console.error("❌ Broadcast upload failed:", xhr.responseText);
+            alert("Broadcast upload failed.");
+          }
+        }
+      };
+
+      xhr.open("POST", `${getApiUrl()}/api/uploads/handouts`);
+      xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+      xhr.send(formData);
+    };
 
     const handleMouseDown = (e, playerId) => {
       const startX = e.clientX;
       const startY = e.clientY;
-
       const initPos = positions[playerId] || { x: 10, y: 10 };
 
       const onMouseMove = (moveEvent) => {
         const dx = moveEvent.clientX - startX;
         const dy = moveEvent.clientY - startY;
-
-        setPositions((prev) => {
-          const updated = {
-            ...prev,
-            [playerId]: {
-              x: initPos.x + dx,
-              y: initPos.y + dy,
-            },
-          };
-          return updated;
-        });
+        setPositions((prev) => ({
+          ...prev,
+          [playerId]: { x: initPos.x + dx, y: initPos.y + dy },
+        }));
       };
 
       const onMouseUp = () => {
@@ -98,11 +202,9 @@ const DMConnectedPlayerCards = memo(
 
               <img
                 src={
-                  player.avatarUrl
-                    ? player.avatarUrl.startsWith("/uploads")
-                      ? `${getApiUrl()}${player.avatarUrl}`
-                      : player.avatarUrl
-                    : "/default-avatar.png"
+                  player.avatarUrl?.startsWith("/uploads")
+                    ? `${getApiUrl()}${player.avatarUrl}`
+                    : player.avatarUrl || "/default-avatar.png"
                 }
                 alt={`${player?.username || "Unknown"}'s avatar`}
                 onError={(e) => {
@@ -125,13 +227,88 @@ const DMConnectedPlayerCards = memo(
               </div>
 
               {!isCollapsed && (
-                <button onClick={() => onSendMessage(player)}>
-                  💬 Message {player.username}
-                </button>
+                <>
+                  <button onClick={() => onSendMessage(player)}>
+                    💬 Send Message
+                  </button>
+                  <button onClick={() => handleSendHandout(player)}>
+                    📎 Send Handout
+                  </button>
+                </>
               )}
             </div>
           );
         })}
+
+        {uploadProgress !== null && (
+          <div
+            style={{
+              position: "fixed",
+              bottom: 30,
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "300px",
+              background: "#333",
+              borderRadius: "6px",
+              overflow: "hidden",
+              boxShadow: "0 0 10px rgba(0,0,0,0.4)",
+              zIndex: 3000,
+            }}
+          >
+            <div
+              style={{
+                height: "10px",
+                width: `${uploadProgress}%`,
+                background: "#4caf50",
+                transition: "width 0.3s ease",
+              }}
+            />
+            <div
+              style={{
+                textAlign: "center",
+                color: "white",
+                fontSize: "12px",
+                padding: "4px 0",
+              }}
+            >
+              Uploading... {uploadProgress}%
+            </div>
+          </div>
+        )}
+
+        <button
+          onClick={handleBroadcastHandout}
+          style={{
+            position: "absolute",
+            bottom: 50,
+            left: 200,
+            zIndex: 3000,
+            padding: "8px 12px",
+            background: "#444",
+            color: "white",
+            border: "1px solid #888",
+            borderRadius: "8px",
+            cursor: "pointer",
+          }}
+        >
+          📎 Share With All
+        </button>
+
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          accept="*/*"
+          onChange={handleFileChange}
+        />
+
+        <input
+          type="file"
+          ref={broadcastFileInputRef}
+          style={{ display: "none" }}
+          accept="*/*"
+          onChange={handleBroadcastFileChange}
+        />
       </>
     );
   }

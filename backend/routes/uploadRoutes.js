@@ -10,8 +10,8 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-const defineUploadRoute = (urlPath, folderName) => {
-  router.post(urlPath, protect, upload.single("image"), async (req, res) => {
+const defineUploadRoute = (urlPath, folderName, fieldName = "image") => {
+  router.post(urlPath, protect, upload.single(fieldName), async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
@@ -53,5 +53,6 @@ defineUploadRoute("/tokenImages", "tokenImages");
 defineUploadRoute("/campaigns", "campaigns");
 defineUploadRoute("/avatars", "avatars");
 defineUploadRoute("/characters", "characters");
+defineUploadRoute("/handouts", "handouts", "file");
 
 module.exports = router;

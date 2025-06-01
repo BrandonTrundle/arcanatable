@@ -33,6 +33,7 @@ const DMView = ({ campaign, socket, sessionMap }) => {
   const [trackStartedAt, setTrackStartedAt] = useState(null);
   const [connectedPlayers, setConnectedPlayers] = useState([]);
   const [showPlayerCards, setShowPlayerCards] = useState(false);
+  const [incomingHandout, setIncomingHandout] = useState(null);
 
   const {
     sidebarOpen,
@@ -127,6 +128,21 @@ const DMView = ({ campaign, socket, sessionMap }) => {
       }
     }
   };
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleIncomingHandout = (data) => {
+      console.log("📎 Incoming handout offer:", data); // <- THIS
+      setIncomingHandout(data);
+    };
+
+    socket.on("handout:offer", handleIncomingHandout);
+
+    return () => {
+      socket.off("handout:offer", handleIncomingHandout);
+    };
+  }, [socket]);
 
   useEffect(() => {
     if (!socket || !campaign?._id) return;
@@ -293,6 +309,58 @@ const DMView = ({ campaign, socket, sessionMap }) => {
         />
       </div>
 
+      {incomingHandout && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            background: "#222",
+            color: "white",
+            padding: "12px 20px",
+            borderRadius: "8px",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.6)",
+            zIndex: 3000,
+          }}
+        >
+          📎 {incomingHandout?.from?.username || "Someone"} wants to share:{" "}
+          <strong>{incomingHandout?.filename}</strong>
+          <div style={{ marginTop: "10px" }}>
+            <button
+              onClick={() => {
+                window.open(incomingHandout.url, "_blank");
+                setIncomingHandout(null);
+              }}
+              style={{
+                marginRight: "8px",
+                background: "#4caf50",
+                border: "none",
+                color: "white",
+                padding: "6px 12px",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+            >
+              ✅ Accept
+            </button>
+            <button
+              onClick={() => setIncomingHandout(null)}
+              style={{
+                background: "#aaa",
+                border: "none",
+                color: "black",
+                padding: "6px 12px",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+            >
+              ❌ Decline
+            </button>
+          </div>
+        </div>
+      )}
+
       {currentTrack && activeTool !== "music" && (
         <FloatingMusicPlayer
           track={currentTrack}
@@ -349,10 +417,10 @@ const DMView = ({ campaign, socket, sessionMap }) => {
       {showPlayerCards && (
         <DMConnectedPlayerCards
           players={connectedPlayers}
-          currentUserId={user._id}
-          onSendMessage={(player) => {
-            console.log("💬 Send message to", player.username);
-          }}
+          onSendMessage={(player) => console.log("Message:", player)}
+          currentUserId={user?._id}
+          socket={socket}
+          user={user}
         />
       )}
 
