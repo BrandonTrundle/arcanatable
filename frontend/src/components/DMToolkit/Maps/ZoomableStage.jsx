@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import React, { useEffect, forwardRef } from "react";
 import { Stage } from "react-konva";
 
 export function handleWheelEvent(stage, e) {
@@ -46,6 +46,41 @@ const ZoomableStage = forwardRef(
     const handleWheel = (e) => {
       handleWheelEvent(ref?.current, e);
     };
+
+    // ✅ Initial debug log & scale reset
+    useEffect(() => {
+      const stage = ref?.current;
+      if (!stage) {
+        console.warn("[🛑 ZoomableStage] No stageRef available.");
+        return;
+      }
+
+      const scaleX = stage.scaleX();
+      const scaleY = stage.scaleY();
+      const x = stage.x();
+      const y = stage.y();
+
+      console.log("[🎥 ZoomableStage] Initial stage state", {
+        width: stage.width(),
+        height: stage.height(),
+        scaleX,
+        scaleY,
+        x,
+        y,
+      });
+
+      const invalidScale = scaleX === 0 || isNaN(scaleX);
+      const invalidPos = isNaN(x) || isNaN(y);
+
+      if (invalidScale || invalidPos) {
+        console.warn(
+          "[⚠️ ZoomableStage] Resetting stage transform due to invalid state."
+        );
+        stage.scale({ x: 1, y: 1 });
+        stage.position({ x: 0, y: 0 });
+        stage.batchDraw();
+      }
+    }, [ref]);
 
     return (
       <Stage

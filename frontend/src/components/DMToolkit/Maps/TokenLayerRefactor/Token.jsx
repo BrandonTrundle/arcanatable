@@ -29,14 +29,16 @@ const Token = ({
   maxHP,
 }) => {
   // console.log("🔄 Token rendered:", id, currentHP);
-  const [img] = useImage(
+  const [img, status] = useImage(
     imageUrl?.startsWith("/uploads")
       ? `${import.meta.env.VITE_API_URL}${imageUrl}`
       : imageUrl,
     "anonymous"
   );
 
-  if (!img) return null;
+  if (status !== "loaded" || !img || img.width === 0 || img.height === 0) {
+    return null;
+  }
 
   const isDM = activeLayer === "dm";
   const isPlayerToken = layer === "player";
@@ -54,6 +56,10 @@ const Token = ({
   const scaleFactor = sizeScaleMap[size] || 1;
   const baseSize = 64;
   const visualSize = baseSize * scaleFactor;
+  if (!visualSize || visualSize <= 0 || isNaN(visualSize)) {
+    console.warn("⚠️ Token has invalid visualSize:", { id, size, visualSize });
+    return null;
+  }
   const offset = visualSize / 2;
 
   return (
@@ -96,21 +102,24 @@ const Token = ({
 
       {isSelected && <SelectionHighlight size={visualSize} />}
 
-      <Rect
-        width={visualSize}
-        height={visualSize}
-        cornerRadius={visualSize / 2}
-        stroke="saddlebrown"
-        strokeWidth={2}
-        fill="antiquewhite"
-      />
-
-      <KonvaImage
-        image={img}
-        width={visualSize}
-        height={visualSize}
-        cornerRadius={visualSize / 2}
-      />
+      {visualSize > 0 && (
+        <>
+          <Rect
+            width={visualSize}
+            height={visualSize}
+            cornerRadius={visualSize / 2}
+            stroke="saddlebrown"
+            strokeWidth={2}
+            fill="antiquewhite"
+          />
+          <KonvaImage
+            image={img}
+            width={visualSize}
+            height={visualSize}
+            cornerRadius={visualSize / 2}
+          />
+        </>
+      )}
 
       {(isCombatMode || showTokenInfo) && title && (
         <TokenLabel title={title} offset={offset} />

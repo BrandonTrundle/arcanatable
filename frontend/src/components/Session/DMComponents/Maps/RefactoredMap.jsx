@@ -56,14 +56,20 @@ const RefactoredMap = ({
   addAOE,
   removeAOE,
   updateAOE,
-  gridVisible,
 }) => {
   const [showMeasurementPanel, setShowMeasurementPanel] = useState(true);
   const prevInteractionMode = useRef(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const { stageRef, cellSize, gridWidth, gridHeight } = useStageContext(
     map || {}
   );
+
+  useEffect(() => {
+    console.log("[📏 useStageContext] Dimensions:", {
+      cellSize,
+      gridWidth,
+      gridHeight,
+    });
+  }, [cellSize, gridWidth, gridHeight]);
   const containerRef = useRef();
   const [image] = useImage(map?.content?.imageUrl || "");
   const {
@@ -158,21 +164,6 @@ const RefactoredMap = ({
       //  console.log("[SOCKET] Joined room:", map._id);
     }
   }, [socket, map?._id]);
-
-  useEffect(() => {
-    const updateSize = () => {
-      if (containerRef.current) {
-        setDimensions({
-          width: containerRef.current.clientWidth,
-          height: containerRef.current.clientHeight,
-        });
-      }
-    };
-
-    updateSize();
-    window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
 
   useEffect(() => {
     if (
@@ -270,12 +261,6 @@ const RefactoredMap = ({
       ref={containerRef}
       onDrop={onDrop}
       onDragOver={onDragOver}
-      style={{
-        width: "100%",
-        height: "100%",
-        overflow: "hidden",
-        position: "relative",
-      }}
     >
       {activeInteractionMode === "aoe" && selectedTokenId && (
         <AoEControlPanel
@@ -348,9 +333,6 @@ const RefactoredMap = ({
         lockedMeasurements={lockedMeasurements}
         remoteMeasurements={remoteMeasurements}
         setMeasureTarget={setMeasureTarget}
-        gridVisible={gridVisible}
-        width={dimensions.width}
-        height={dimensions.height}
       />
 
       <HPDOMOverlay

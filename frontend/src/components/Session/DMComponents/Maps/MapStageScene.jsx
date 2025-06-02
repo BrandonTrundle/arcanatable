@@ -47,18 +47,18 @@ const MapStageScene = ({
   width, // ✅ ADD THIS
   height, // ✅ ADD THIS
 }) => {
-  //console.log("📏 Map size check", {
-  //  mapWidth: map?.content?.width,
-  //  mapHeight: map?.content?.height,
-  //  gridWidth,
-  //  gridHeight,
-  //  cellSize,
-  //});
+  console.log("📏 Map size check", {
+    mapWidth: map?.content?.width,
+    mapHeight: map?.content?.height,
+    gridWidth,
+    gridHeight,
+    cellSize,
+  });
   return (
     <ZoomableStage
       ref={stageRef}
-      width={width}
-      height={height}
+      width={gridWidth}
+      height={gridHeight}
       onMouseMove={(e) => {
         if (
           activeInteractionMode === "measure" &&
