@@ -177,26 +177,100 @@ const CombatTrackerPanel = ({
                   />
                   <br />
                   <div style={{ marginTop: "0.3rem" }}>
-                    🧷 Conditions:{" "}
-                    {c.conditions.length ? c.conditions.join(", ") : "None"}
-                    <button
-                      onClick={() => {
-                        const cond = prompt("Add condition (e.g., Poisoned):");
-                        if (cond) addCondition(c.tokenId, cond);
-                      }}
+                    🧷 Conditions:
+                    <div
                       style={{
-                        marginLeft: "0.5rem",
-                        fontSize: "0.8rem",
-                        padding: "2px 6px",
-                        borderRadius: "4px",
-                        border: "1px solid #888",
-                        backgroundColor: "#222",
-                        color: "white",
-                        cursor: "pointer",
+                        display: "inline-flex",
+                        flexWrap: "wrap",
+                        gap: "0.3rem",
+                        marginTop: "0.25rem",
                       }}
                     >
-                      ➕ Add
-                    </button>
+                      {c.conditions.length > 0 ? (
+                        c.conditions.map((cond, i) => (
+                          <span
+                            key={`${c.tokenId}-${cond}-${i}`}
+                            style={{
+                              backgroundColor: "#222",
+                              color: "white",
+                              borderRadius: "6px",
+                              padding: "2px 8px",
+                              fontSize: "0.8rem",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              border: "1px solid #888",
+                            }}
+                          >
+                            {cond}
+                            <button
+                              onClick={() => removeCondition(c.tokenId, cond)}
+                              style={{
+                                marginLeft: "6px",
+                                background: "transparent",
+                                border: "none",
+                                color: "red",
+                                fontWeight: "bold",
+                                cursor: "pointer",
+                                padding: 0,
+                                fontSize: "0.85rem",
+                              }}
+                              title={`Remove ${cond}`}
+                            >
+                              ✖
+                            </button>
+                          </span>
+                        ))
+                      ) : (
+                        <span style={{ color: "#aaa", fontSize: "0.85rem" }}>
+                          None
+                        </span>
+                      )}
+                      <select
+                        onChange={(e) => {
+                          const cond = e.target.value;
+                          if (cond) {
+                            addCondition(c.tokenId, cond);
+                            e.target.value = ""; // reset dropdown
+                          }
+                        }}
+                        defaultValue=""
+                        style={{
+                          fontSize: "0.8rem",
+                          padding: "2px 6px",
+                          borderRadius: "6px",
+                          border: "1px solid #888",
+                          backgroundColor: "#222",
+                          color: "white",
+                          cursor: "pointer",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        <option value="" disabled>
+                          ➕ Add Condition
+                        </option>
+                        {[
+                          "Blinded",
+                          "Charmed",
+                          "Deafened",
+                          "Exhaustion",
+                          "Frightened",
+                          "Grappled",
+                          "Incapacitated",
+                          "Invisible",
+                          "Paralyzed",
+                          "Petrified",
+                          "Poisoned",
+                          "Prone",
+                          "Restrained",
+                          "Stunned",
+                          "Unconscious",
+                        ].map((condition) => (
+                          <option key={condition} value={condition}>
+                            {condition}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </li>
               ))}
